@@ -1,0 +1,32 @@
+{
+  "name": "id-blog",
+  "version": "0.0.1",
+  "description": "Blog",
+  "private": true,
+  "author": "i'DLisT",
+  "keywords": [],
+  "license": "CC-BY-NC-SA-4.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idlist/id-blog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/idlist/id-blog/issues"
+  },
+  "homepage": "https://github.com/idlist/id-blog#readme",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "esbuild": "^0.13.0",
+    "fast-glob": "^3.0.0",
+    "js-yaml": "^4.0.0",
+    "sass": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.0",
+    "@types/node": "^16.10.0",
+    "eslint": "^7.0.0"
+  }
+}
