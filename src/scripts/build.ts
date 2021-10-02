@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'fs/promises'
 import { readdir, access, mkdir, rm } from 'fs/promises'
-import { cwd } from 'process'
+import { cwd, argv } from 'process'
 import { createHash } from 'crypto'
 
 import yaml from 'js-yaml'
@@ -10,50 +10,96 @@ import c from '../../utils/colors.js'
 import type BlogConfig from './.blogconfig.js'
 import type { RawPostMeta, PostMeta, MetaCategory } from '../.data-types.js'
 
-const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as BlogConfig
-const metaDelimiter = `${config.blog.metaDelimiter}\r\n`
+// Import Configuration
 
-const allMeta: PostMeta[] = []
+const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as BlogConfig
+
+const metaDelimiter = `${config.blog.metaDelimiter}\r\n`
+const postDir = `${config.root}/${config.blog.posts}`
+const cacheDir = `${config.root}/${config.blog.cache}`
+const outputDir = `${config.root}/${config.blog.output}`
+
+const options = {
+  rebuild: argv.includes('--rebuild-cache')
+}
+
+// Prepare global variables
+
+const allMeta: Record<string, PostMeta> = {}
 const category: MetaCategory = {
   tags: {},
   date: {}
 }
 
-const postList = await readdir(`${config.root}/${config.blog.posts}`)
+// Prepare functions
+
+const noop = () => { /* Do nothing */ }
+
+const md = markdownIt()
+
+// Prepare folders and files
+
+const postList = await readdir(postDir)
 
 try {
-  await access(`${config.root}/${config.blog.cache}`)
+  await access(cacheDir)
+  if (options.rebuild) {
+    await rm(cacheDir, { recursive: true })
+    await mkdir(cacheDir)
+  }
 } catch {
-  await mkdir(`${config.root}/${config.blog.cache}`)
+  await mkdir(cacheDir)
 }
 
+let allMetaCache: Record<string, PostMeta> = {}
 try {
-  await rm(`${config.root}/${config.blog.output}`, { recursive: true })
-} catch { /* Do nothing */}
-await mkdir(`${config.root}/${config.blog.output}`)
+  allMetaCache = JSON.parse(await readFile(`${cacheDir}/meta.json`, 'utf-8'))
+} catch { noop() }
+
+try {
+  await rm(outputDir, { recursive: true })
+} catch { noop() }
+await mkdir(outputDir)
 
 for (const post of postList) {
-  const content = await readFile(`${cwd()}/${config.blog.posts}/${post}`, 'utf-8')
+  const content = await readFile(`${postDir}/${post}`, 'utf-8')
+  const contentHash = createHash('md5').update(content).digest('hex')
+  const postName = post.split('.')[0]
+
+  // Read from cached metadata
+
+  if (allMetaCache[postName] &&
+    allMetaCache[postName].hash === contentHash &&
+    !options.rebuild) {
+    console.log(`${c.blue('[I]')} Post ${c.green(post)} didn't change. skipped`)
+    allMeta[postName] = { ...allMetaCache[postName] }
+    continue
+  }
+
+  // Extract metadata from posts
 
   if (!content.startsWith(metaDelimiter)) {
-    console.warn(`${c.yellow('[W]')} Post ${c.green(post)} `
-      + 'does not contain valid metadata. skipped.')
+    console.warn(`${c.yellow('[W]')} Post ${c.green(post)} ` +
+      'does not contain valid metadata. skipped.')
     continue
   }
 
   const metaSection = content.indexOf(metaDelimiter, metaDelimiter.length)
   if (metaSection === -1) {
-    console.warn(`${c.yellow('[W]')} Post ${c.green(post)}`
-      + 'does not contain ending delimiter of metadata. skipped.')
+    console.warn(`${c.yellow('[W]')} Post ${c.green(post)}` +
+      'does not contain ending delimiter of metadata. skipped.')
   }
 
   const metaString = content.slice(metaDelimiter.length, metaSection)
+
+  // Parse metadata
+
   let rawMeta: RawPostMeta
   try {
     rawMeta = yaml.load(metaString) as RawPostMeta
   } catch {
-    console.warn(`${c.yellow('[W]')} Metadata of post ${c.green(post)} `
-      + 'cannot be parsed. skipped.')
+    console.warn(`${c.yellow('[W]')} Metadata of post ${c.green(post)} ` +
+      'cannot be parsed. skipped.')
     continue
   }
 
@@ -61,12 +107,13 @@ for (const post of postList) {
   if (!rawMeta.title) missingMeta.push('title')
   if (!rawMeta.date || !(rawMeta.date instanceof Date)) missingMeta.push('date')
   if (missingMeta.length) {
-    console.warn(`${c.yellow('[W]')} Post ${c.green(post)} does not have `
-      + `following required metadata: ${missingMeta.join(', ')}. skipped.`)
+    console.warn(`${c.yellow('[W]')} Post ${c.green(post)} does not have or has wrong ` +
+      `metadata: ${missingMeta.map(str => c.blue(str)).join(', ')}. skipped.`)
+    continue
   }
 
   const meta: PostMeta = {
-    filename: post,
+    hash: contentHash,
     title: rawMeta.title,
     route: rawMeta.route
       ?? encodeURI(rawMeta.title.toLowerCase().replace(/\s+/g, '-')),
@@ -75,17 +122,20 @@ for (const post of postList) {
       month: rawMeta.date.getMonth() + 1,
       day: rawMeta.date.getDate()
     },
+    timestamp: rawMeta.date.getTime(),
     tags: rawMeta.tags
       ? rawMeta.tags.split(' ').map(tag => tag.replace('_', ' ')).filter(tag => tag)
       : []
   }
 
-  if (allMeta.find(existedMeta => existedMeta.route == meta.route)) {
-    console.warn(`${c.yellow('[W]')} Metadata of post ${c.green(post)} `
-      + 'has dupicated route with previous posts, skipped.')
+  // Categorize metadata
+
+  if (Object.values(allMeta).find(existedMeta => existedMeta.route == meta.route)) {
+    console.warn(`${c.yellow('[W]')} Metadata of post ${c.green(post)} ` +
+      'has dupicated route with previous posts, skipped.')
     continue
   }
-  allMeta.push(meta)
+  allMeta[postName] = meta
 
   if (!category.date[meta.date.year]) {
     category.date[meta.date.year] = {}
@@ -99,4 +149,14 @@ for (const post of postList) {
     if (!category.tags[tag]) category.tags[tag] = []
     category.tags[tag].push(meta.route)
   }
+
+  // Parse markdown and write cache
+
+  const article = content.slice(metaSection + metaDelimiter.length)
+  const parsedArticle = md.render(article)
+  await writeFile(`${cacheDir}/${postName}.html`, parsedArticle)
 }
+
+// Write metadata cache
+
+await writeFile(`${cacheDir}/meta.json`, JSON.stringify(allMeta))

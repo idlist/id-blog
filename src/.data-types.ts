@@ -8,13 +8,14 @@ export interface RawPostMeta {
 type ProcessedPostMeta = 'tags' | 'date'
 
 export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
-  filename: string
+  hash: string
   route: string
   date: {
     year: number
     month: number
     day: number
   }
+  timestamp: number
   tags: string[]
 }
 
@@ -25,11 +26,15 @@ export interface MetaCategory {
 
 export interface LayoutMeta extends PostMeta {
   head: string
-  body: string
 }
 
-export interface Layout {
-  layout: (meta: LayoutMeta, category: MetaCategory) => string
-  parentLayout?: string
+type Meta = LayoutMeta & MetaCategory
+
+interface LayoutOutput {
+  layout: (meta: Meta, content: string) => string
   unavailable?: boolean
+  parentMeta?: Meta
+  parentLayout?: string
 }
+
+export type Layout = (meta: Meta) => LayoutOutput

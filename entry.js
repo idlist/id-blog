@@ -14,7 +14,9 @@ import c from './utils/colors.js'
 const startTs = Date.now()
 
 const options = {
-  watch: argv.includes('--watch') || argv.includes('-w') ? true : false
+  watch: argv.includes('--watch') || argv.includes('-w'),
+  rebuild: argv.includes('--rebuild-cache'),
+  buildOnly: argv.includes('--build-only')
 }
 
 /**
@@ -51,7 +53,11 @@ const blogBuilder = async () => {
   const processOutput = str => str.slice(0, str.length - 1)
 
   try {
-    const { stdout, stderr } = await exec(`node ${config.compiler.dist}/scripts/build.js --color`)
+    const { stdout, stderr } = await exec(
+      `node ${config.compiler.dist}/scripts/build.js` +
+      ' --color' +
+      ` ${options.rebuild ? '--rebuild-cache' : ''}`
+    )
     if (stdout) console.log(processOutput(stdout))
     if (stderr) console.error(processOutput(stderr))
   } catch (err) {
@@ -129,4 +135,15 @@ const main = async () => {
   }
 }
 
-main()
+const buildOnly = async () => {
+  await blogBuilder()
+
+  const duration = ((Date.now() - startTs) / 1000).toFixed(3)
+  console.log(`${c.green('[S]')} ${c.cyan(`${duration}s`)} Blog built.`)
+}
+
+if (options.buildOnly) {
+  buildOnly()
+} else {
+  main()
+}

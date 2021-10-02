@@ -2,8 +2,7 @@ export default {
   root: '.',
   compiler: {
     src: 'src',
-    dist: 'dist',
-    entryFile: 'scripts/build.js',
+    dist: 'dist'
   },
   blog: {
     posts: 'posts',

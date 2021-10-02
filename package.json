@@ -18,8 +18,10 @@
   "type": "module",
   "scripts": {
     "start": "node entry.js --watch",
-    "dev": "node entry.js --watch",
-    "build": "node entry.js"
+    "build": "node entry.js",
+    "rebuild": "node entry.js --rebuild-cache",
+    "quickbuild": "node entry.js --build-only",
+    "count": "cd .. && cloc id-blog --exclude-dir=node_modules,dist,_site,_posts_cache, --include-ext=js,ts,sass"
   },
   "dependencies": {
     "js-yaml": "^4.0.0",
