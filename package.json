@@ -14,19 +14,24 @@
     "url": "https://github.com/idlist/id-blog/issues"
   },
   "homepage": "https://github.com/idlist/id-blog#readme",
-  "main": "index.js",
+  "main": "entry.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node entry.js --watch",
+    "build": "node entry.js"
   },
   "dependencies": {
+    "chalk": "^4.0.0",
     "esbuild": "^0.13.0",
     "fast-glob": "^3.0.0",
     "js-yaml": "^4.0.0",
+    "outdent": "^0.8.0",
     "sass": "^1.0.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^16.10.0",
-    "eslint": "^7.0.0"
+    "chokidar": "^3.5.2",
+    "eslint": "^7.32.0"
   }
 }
