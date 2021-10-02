@@ -17,21 +17,25 @@
   "main": "entry.js",
   "type": "module",
   "scripts": {
+    "start": "node entry.js --watch",
     "dev": "node entry.js --watch",
     "build": "node entry.js"
   },
   "dependencies": {
-    "chalk": "^4.0.0",
-    "esbuild": "^0.13.0",
-    "fast-glob": "^3.0.0",
     "js-yaml": "^4.0.0",
-    "outdent": "^0.8.0",
-    "sass": "^1.0.0"
+    "markdown-it": "^12.0.0",
+    "outdent": "^0.8.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^16.10.0",
-    "chokidar": "^3.5.2",
-    "eslint": "^7.32.0"
+    "@typescript-eslint/eslint-plugin": "^4.0.0",
+    "@typescript-eslint/parser": "^4.0.0",
+    "chalk": "^4.0.0",
+    "chokidar": "^3.0.0",
+    "esbuild": "^0.13.0",
+    "eslint": "^7.0.0",
+    "fast-glob": "^3.0.0",
+    "sass": "^1.0.0"
   }
 }

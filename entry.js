@@ -17,6 +17,9 @@ const options = {
   watch: argv.includes('--watch') || argv.includes('-w') ? true : false
 }
 
+/**
+ * @returns {esbuild.BuildOptions}
+ */
 const esbuildConfig = () => {
   return {
     entryPoints: [
@@ -25,7 +28,7 @@ const esbuildConfig = () => {
     outbase: config.compiler.src,
     outdir: config.compiler.dist,
     platform: 'node',
-    target: ['esnext'],
+    target: ['node16'],
     incremental: true
   }
 }
@@ -46,7 +49,10 @@ const scriptsBuilder = async () => {
 const blogBuilder = async () => {
   try {
     const { stdout, stderr } = await exec(`node ${config.compiler.dist}/scripts/build.js --color`)
-    if (stdout) console.log(stdout)
+    if (stdout) {
+      const output = stdout.split('\n').filter(line => line).join('\n')
+      console.log(output)
+    }
     if (stderr) console.error(stderr)
   } catch (err) {
     console.error(err)
@@ -60,10 +66,14 @@ const main = async () => {
   await blogBuilder()
 
   const initDuration = (Date.now() - startTs) / 1000
-  console.log(`${c.green('[S]')} ${c.cyan(`${initDuration}s`)} Blog was built succesfully.`)
+  console.log(`${c.green('[S]')} ${c.cyan(`${initDuration}s`)} Blog was built.`)
 
   if (options.watch) {
-    const watcher = chokidar.watch([`${config.compiler.src}/**/*.ts`], {
+    const watcher = chokidar.watch([
+      `${config.compiler.src}/**/*.ts`,
+      `${config.blog.posts}/**/*.md`,
+      '.blogconfig.js'
+    ], {
       ignoreInitial: true
     })
 
@@ -111,6 +121,10 @@ const main = async () => {
       scriptsWatcher.rebuild.dispose()
       await watcher.close()
       console.log(`${c.orange('[U]')} Ended by SIGINT.`)
+    })
+
+    process.on('uncaughtException', err => {
+      console.log(err)
     })
   }
 }
