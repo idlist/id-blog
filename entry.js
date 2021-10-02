@@ -46,14 +46,14 @@ const scriptsBuilder = async () => {
   return watcher
 }
 
+
 const blogBuilder = async () => {
+  const processOutput = str => str.slice(0, str.length - 1)
+
   try {
     const { stdout, stderr } = await exec(`node ${config.compiler.dist}/scripts/build.js --color`)
-    if (stdout) {
-      const output = stdout.split('\n').filter(line => line).join('\n')
-      console.log(output)
-    }
-    if (stderr) console.error(stderr)
+    if (stdout) console.log(processOutput(stdout))
+    if (stderr) console.error(processOutput(stderr))
   } catch (err) {
     console.error(err)
   }
@@ -89,8 +89,8 @@ const main = async () => {
       else callback()
 
       const duration = ((Date.now() - startTimer) / 1000).toFixed(3)
-      console.log(`${c.blue('[I]')} ${c.cyan(`${duration}s`)}`
-        + ` ${c.yellow(path)} ${desc}. Blog was rebuilt.`)
+      console.log(`${c.blue('[I]')} ${c.cyan(`${duration}s`)} ` +
+        `${c.yellow(path)} ${desc}. Blog was rebuilt.`)
     }
 
     watcher.on('add', async (path) => {

@@ -6,6 +6,9 @@ export default {
     entryFile: 'scripts/build.js',
   },
   blog: {
-    posts: 'posts'
+    posts: 'posts',
+    cache: '_posts_cache',
+    output: '_site',
+    metaDelimiter: '---'
   }
 }

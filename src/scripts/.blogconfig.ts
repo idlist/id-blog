@@ -6,6 +6,9 @@ interface BlogConfig {
   }
   blog: {
     posts: string
+    cache: string
+    output: string
+    metaDelimiter: string
   }
 }
 

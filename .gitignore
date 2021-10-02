@@ -1,3 +1,6 @@
 node_modules/
 
 dist/
+
+_posts_cache/
+_site/
