@@ -1,8 +1,9 @@
-import { readFile, writeFile } from 'fs/promises'
-import { readdir, access, mkdir, rm } from 'fs/promises'
+import { readFile, writeFile, copyFile } from 'fs/promises'
+import { readdir, access, mkdir } from 'fs/promises'
 import { cwd, argv, exit } from 'process'
 import { createHash } from 'crypto'
 
+import { emptyDir } from 'fs-extra'
 import yaml from 'js-yaml'
 import markdownIt from 'markdown-it'
 import jsBeautify from 'js-beautify'
@@ -24,6 +25,7 @@ const dirCache = `${config.root}/${config.blog.cache}`
 const dirOutput = `${config.root}/${config.blog.output}`
 
 const options = {
+  watch: argv.includes('--watch') || argv.includes('-w'),
   rebuild: argv.includes('--rebuild-cache')
 }
 
@@ -47,7 +49,7 @@ const beautify = jsBeautify.html
 try {
   await access(dirCache)
   if (options.rebuild) {
-    await rm(dirCache, { recursive: true })
+    await emptyDir(dirCache)
     await mkdir(dirCache)
   }
 } catch {
@@ -60,10 +62,12 @@ try {
 } catch { noop() }
 
 try {
-  await rm(dirOutput, { recursive: true })
-} catch { noop() }
-await mkdir(dirOutput)
-await mkdir(`${dirOutput}/posts`)
+  await emptyDir(dirOutput)
+} catch {
+  await mkdir(dirOutput)
+}
+await mkdir(`${dirOutput}/p`)
+await mkdir(`${dirOutput}/assets`)
 
 // Prepare files
 
@@ -126,8 +130,6 @@ const processPosts = async (post: string) => {
 
     AllMeta[postName] = { ...AllMetaCache[postName] }
     categorizeMeta(AllMeta[postName])
-
-    console.log(`${c.blue('[I]')} Post ${c.green(post)} didn't change. skipped`)
     return
   }
 
@@ -199,6 +201,8 @@ const processPosts = async (post: string) => {
   const article = content.slice(metaSection + metaDelimiter.length)
   const parsedArticle = md.render(article)
   await writeFile(`${dirCache}/${postName}.html`, parsedArticle)
+
+  console.log(`${c.blue('[I]')} Cache built for ${c.green(post)}.`)
 }
 
 // Wait for all posts to be processed and all layouts to be imported
@@ -218,14 +222,15 @@ await writeFile(`${dirCache}/meta.json`, JSON.stringify(AllMeta))
 const renderPost = async (post: string) => {
   const postName = filename(post)
   const postHtml = await readFile(`${dirCache}/${postName}.html`, 'utf-8')
-  const postRoute = `${dirOutput}/posts/${AllMeta[postName].route}`
+  const postRoute = `${dirOutput}/p/${AllMeta[postName].route}`
 
   let renderedHtml = postHtml
 
   let currentMeta = {
     ...AllMeta[postName],
     ...Category,
-    head: ''
+    head: '',
+    liveReload: options.watch
   }
   let layoutName = currentMeta.layout
   do {
@@ -247,3 +252,7 @@ const renderPost = async (post: string) => {
 // Wait for all posts to be rendered
 
 await Promise.all(postList.map(async (post) => await renderPost(post)))
+
+if (options.watch) {
+  await copyFile('./dist/inject-scripts/live-reload.js', './_site/assets/live-reload.js')
+}

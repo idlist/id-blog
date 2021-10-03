@@ -27,6 +27,7 @@ export interface MetaCategory {
 
 export interface LayoutMeta extends PostMeta {
   head: string
+  liveReload: boolean
 }
 
 export type Meta = LayoutMeta & MetaCategory

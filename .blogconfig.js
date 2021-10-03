@@ -1,5 +1,8 @@
 export default {
   root: '.',
+  server: {
+    port: 12345
+  },
   compiler: {
     src: 'src',
     dist: 'dist'

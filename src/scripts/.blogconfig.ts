@@ -1,5 +1,8 @@
 interface BlogConfig {
   root: string
+  server: {
+    port: string
+  }
   compiler: {
     src: string
     dist: string

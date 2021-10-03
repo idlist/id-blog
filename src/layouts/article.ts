@@ -16,7 +16,7 @@ const Article: Layout = meta => {
       ...meta,
       title: html`${meta.title} | i'D Blog`,
       head: html`
-      <link rel="stylesheet" type="text/css" href="assets/article.css">
+      <link rel="stylesheet" type="text/css" href="../../assets/article.css">
       `
     }
   }

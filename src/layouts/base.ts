@@ -6,18 +6,19 @@ const Base: Layout = () => {
   return {
     layout: (meta, content) => html`
       <!DOCTYPE html>
-      <html>
+      <html lang="zh-CN">
 
       <head>
-        <title>${meta.title}</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" type="text/css" href="assets/base.css">
+        <title>${meta.title}</title>
+        <link rel="stylesheet" type="text/css" href="../../assets/base.css">
         ${meta.head}
       </head>
 
       <body>
         ${content}
+        ${meta.liveReload ? html`<script type="module" src="../../assets/live-reload.js"></script>` : html``}
       </body>
 
       </html>
