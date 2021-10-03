@@ -24,11 +24,13 @@
     "count": "cd .. && cloc id-blog --exclude-dir=node_modules,dist,_site,_posts_cache, --include-ext=js,ts,sass"
   },
   "dependencies": {
+    "js-beautify": "^1.14.0",
     "js-yaml": "^4.0.0",
     "markdown-it": "^12.0.0",
     "outdent": "^0.8.0"
   },
   "devDependencies": {
+    "@types/js-beautify": "^1.13.3",
     "@types/js-yaml": "^4.0.0",
     "@types/markdown-it": "^12.0.0",
     "@types/node": "^16.10.0",

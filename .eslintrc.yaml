@@ -26,6 +26,8 @@ parserOptions:
 rules:
   no-unused-vars: [warn]
   no-empty: [warn]
+  prefer-const: [warn]
+  '@typescript-eslint/no-unused-vars': [warn]
 
   semi: [warn, never]
   quotes: [warn, single]

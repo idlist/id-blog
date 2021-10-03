@@ -5,6 +5,7 @@ interface BlogConfig {
     dist: string
   }
   blog: {
+    layouts: string
     posts: string
     cache: string
     output: string

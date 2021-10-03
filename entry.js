@@ -30,7 +30,7 @@ const esbuildConfig = () => {
     outbase: config.compiler.src,
     outdir: config.compiler.dist,
     platform: 'node',
-    target: ['node16'],
+    target: ['esnext'],
     incremental: true
   }
 }

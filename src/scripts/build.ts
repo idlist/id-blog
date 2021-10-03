@@ -1,23 +1,27 @@
 import { readFile, writeFile } from 'fs/promises'
 import { readdir, access, mkdir, rm } from 'fs/promises'
-import { cwd, argv } from 'process'
+import { cwd, argv, exit } from 'process'
 import { createHash } from 'crypto'
 
 import yaml from 'js-yaml'
 import markdownIt from 'markdown-it'
+import jsBeautify from 'js-beautify'
+
+import type { RawPostMeta, PostMeta, MetaCategory, Meta, Layout } from '../.data-types.js'
+import type BlogConfig from './.blogconfig.js'
 
 import c from '../../utils/colors.js'
-import type BlogConfig from './.blogconfig.js'
-import type { RawPostMeta, PostMeta, MetaCategory } from '../.data-types.js'
+import { noop, filename } from './utils.js'
 
 // Import Configuration
 
 const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as BlogConfig
 
 const metaDelimiter = `${config.blog.metaDelimiter}\r\n`
-const postDir = `${config.root}/${config.blog.posts}`
-const cacheDir = `${config.root}/${config.blog.cache}`
-const outputDir = `${config.root}/${config.blog.output}`
+const dirLayouts = `${config.root}/${config.compiler.dist}/${config.blog.layouts}`
+const dirPosts = `${config.root}/${config.blog.posts}`
+const dirCache = `${config.root}/${config.blog.cache}`
+const dirOutput = `${config.root}/${config.blog.output}`
 
 const options = {
   rebuild: argv.includes('--rebuild-cache')
@@ -25,55 +29,106 @@ const options = {
 
 // Prepare global variables
 
-const allMeta: Record<string, PostMeta> = {}
-const category: MetaCategory = {
-  tags: {},
-  date: {}
+const AllMeta: Record<string, PostMeta> = {}
+const Category: MetaCategory = {
+  allTags: {},
+  allDate: {}
 }
+const Layouts: Record<string, Layout> = {}
 
-// Prepare functions
-
-const noop = () => { /* Do nothing */ }
+// Prepare markdown factory
 
 const md = markdownIt()
 
-// Prepare folders and files
+const beautify = jsBeautify.html
 
-const postList = await readdir(postDir)
+// Prepare folders
 
 try {
-  await access(cacheDir)
+  await access(dirCache)
   if (options.rebuild) {
-    await rm(cacheDir, { recursive: true })
-    await mkdir(cacheDir)
+    await rm(dirCache, { recursive: true })
+    await mkdir(dirCache)
   }
 } catch {
-  await mkdir(cacheDir)
+  await mkdir(dirCache)
 }
 
-let allMetaCache: Record<string, PostMeta> = {}
+let AllMetaCache: Record<string, PostMeta> = {}
 try {
-  allMetaCache = JSON.parse(await readFile(`${cacheDir}/meta.json`, 'utf-8'))
+  AllMetaCache = JSON.parse(await readFile(`${dirCache}/meta.json`, 'utf-8'))
 } catch { noop() }
 
 try {
-  await rm(outputDir, { recursive: true })
+  await rm(dirOutput, { recursive: true })
 } catch { noop() }
-await mkdir(outputDir)
+await mkdir(dirOutput)
+await mkdir(`${dirOutput}/posts`)
 
-for (const post of postList) {
-  const content = await readFile(`${postDir}/${post}`, 'utf-8')
+// Prepare files
+
+let postList: string[]
+try {
+  postList = await readdir(dirPosts)
+} catch {
+  console.error(`${c.red('[E]')} Cannot found directory for posts: ${dirPosts}, aborted.`)
+  exit(1)
+}
+
+let layoutList: string[]
+try {
+  layoutList = await readdir(dirLayouts)
+} catch {
+  console.error(`${c.red('[E]')} Cannot found directory for transpiled layouts: ${dirLayouts}, aborted.`)
+  exit(1)
+}
+
+const importLayout = async (layoutFilename: string) => {
+  const layoutImport = await import(`file://${cwd()}/${dirLayouts}/${layoutFilename}`)
+  const layout = layoutImport.default as Layout
+  const layoutName = filename(layoutFilename)
+  Layouts[layoutName] = layout
+}
+
+/**
+ * Process posts in an asynchronous way.
+ * @param post Filename of the post, with extension.
+ */
+const processPosts = async (post: string) => {
+  const content = await readFile(`${dirPosts}/${post}`, 'utf-8')
   const contentHash = createHash('md5').update(content).digest('hex')
-  const postName = post.split('.')[0]
+  const postName = filename(post)
+
+  /**
+   * Categorize Metadata
+   * @param meta
+   */
+  const categorizeMeta = (meta: PostMeta) => {
+    if (!Category.allDate[meta.date.year]) {
+      Category.allDate[meta.date.year] = {}
+    }
+    if (!Category.allDate[meta.date.year][meta.date.month]) {
+      Category.allDate[meta.date.year][meta.date.month] = []
+    }
+    Category.allDate[meta.date.year][meta.date.month].push(meta.route)
+
+    for (const tag in meta.tags) {
+      if (!Category.allTags[tag]) Category.allTags[tag] = []
+      Category.allTags[tag].push(meta.route)
+    }
+  }
 
   // Read from cached metadata
 
-  if (allMetaCache[postName] &&
-    allMetaCache[postName].hash === contentHash &&
+  if (AllMetaCache[postName] &&
+    AllMetaCache[postName].hash === contentHash &&
     !options.rebuild) {
+
+    AllMeta[postName] = { ...AllMetaCache[postName] }
+    categorizeMeta(AllMeta[postName])
+
     console.log(`${c.blue('[I]')} Post ${c.green(post)} didn't change. skipped`)
-    allMeta[postName] = { ...allMetaCache[postName] }
-    continue
+    return
   }
 
   // Extract metadata from posts
@@ -81,7 +136,7 @@ for (const post of postList) {
   if (!content.startsWith(metaDelimiter)) {
     console.warn(`${c.yellow('[W]')} Post ${c.green(post)} ` +
       'does not contain valid metadata. skipped.')
-    continue
+    return
   }
 
   const metaSection = content.indexOf(metaDelimiter, metaDelimiter.length)
@@ -100,21 +155,22 @@ for (const post of postList) {
   } catch {
     console.warn(`${c.yellow('[W]')} Metadata of post ${c.green(post)} ` +
       'cannot be parsed. skipped.')
-    continue
+    return
   }
 
   const missingMeta: (keyof RawPostMeta)[] = []
   if (!rawMeta.title) missingMeta.push('title')
   if (!rawMeta.date || !(rawMeta.date instanceof Date)) missingMeta.push('date')
+  if (!rawMeta.layout) missingMeta.push('layout')
   if (missingMeta.length) {
     console.warn(`${c.yellow('[W]')} Post ${c.green(post)} does not have or has wrong ` +
       `metadata: ${missingMeta.map(str => c.blue(str)).join(', ')}. skipped.`)
-    continue
+    return
   }
 
   const meta: PostMeta = {
+    ...rawMeta,
     hash: contentHash,
-    title: rawMeta.title,
     route: rawMeta.route
       ?? encodeURI(rawMeta.title.toLowerCase().replace(/\s+/g, '-')),
     date: {
@@ -130,33 +186,64 @@ for (const post of postList) {
 
   // Categorize metadata
 
-  if (Object.values(allMeta).find(existedMeta => existedMeta.route == meta.route)) {
+  if (Object.values(AllMeta).find(existedMeta => existedMeta.route == meta.route)) {
     console.warn(`${c.yellow('[W]')} Metadata of post ${c.green(post)} ` +
       'has dupicated route with previous posts, skipped.')
-    continue
+    return
   }
-  allMeta[postName] = meta
-
-  if (!category.date[meta.date.year]) {
-    category.date[meta.date.year] = {}
-  }
-  if (!category.date[meta.date.year][meta.date.month]) {
-    category.date[meta.date.year][meta.date.month] = []
-  }
-  category.date[meta.date.year][meta.date.month].push(meta.route)
-
-  for (const tag in meta.tags) {
-    if (!category.tags[tag]) category.tags[tag] = []
-    category.tags[tag].push(meta.route)
-  }
+  AllMeta[postName] = meta
+  categorizeMeta(meta)
 
   // Parse markdown and write cache
 
   const article = content.slice(metaSection + metaDelimiter.length)
   const parsedArticle = md.render(article)
-  await writeFile(`${cacheDir}/${postName}.html`, parsedArticle)
+  await writeFile(`${dirCache}/${postName}.html`, parsedArticle)
 }
+
+// Wait for all posts to be processed and all layouts to be imported
+
+await Promise.all([
+  ...layoutList.map(async (layoutFilename) => await importLayout(layoutFilename)),
+  ...postList.map(async (post) => await processPosts(post))])
 
 // Write metadata cache
 
-await writeFile(`${cacheDir}/meta.json`, JSON.stringify(allMeta))
+await writeFile(`${dirCache}/meta.json`, JSON.stringify(AllMeta))
+
+/**
+ * Render the posts
+ * @param post Filename of the post, with extension.
+ */
+const renderPost = async (post: string) => {
+  const postName = filename(post)
+  const postHtml = await readFile(`${dirCache}/${postName}.html`, 'utf-8')
+  const postRoute = `${dirOutput}/posts/${AllMeta[postName].route}`
+
+  let renderedHtml = postHtml
+
+  let currentMeta = {
+    ...AllMeta[postName],
+    ...Category,
+    head: ''
+  }
+  let layoutName = currentMeta.layout
+  do {
+    const currentLayout = Layouts[layoutName](currentMeta)
+    renderedHtml = currentLayout.layout(currentMeta, renderedHtml)
+    layoutName = currentLayout.parentLayout ?? ''
+    if (layoutName) currentMeta = currentLayout.parentMeta as Meta
+  } while (layoutName)
+
+  renderedHtml = beautify(renderedHtml, {
+    indent_size: 2,
+    preserve_newlines: false
+  })
+
+  await mkdir(postRoute)
+  await writeFile(`${postRoute}/index.html`, renderedHtml)
+}
+
+// Wait for all posts to be rendered
+
+await Promise.all(postList.map(async (post) => await renderPost(post)))

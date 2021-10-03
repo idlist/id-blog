@@ -3,6 +3,7 @@ export interface RawPostMeta {
   route?: string
   date: Date
   tags?: string
+  layout: string
 }
 
 type ProcessedPostMeta = 'tags' | 'date'
@@ -20,15 +21,15 @@ export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
 }
 
 export interface MetaCategory {
-  tags: Record<string, string[]>
-  date: Record<string, Record<string, string[]>>
+  allTags: Record<string, string[]>
+  allDate: Record<string, Record<string, string[]>>
 }
 
 export interface LayoutMeta extends PostMeta {
   head: string
 }
 
-type Meta = LayoutMeta & MetaCategory
+export type Meta = LayoutMeta & MetaCategory
 
 interface LayoutOutput {
   layout: (meta: Meta, content: string) => string
