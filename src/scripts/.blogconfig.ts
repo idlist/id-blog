@@ -8,6 +8,12 @@ interface BlogConfig {
     cache: string
     output: string
     metaDelimiter: string
+    public: string
+  },
+  route: {
+    posts: string
+    assets: string
+    public: string
   }
 }
 

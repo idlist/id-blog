@@ -3,10 +3,16 @@ export default {
   dist: 'dist',
   port: 12345,
   blog: {
-    layouts: 'layouts',
-    posts: 'posts',
-    cache: '_posts_cache',
+    metaDelimiter: '---',
     output: '_site',
-    metaDelimiter: '---'
+    layouts: 'layouts',
+    cache: '_posts_cache',
+    posts: 'posts',
+    public: 'public'
+  },
+  route: {
+    posts: 'p',
+    assets: 'assets',
+    public: 'public'
   }
 }

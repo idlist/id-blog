@@ -22,8 +22,10 @@ const startTs = Date.now()
 
 const options = {
   watch: argv.includes('--watch') || argv.includes('-w'),
-  rebuild: argv.includes('--rebuild-cache'),
   buildOnly: argv.includes('--build-only')
+}
+const dir = {
+  layouts: `${config.src}/${config.blog.layouts}`
 }
 
 const cleanDist = async () => {
@@ -32,7 +34,7 @@ const cleanDist = async () => {
   } catch { /* Do nothing */ }
 }
 
-const commonEsbuildConfig = {
+const esbuildCommonConfig = {
   outbase: config.src,
   outdir: config.dist,
   platform: 'node',
@@ -41,19 +43,24 @@ const commonEsbuildConfig = {
 }
 
 const scriptsBuilder = async () => {
-  const [watcher, cssBundler] = await Promise.all([
-    await esbuild.build({
-      ...commonEsbuildConfig,
+  const watchers = await Promise.all([
+    esbuild.build({
+      ...esbuildCommonConfig,
       entryPoints: [
         ...glob('src/scripts/**/*.ts'),
-        ...glob('src/inject-scripts/**/*.ts'),
-        ...glob(`${config.src}/${config.blog.layouts}/**/*.ts`)
+        ...glob('src/inject-scripts/**/*.ts')
       ]
     }),
-    await esbuild.build({
-      ...commonEsbuildConfig,
+    esbuild.build({
+      ...esbuildCommonConfig,
       entryPoints: [
-        ...glob(`${config.src}/${config.blog.layouts}/**.sass`)
+        ...glob(`${dir.layouts}/**/*.ts`)
+      ]
+    }),
+    esbuild.build({
+      ...esbuildCommonConfig,
+      entryPoints: [
+        ...glob(`${dir.layouts}/**/*.sass`)
       ],
       bundle: true,
       plugins: [
@@ -64,14 +71,10 @@ const scriptsBuilder = async () => {
 
   return {
     rebuild: async () => {
-      await Promise.all([
-        watcher.rebuild(),
-        cssBundler.rebuild()
-      ])
+      await Promise.all([...watchers.map(async (watcher) => await watcher.rebuild())])
     },
     dispose: () => {
-      watcher.rebuild.dispose()
-      cssBundler.rebuild.dispose()
+      watchers.map(watcher => watcher.rebuild.dispose())
     }
   }
 }
@@ -81,7 +84,7 @@ const blogBuilder = async () => {
 
   try {
     const { stdout, stderr } = await exec(
-      `node ${config.dist}/scripts/build.js` +
+      'node dist/scripts/build.js' +
       ' --color' +
       ` ${argv.slice(2).join(' ')}`
     )

@@ -1,5 +1,5 @@
 import { readFile, writeFile, copyFile } from 'fs/promises'
-import { readdir, access, mkdir, rm } from 'fs/promises'
+import { readdir, access, mkdir, rm, cp } from 'fs/promises'
 import { cwd, argv, exit } from 'process'
 import { extname } from 'path'
 import { createHash } from 'crypto'
@@ -14,15 +14,23 @@ import type BlogConfig from './.blogconfig.js'
 import c from '../../utils/colors.js'
 import { noop, filename } from './utils.js'
 
-// Import Configuration
+// Import Configurations
 
 const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as BlogConfig
 
-const metaDelimiter = `${config.blog.metaDelimiter}\r\n`
-const dirLayouts = `${config.dist}/${config.blog.layouts}`
-const dirPosts = config.blog.posts
-const dirCache = config.blog.cache
-const dirOutput = config.blog.output
+const metaDelimiter = config.blog.metaDelimiter + '\r\n'
+const dir = {
+  output: config.blog.output,
+  cache: config.blog.cache,
+  layouts: `${config.dist}/${config.blog.layouts}`,
+  posts: config.blog.posts,
+  public: config.blog.public
+}
+const routes = {
+  posts: `${dir.output}/${config.route.posts}`,
+  assets: `${dir.output}/${config.route.assets}`,
+  public: `${dir.output}/${config.route.public}`
+}
 
 const options = {
   watch: argv.includes('--watch') || argv.includes('-w'),
@@ -51,39 +59,40 @@ const beautify = jsBeautify.html
 // Prepare folders and files
 
 try {
-  await access(dirCache)
+  await access(dir.cache)
   if (options.rebuild) {
-    await rm(dirCache, { recursive: true })
-    await mkdir(dirCache)
+    await rm(dir.cache, { recursive: true })
+    await mkdir(dir.cache)
   }
 } catch {
-  await mkdir(dirCache)
+  await mkdir(dir.cache)
 }
 
 try {
-  await rm(dirOutput, { recursive: true })
+  await rm(dir.output, { recursive: true })
 } catch { noop() }
-await mkdir(dirOutput)
-await mkdir(`${dirOutput}/p`)
-await mkdir(`${dirOutput}/assets`)
+await mkdir(dir.output)
+await mkdir(routes.posts)
+await mkdir(routes.assets)
+await mkdir(routes.public)
 
 try {
-  AllMetaCache = JSON.parse(await readFile(`${dirCache}/meta.json`, 'utf-8'))
+  AllMetaCache = JSON.parse(await readFile(`${dir.cache}/meta.json`, 'utf-8'))
 } catch { noop() }
 
 // Read file lists
 
 try {
-  postList = await readdir(dirPosts)
+  postList = await readdir(dir.posts)
 } catch {
-  console.error(`${c.red('[E]')} Cannot found directory for posts: ${dirPosts}, aborted.`)
+  console.error(`${c.red('[E]')} Cannot found directory for posts: ${dir.posts}, aborted.`)
   exit(1)
 }
 
 try {
-  layoutList = await readdir(dirLayouts)
+  layoutList = await readdir(dir.layouts)
 } catch {
-  console.error(`${c.red('[E]')} Cannot found directory for transpiled layouts: ${dirLayouts}, aborted.`)
+  console.error(`${c.red('[E]')} Cannot found directory for transpiled layouts: ${dir.layouts}, aborted.`)
   exit(1)
 }
 
@@ -91,8 +100,8 @@ try {
 
 const importLayout = async (layoutFilename: string) => {
   if (!(extname(layoutFilename) == '.js')) return
-  const layoutImport = await import(`file://${cwd()}/${dirLayouts}/${layoutFilename}`)
-  const layout = layoutImport.default as Layout
+  const layoutPath = `file://${cwd()}/${dir.layouts}/${layoutFilename}`
+  const layout = (await import(layoutPath)).default as Layout
   const layoutName = filename(layoutFilename)
   Layouts[layoutName] = layout
 }
@@ -105,17 +114,20 @@ const injectLiveReloadScript = async () => {
   }
 }
 
-const copyBundledAssets = async () => {
-  const cssFiles = await readdir(dirLayouts)
-
+const copyAssets = async () => {
   const copyCssAssets = async (file: string) => {
     if (extname(file) == '.css') {
-      await copyFile(`${dirLayouts}/${file}`, `${dirOutput}/assets/${file}`)
+      await copyFile(`${dir.layouts}/${file}`, `${routes.assets}/${file}`)
     }
   }
 
+  const copyPublicAssets = async () => {
+    await cp(dir.public, routes.public, { recursive: true })
+  }
+
   await Promise.all([
-    ...cssFiles.map(async (file) => { await copyCssAssets(file) })
+    ...layoutList.map(async (file) => { await copyCssAssets(file) }),
+    copyPublicAssets()
   ])
 }
 
@@ -124,7 +136,7 @@ const copyBundledAssets = async () => {
  * @param post Filename of the post, with extension.
  */
 const processPosts = async (post: string) => {
-  const content = await readFile(`${dirPosts}/${post}`, 'utf-8')
+  const content = await readFile(`${dir.posts}/${post}`, 'utf-8')
   const contentHash = createHash('md5').update(content).digest('hex')
   const postName = filename(post)
 
@@ -225,7 +237,7 @@ const processPosts = async (post: string) => {
 
   const article = content.slice(metaSection + metaDelimiter.length)
   const parsedArticle = md.render(article)
-  await writeFile(`${dirCache}/${postName}.html`, parsedArticle)
+  await writeFile(`${dir.cache}/${postName}.html`, parsedArticle)
 
   console.log(`${c.blue('[I]')} Cache built for ${c.green(post)}.`)
 }
@@ -240,12 +252,12 @@ await Promise.all([
   // Copy client-side live-reload script in development mode
   injectLiveReloadScript(),
   // Copy assets to blog directory
-  copyBundledAssets()
+  copyAssets()
 ])
 
 // Write metadata cache
 
-await writeFile(`${dirCache}/meta.json`, JSON.stringify(AllMeta))
+await writeFile(`${dir.cache}/meta.json`, JSON.stringify(AllMeta))
 
 /**
  * Render the posts
@@ -253,8 +265,8 @@ await writeFile(`${dirCache}/meta.json`, JSON.stringify(AllMeta))
  */
 const renderPost = async (post: string) => {
   const postName = filename(post)
-  const postHtml = await readFile(`${dirCache}/${postName}.html`, 'utf-8')
-  const postRoute = `${dirOutput}/p/${AllMeta[postName].route}`
+  const postHtml = await readFile(`${dir.cache}/${postName}.html`, 'utf-8')
+  const postRoute = `${routes.posts}/${AllMeta[postName].route}`
 
   let renderedHtml = postHtml
 
