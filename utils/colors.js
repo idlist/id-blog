@@ -9,5 +9,5 @@ export default {
   blue: chalk.hex('#4f91f8'),
   purple: chalk.hex('#e66ffc'),
   pink: chalk.hex('#ff8eed'),
-  gray: chalk.hex('#d8d8d8')
+  gray: chalk.hex('#aaaaaa')
 }

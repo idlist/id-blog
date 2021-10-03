@@ -5,7 +5,7 @@ import { isAsyncFunction } from 'util/types'
 
 import { emptyDir } from 'fs-extra'
 import esbuild from 'esbuild'
-import glob from 'fast-glob'
+import fg from 'fast-glob'
 import chokidar from 'chokidar'
 import Koa from 'koa'
 import KoaStatic from 'koa-static'
@@ -13,6 +13,9 @@ import { WebSocketServer } from 'ws'
 
 import config from './.blogconfig.js'
 import c from './utils/colors.js'
+
+const glob = fg.sync
+const exec = promisify(execCallback)
 
 const startTs = Date.now()
 
@@ -28,7 +31,9 @@ const options = {
 const esbuildConfig = () => {
   return {
     entryPoints: [
-      ...glob.sync(`${config.compiler.src}/**/*.ts`)
+      ...glob('src/scripts/**/*.ts'),
+      ...glob('src/inject-scripts/**/*.ts'),
+      ...glob(`${config.compiler.src}/${config.blog.layouts}/**/*.ts`)
     ],
     outbase: config.compiler.src,
     outdir: config.compiler.dist,
@@ -38,8 +43,6 @@ const esbuildConfig = () => {
   }
 }
 
-const exec = promisify(execCallback)
-
 const cleanDist = async () => {
   try {
     await emptyDir(`${config.root}/${config.compiler.dist}`, { recursive: true })
@@ -48,9 +51,15 @@ const cleanDist = async () => {
 
 const scriptsBuilder = async () => {
   const watcher = await esbuild.build(esbuildConfig())
-  return watcher
+  return {
+    rebuild: async () => {
+      await watcher.rebuild()
+    },
+    dispose: () => {
+      watcher.rebuild.dispose()
+    }
+  }
 }
-
 
 const blogBuilder = async () => {
   const processOutput = str => str.slice(0, str.length - 1)
@@ -71,7 +80,7 @@ const blogBuilder = async () => {
 const main = async () => {
   await cleanDist()
   let scriptsWatcher = await scriptsBuilder()
-  if (!options.watch) scriptsWatcher.rebuild.dispose()
+  if (!options.watch) scriptsWatcher.dispose()
   await blogBuilder()
 
   const initDuration = (Date.now() - startTs) / 1000
@@ -103,7 +112,7 @@ const main = async () => {
 
   watcher.on('add', async (path) => {
     processTimer(path, 'added', async () => {
-      scriptsWatcher.rebuild.dispose()
+      scriptsWatcher.dispose()
       scriptsWatcher = await scriptsBuilder()
       await blogBuilder()
     })
@@ -112,7 +121,7 @@ const main = async () => {
   watcher.on('unlink', async (path) => {
     processTimer(path, 'deleted', async () => {
       await cleanDist()
-      scriptsWatcher.rebuild.dispose()
+      scriptsWatcher.dispose()
       scriptsWatcher = await scriptsBuilder()
       await blogBuilder()
     })
@@ -125,26 +134,42 @@ const main = async () => {
     })
   })
 
-  const blogWatcher = chokidar.watch(config.blog.output, { ignoreInitial: true })
+  const hostWatcher = chokidar.watch(config.blog.output, {
+    ignoreInitial: true,
+    usePolling: true
+  })
 
-  const blogHost = new Koa()
-  blogHost.use(KoaStatic(config.blog.output))
-  const blogHostHandler = blogHost.listen(config.server.port)
+  const host = new Koa()
+  host.use(KoaStatic(config.blog.output))
+  const hostHandler = host.listen(config.server.port)
 
   const devServer = new WebSocketServer({
-    server: blogHostHandler
+    server: hostHandler
   })
+
+  devServer.on('listening', () => {
+    console.log(`${c.green('[S]')} Live server is listening at ` +
+      `${c.purple(`http://localhost:${config.server.port}/`)}`)
+  })
+
+  let currentWs
 
   devServer.on('connection', ws => {
-    blogWatcher.on('change', () => { ws.send('reload') })
+    currentWs = ws
+    ws.on('message', data => {
+      console.log(`${c.pink('[D]')} Live server received: ${data.toString()}`)
+    })
   })
 
+  hostWatcher.on('add', () => { currentWs.send('reload') })
+  hostWatcher.on('change', () => { currentWs.send('reload') })
+
   process.on('SIGINT', () => {
-    scriptsWatcher.rebuild.dispose()
+    scriptsWatcher.dispose()
     watcher.close()
-    blogWatcher.close()
+    hostWatcher.close()
     devServer.close()
-    blogHostHandler.close()
+    hostHandler.close()
     console.log(`${c.orange('[U]')} Ended by SIGINT.`)
     exit(0)
   })
