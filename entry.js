@@ -1,12 +1,13 @@
+import { rm } from 'fs/promises'
 import process, { argv, exit } from 'process'
 import { exec as execCallback } from 'child_process'
 import { promisify } from 'util'
 import { isAsyncFunction } from 'util/types'
 
-import { emptyDir } from 'fs-extra'
-import esbuild from 'esbuild'
 import fg from 'fast-glob'
 import chokidar from 'chokidar'
+import esbuild from 'esbuild'
+import { sassPlugin } from 'esbuild-sass-plugin'
 import Koa from 'koa'
 import KoaStatic from 'koa-static'
 import { WebSocketServer } from 'ws'
@@ -25,38 +26,52 @@ const options = {
   buildOnly: argv.includes('--build-only')
 }
 
-/**
- * @returns {esbuild.BuildOptions}
- */
-const esbuildConfig = () => {
-  return {
-    entryPoints: [
-      ...glob('src/scripts/**/*.ts'),
-      ...glob('src/inject-scripts/**/*.ts'),
-      ...glob(`${config.src}/${config.blog.layouts}/**/*.ts`)
-    ],
-    outbase: config.src,
-    outdir: config.dist,
-    platform: 'node',
-    target: ['esnext'],
-    incremental: true
-  }
-}
-
 const cleanDist = async () => {
   try {
-    await emptyDir(config.dist, { recursive: true })
+    await rm(config.dist, { recursive: true })
   } catch { /* Do nothing */ }
 }
 
+const commonEsbuildConfig = {
+  outbase: config.src,
+  outdir: config.dist,
+  platform: 'node',
+  target: ['esnext'],
+  incremental: true
+}
+
 const scriptsBuilder = async () => {
-  const watcher = await esbuild.build(esbuildConfig())
+  const [watcher, cssBundler] = await Promise.all([
+    await esbuild.build({
+      ...commonEsbuildConfig,
+      entryPoints: [
+        ...glob('src/scripts/**/*.ts'),
+        ...glob('src/inject-scripts/**/*.ts'),
+        ...glob(`${config.src}/${config.blog.layouts}/**/*.ts`)
+      ]
+    }),
+    await esbuild.build({
+      ...commonEsbuildConfig,
+      entryPoints: [
+        ...glob(`${config.src}/${config.blog.layouts}/**.sass`)
+      ],
+      bundle: true,
+      plugins: [
+        sassPlugin()
+      ]
+    })
+  ])
+
   return {
     rebuild: async () => {
-      await watcher.rebuild()
+      await Promise.all([
+        watcher.rebuild(),
+        cssBundler.rebuild()
+      ])
     },
     dispose: () => {
       watcher.rebuild.dispose()
+      cssBundler.rebuild.dispose()
     }
   }
 }
@@ -83,13 +98,14 @@ const main = async () => {
   if (!options.watch) scriptsWatcher.dispose()
   await blogBuilder()
 
-  const initDuration = (Date.now() - startTs) / 1000
+  const initDuration = ((Date.now() - startTs) / 1000).toFixed(3)
   console.log(`${c.green('[S]')} ${c.cyan(`${initDuration}s`)} Blog was built.`)
 
   if (!options.watch) return
 
   const watcher = chokidar.watch([
     `${config.src}/**/*.ts`,
+    `${config.src}/**/*.sass`,
     `${config.blog.posts}/**/*.md`,
     '.blogconfig.js'
   ], {

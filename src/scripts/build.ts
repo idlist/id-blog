@@ -1,9 +1,9 @@
 import { readFile, writeFile, copyFile } from 'fs/promises'
-import { readdir, access, mkdir } from 'fs/promises'
+import { readdir, access, mkdir, rm } from 'fs/promises'
 import { cwd, argv, exit } from 'process'
+import { extname } from 'path'
 import { createHash } from 'crypto'
 
-import { emptyDir } from 'fs-extra'
 import yaml from 'js-yaml'
 import markdownIt from 'markdown-it'
 import jsBeautify from 'js-beautify'
@@ -38,40 +38,41 @@ const Category: MetaCategory = {
 }
 const Layouts: Record<string, Layout> = {}
 
+let AllMetaCache: Record<string, PostMeta> = {}
+let postList: string[] = []
+let layoutList: string[] = []
+
 // Prepare markdown factory
 
 const md = markdownIt()
 
 const beautify = jsBeautify.html
 
-// Prepare folders
+// Prepare folders and files
 
 try {
   await access(dirCache)
   if (options.rebuild) {
-    await emptyDir(dirCache)
+    await rm(dirCache, { recursive: true })
     await mkdir(dirCache)
   }
 } catch {
   await mkdir(dirCache)
 }
 
-let AllMetaCache: Record<string, PostMeta> = {}
+try {
+  await rm(dirOutput, { recursive: true })
+} catch { noop() }
+await mkdir(dirOutput)
+await mkdir(`${dirOutput}/p`)
+await mkdir(`${dirOutput}/assets`)
+
 try {
   AllMetaCache = JSON.parse(await readFile(`${dirCache}/meta.json`, 'utf-8'))
 } catch { noop() }
 
-try {
-  await emptyDir(dirOutput)
-} catch {
-  await mkdir(dirOutput)
-}
-await mkdir(`${dirOutput}/p`)
-await mkdir(`${dirOutput}/assets`)
+// Read file lists
 
-// Prepare files
-
-let postList: string[]
 try {
   postList = await readdir(dirPosts)
 } catch {
@@ -79,7 +80,6 @@ try {
   exit(1)
 }
 
-let layoutList: string[]
 try {
   layoutList = await readdir(dirLayouts)
 } catch {
@@ -87,11 +87,36 @@ try {
   exit(1)
 }
 
+// Load layouts
+
 const importLayout = async (layoutFilename: string) => {
+  if (!(extname(layoutFilename) == '.js')) return
   const layoutImport = await import(`file://${cwd()}/${dirLayouts}/${layoutFilename}`)
   const layout = layoutImport.default as Layout
   const layoutName = filename(layoutFilename)
   Layouts[layoutName] = layout
+}
+
+// Copy files
+
+const injectLiveReloadScript = async () => {
+  if (options.watch) {
+    await copyFile('./dist/inject-scripts/live-reload.js', './_site/assets/live-reload.js')
+  }
+}
+
+const copyBundledAssets = async () => {
+  const cssFiles = await readdir(dirLayouts)
+
+  const copyCssAssets = async (file: string) => {
+    if (extname(file) == '.css') {
+      await copyFile(`${dirLayouts}/${file}`, `${dirOutput}/assets/${file}`)
+    }
+  }
+
+  await Promise.all([
+    ...cssFiles.map(async (file) => { await copyCssAssets(file) })
+  ])
 }
 
 /**
@@ -205,11 +230,18 @@ const processPosts = async (post: string) => {
   console.log(`${c.blue('[I]')} Cache built for ${c.green(post)}.`)
 }
 
-// Wait for all posts to be processed and all layouts to be imported
+// Wait for all asynchronous methods to finish
 
 await Promise.all([
+  // Import all layouts
   ...layoutList.map(async (layoutFilename) => await importLayout(layoutFilename)),
-  ...postList.map(async (post) => await processPosts(post))])
+  // Extract metadata and cache all posts
+  ...postList.map(async (post) => await processPosts(post)),
+  // Copy client-side live-reload script in development mode
+  injectLiveReloadScript(),
+  // Copy assets to blog directory
+  copyBundledAssets()
+])
 
 // Write metadata cache
 
@@ -252,7 +284,3 @@ const renderPost = async (post: string) => {
 // Wait for all posts to be rendered
 
 await Promise.all(postList.map(async (post) => await renderPost(post)))
-
-if (options.watch) {
-  await copyFile('./dist/inject-scripts/live-reload.js', './_site/assets/live-reload.js')
-}

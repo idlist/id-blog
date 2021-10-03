@@ -17,7 +17,12 @@ const Base: Layout = () => {
       </head>
 
       <body>
-        ${content}
+        <div class="header">
+          <div>i'D Handmade blog</div>
+        </div>
+        <div class="container">
+          ${content}
+        </div>
         ${meta.liveReload ? html`<script type="module" src="../../assets/live-reload.js"></script>` : html``}
       </body>
 
