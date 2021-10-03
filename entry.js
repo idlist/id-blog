@@ -33,10 +33,10 @@ const esbuildConfig = () => {
     entryPoints: [
       ...glob('src/scripts/**/*.ts'),
       ...glob('src/inject-scripts/**/*.ts'),
-      ...glob(`${config.compiler.src}/${config.blog.layouts}/**/*.ts`)
+      ...glob(`${config.src}/${config.blog.layouts}/**/*.ts`)
     ],
-    outbase: config.compiler.src,
-    outdir: config.compiler.dist,
+    outbase: config.src,
+    outdir: config.dist,
     platform: 'node',
     target: ['esnext'],
     incremental: true
@@ -45,7 +45,7 @@ const esbuildConfig = () => {
 
 const cleanDist = async () => {
   try {
-    await emptyDir(`${config.root}/${config.compiler.dist}`, { recursive: true })
+    await emptyDir(config.dist, { recursive: true })
   } catch { /* Do nothing */ }
 }
 
@@ -66,7 +66,7 @@ const blogBuilder = async () => {
 
   try {
     const { stdout, stderr } = await exec(
-      `node ${config.compiler.dist}/scripts/build.js` +
+      `node ${config.dist}/scripts/build.js` +
       ' --color' +
       ` ${argv.slice(2).join(' ')}`
     )
@@ -89,10 +89,12 @@ const main = async () => {
   if (!options.watch) return
 
   const watcher = chokidar.watch([
-    `${config.compiler.src}/**/*.ts`,
+    `${config.src}/**/*.ts`,
     `${config.blog.posts}/**/*.md`,
     '.blogconfig.js'
-  ], { ignoreInitial: true })
+  ], {
+    ignoreInitial: true
+  })
 
   /**
    * @param {string} path
@@ -141,7 +143,7 @@ const main = async () => {
 
   const host = new Koa()
   host.use(KoaStatic(config.blog.output))
-  const hostHandler = host.listen(config.server.port)
+  const hostHandler = host.listen(config.port)
 
   const devServer = new WebSocketServer({
     server: hostHandler
@@ -149,7 +151,7 @@ const main = async () => {
 
   devServer.on('listening', () => {
     console.log(`${c.green('[S]')} Live server is listening at ` +
-      `${c.purple(`http://localhost:${config.server.port}/`)}`)
+      `${c.purple(`http://localhost:${config.port}/`)}`)
   })
 
   let currentWs
@@ -161,8 +163,8 @@ const main = async () => {
     })
   })
 
-  hostWatcher.on('add', () => { currentWs.send('reload') })
-  hostWatcher.on('change', () => { currentWs.send('reload') })
+  hostWatcher.on('add', () => { currentWs?.send('reload') })
+  hostWatcher.on('change', () => { currentWs?.send('reload') })
 
   process.on('SIGINT', () => {
     scriptsWatcher.dispose()

@@ -1,12 +1,7 @@
 interface BlogConfig {
-  root: string
-  server: {
-    port: string
-  }
-  compiler: {
-    src: string
-    dist: string
-  }
+  port: string
+  src: string
+  dist: string
   blog: {
     layouts: string
     posts: string

@@ -1,12 +1,7 @@
 export default {
-  root: '.',
-  server: {
-    port: 12345
-  },
-  compiler: {
-    src: 'src',
-    dist: 'dist'
-  },
+  src: 'src',
+  dist: 'dist',
+  port: 12345,
   blog: {
     layouts: 'layouts',
     posts: 'posts',

@@ -19,10 +19,10 @@ import { noop, filename } from './utils.js'
 const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as BlogConfig
 
 const metaDelimiter = `${config.blog.metaDelimiter}\r\n`
-const dirLayouts = `${config.root}/${config.compiler.dist}/${config.blog.layouts}`
-const dirPosts = `${config.root}/${config.blog.posts}`
-const dirCache = `${config.root}/${config.blog.cache}`
-const dirOutput = `${config.root}/${config.blog.output}`
+const dirLayouts = `${config.dist}/${config.blog.layouts}`
+const dirPosts = config.blog.posts
+const dirCache = config.blog.cache
+const dirOutput = config.blog.output
 
 const options = {
   watch: argv.includes('--watch') || argv.includes('-w'),
