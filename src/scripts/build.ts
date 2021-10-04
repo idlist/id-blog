@@ -9,14 +9,12 @@ import markdownIt from 'markdown-it'
 import jsBeautify from 'js-beautify'
 
 import type { RawPostMeta, PostMeta, MetaCategory, Meta, Layout } from '../.data-types.js'
-import type BlogConfig from './.blogconfig.js'
 
 import c from '../../utils/colors.js'
+import config from '../config.js'
 import { noop, filename } from './utils.js'
 
 // Import Configurations
-
-const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as BlogConfig
 
 const metaDelimiter = config.blog.metaDelimiter + '\r\n'
 const dir = {

@@ -1,3 +1,5 @@
+import { cwd } from 'process'
+
 interface BlogConfig {
   port: string
   src: string
@@ -17,4 +19,6 @@ interface BlogConfig {
   }
 }
 
-export default BlogConfig
+const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as BlogConfig
+
+export default config

@@ -47,6 +47,7 @@ const scriptsBuilder = async () => {
     esbuild.build({
       ...esbuildCommonConfig,
       entryPoints: [
+        ...glob('src/*.ts'),
         ...glob('src/scripts/**/*.ts'),
         ...glob('src/inject-scripts/**/*.ts')
       ]
@@ -63,6 +64,9 @@ const scriptsBuilder = async () => {
         ...glob(`${dir.layouts}/**/*.sass`)
       ],
       bundle: true,
+      loader: {
+        '.woff2': 'dataurl'
+      },
       plugins: [
         sassPlugin()
       ]
@@ -155,9 +159,14 @@ const main = async () => {
     })
   })
 
-  const hostWatcher = chokidar.watch(config.blog.output, {
+  const hostWatcher = chokidar.watch([
+    config.blog.output
+  ], {
     ignoreInitial: true,
-    usePolling: true
+    usePolling: true,
+    awaitWriteFinish: {
+      stabilityThreshold: 100
+    }
   })
 
   const host = new Koa()

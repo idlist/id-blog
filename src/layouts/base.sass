@@ -1,14 +1,53 @@
 @import ../../node_modules/normalize.css/normalize.css
 
-.header
+@font-face
+  font-family: 'Open Sans'
+  src: url('../../public/open-sans.woff2')
+
+*
+  font-family: 'Open Sans', 'Microsoft YaHei UI', sans-serif
+
+header
   position: fixed
   top: 0,
   left: 0,
   right: 0
+
+  display: flex
+  justify-content: space-between
+
   color: #fff
   background-color: #333
 
-  padding: 0.5rem 1rem
+.header
+  display: flex
+  align-items: center
+
+  &-banner
+    height: 3rem
+
+  &-divider
+    height: 2rem
+
+    margin-right: 0.5rem
+    border: none
+    border-left: 1px solid #fff
+
+  &-icon
+    height: 2.5rem
+
+.menu
+  &-fullscreen
+    display: flex
+    align-items: center
+
+    padding: 0 0.25rem
+
+  &-link
+    padding: 0 0.25rem
+
+    color: #fff
+    text-decoration: none
 
 .container
-  padding-top: 3rem
+  padding-top: 4rem
