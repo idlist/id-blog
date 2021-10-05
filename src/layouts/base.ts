@@ -10,7 +10,7 @@ const Base: Layout = () => {
       <html lang="zh-CN">
 
       <head>
-        <meta charset="UTF-8" />
+        <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${meta.title}</title>
         <link rel="shortcut icon" type="image/png" href="/public/favicon.png">
@@ -20,21 +20,25 @@ const Base: Layout = () => {
 
       <body>
         <header>
-          <div class="header">
-            <img class="header-banner"
-              src="/${config.routes.public}/banner.png"
-              alt="banner">
-            <hr class="header-divider">
-            <div>i'D Blog</div>
-          </div>
-          <div class="menu-fullscreen">
-            <a class="menu-link" href="/">Home</a>
-            <a class="menu-link" href="/posts">Articles</a>
+          <div class="header-container">
+            <div class="header">
+              <img class="header-banner"
+                src="/${config.routes.public}/banner.png"
+                alt="banner">
+              <hr class="header-divider">
+              <div>i'D Blog</div>
+            </div>
+            <div class="menu-fullscreen">
+              <a class="menu-link" href="/">Home</a>
+              <a class="menu-link" href="/posts">Articles</a>
+            </div>
           </div>
         </header>
         <div class="container">
         ${content}
         </div>
+        <div id="bg-tiles"></div>
+        <script type="module" src="/assets/base.js"></script>
         ${meta.liveReload ? html`<script type="module" src="/assets/live-reload.js"></script>` : html``}
       </body>
 

@@ -5,13 +5,13 @@ import { Layout } from '../.data-types.js'
 const Article: Layout = meta => {
   return {
     layout: (meta, content) => html`
+    <div class="article-container">
       <div>${meta.date.year}/${meta.date.month}/${meta.date.day}</div>
       <div>标签：${meta.tags.join(', ')}</div>
       <article>
       ${content}
       </article>
-      <div id="app"></div>
-      <script type="module" src="/assets/article.js"></script>
+    </div>
     `,
     parentLayout: 'base',
     parentMeta: {

@@ -1,5 +1,9 @@
 @import ../../node_modules/normalize.css/normalize.css
 
+$screen-small: 640px
+$screen-middle: 768px
+$content-width: 1024px
+
 @font-face
   font-family: 'Open Sans'
   src: url('/public/open-sans.woff2')
@@ -7,7 +11,8 @@
 *
   font-family: 'Open Sans', 'Microsoft YaHei UI', sans-serif
 
-$screen-small: 768px
+html
+  text-size-adjust: 100%
 
 header
   position: fixed
@@ -15,11 +20,18 @@ header
   left: 0,
   right: 0
 
+  color: #fff
+  background-color: #333
+
+  display: flex
+  justify-content: center
+
+.header-container
   display: flex
   justify-content: space-between
 
-  color: #fff
-  background-color: #333
+  width: 100%
+  max-width: $content-width
 
 .header
   display: flex
@@ -55,4 +67,17 @@ header
     text-decoration: none
 
 .container
+  margin: 0 auto
   padding-top: 4rem
+
+  max-width: $content-width
+
+#bg-tiles
+  position: fixed
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  z-index: -10
+
+  background-color: #f0f0f0

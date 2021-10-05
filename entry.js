@@ -17,6 +17,7 @@ import c from './utils/colors.js'
 
 const glob = fg.sync
 const exec = promisify(execCallback)
+const noop = () => { /* Do nothing */ }
 
 const startTs = Date.now()
 
@@ -36,7 +37,7 @@ const route = {
 const cleanDist = async () => {
   try {
     await rm(config.dist, { recursive: true })
-  } catch { /* Do nothing */ }
+  } catch { noop() }
 }
 
 const esbuildCommonConfig = {
@@ -90,13 +91,20 @@ const scriptsBuilder = async () => {
       entryPoints: [
         ...glob(`${dir.js}/**/*.ts`)
       ],
-      outdir: route.js
+      outdir: route.js,
+      loader: {
+        '.svg': 'text'
+      }
     })
   ])
 
   return {
     rebuild: async () => {
-      await Promise.all([...watchers.map(async (watcher) => await watcher.rebuild())])
+      await Promise.all([...watchers.map(async (watcher) => {
+        try {
+          await watcher.rebuild()
+        } catch (err) { console.error(err) }
+      })])
     },
     dispose: () => {
       watchers.map(watcher => watcher.rebuild.dispose())
@@ -135,8 +143,7 @@ const main = async () => {
     '.blogconfig.js',
     `${config.src}/**/*.ts`,
     `${config.src}/**/*.sass`,
-    `${config.blog.posts}/**/*.md`,
-    config.blog.public
+    `${config.blog.posts}/**/*.md`
   ], {
     ignoreInitial: true
   })
@@ -213,8 +220,14 @@ const main = async () => {
     })
   })
 
-  hostWatcher.on('add', () => { currentWs?.send('reload') })
-  hostWatcher.on('change', () => { currentWs?.send('reload') })
+  let throttle = Date.now()
+
+  hostWatcher.on('all', (event) => {
+    if (['add', 'change'].includes(event) && Date.now() - throttle > 250) {
+      currentWs?.send('reload')
+      throttle = Date.now()
+    }
+  })
 
   process.on('SIGINT', () => {
     scriptsWatcher.dispose()
