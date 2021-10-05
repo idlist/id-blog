@@ -1,18 +1,27 @@
 @import ../../node_modules/normalize.css/normalize.css
-
-$screen-small: 640px
-$screen-middle: 768px
-$content-width: 1024px
+@import ../layouts-components/constants
 
 @font-face
   font-family: 'Open Sans'
-  src: url('/public/open-sans.woff2')
+  font-weight: normal
+  src: url('/public/fonts/open-sans.woff2')
+
+@font-face
+  font-family: 'Open Sans'
+  font-weight: bold
+  src: url('/public/fonts/open-sans-bold.woff2')
 
 *
   font-family: 'Open Sans', 'Microsoft YaHei UI', sans-serif
 
 html
   text-size-adjust: 100%
+
+input
+  -webkit-appearance: none
+
+  &:focus-visible
+    outline: none
 
 header
   position: fixed
@@ -25,6 +34,8 @@ header
 
   display: flex
   justify-content: center
+
+  user-select: none
 
 .header-container
   display: flex
@@ -40,6 +51,13 @@ header
   &-banner
     height: 3rem
 
+  &-text
+    display: flex
+    align-items: center
+
+    @media (max-width: $screen-small)
+      display: none
+
   &-divider
     height: 2rem
 
@@ -47,30 +65,103 @@ header
     border: none
     border-left: 1px solid #fff
 
-  &-icon
-    height: 2.5rem
-
 .menu
+  display: flex
+
   &-fullscreen
     display: flex
     align-items: center
 
-    padding: 0 0.25rem
-
-    @media (max-width: $screen-small)
+    @media (max-width: $screen-middle)
       display: none
 
   &-link
-    padding: 0 0.25rem
+    display: flex
+    align-items: center
+
+    height: 100%
+    padding: 0 0.5rem
 
     color: #fff
     text-decoration: none
 
-.container
-  margin: 0 auto
-  padding-top: 4rem
+    &:hover
+      background-color: #484848
 
-  max-width: $content-width
+    &:active
+      background-color: #666
+
+  &-mobile
+    display: flex
+
+    @media (min-width: $screen-middle)
+      display: none
+
+  &-expander
+    display: flex
+    align-items: center
+
+    height: 100%
+    padding: 0 1rem
+
+    cursor: pointer
+
+    &:hover
+      background-color: #484848
+
+    &:active
+      background-color: #666
+
+  &-button
+    height: 1.75rem
+    width: 1.75rem
+
+  &-dropdown
+    position: fixed
+    left: 0
+    top: 0
+    right: 0
+
+    display: grid
+    margin-top: 3rem
+    border-top: 1px solid #fff
+
+    background-color: #484848
+
+  &-dropdown-link
+    display: flex
+    justify-content: center
+
+    padding: 0.75rem 0
+
+    text-decoration: none
+    color: #fff
+
+    &:active
+      background-color: #666
+
+  &-dropdown-hr
+    margin: 0 auto
+    width: calc(100% - 2rem)
+
+    border: none
+    border-bottom: 1px solid #fff
+    background-color: rgba(48, 48, 48, 0.9)
+
+.container-wrapper
+  display: flex
+  justify-content: center
+
+  margin: 1rem
+  margin-top: 4rem
+
+  @media (max-width: $screen-small)
+    margin: 0.5rem
+    margin-top: 3.5rem
+
+  .container
+    width: 100%
+    max-width: $content-width
 
 #bg-tiles
   position: fixed
@@ -81,3 +172,6 @@ header
   z-index: -10
 
   background-color: #f0f0f0
+
+.hidden
+  display: none

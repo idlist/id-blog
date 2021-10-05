@@ -12,9 +12,10 @@ export default {
     js: 'js'
   },
   routes: {
-    posts: 'p',
+    posts: 'a',
     assets: 'assets',
     public: 'public',
-    js: 'assets'
+    js: 'assets',
+    tags: 'tags'
   }
 }

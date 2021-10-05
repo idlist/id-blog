@@ -14,11 +14,12 @@ interface TConfig {
     js: string
   },
   routes: {
+    [property: string]: string
     posts: string
     assets: string
     public: string
     js: string
-    [property: string]: string
+    tags: string
   }
 }
 

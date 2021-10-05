@@ -223,7 +223,7 @@ const main = async () => {
   let throttle = Date.now()
 
   hostWatcher.on('all', (event) => {
-    if (['add', 'change'].includes(event) && Date.now() - throttle > 250) {
+    if (['add', 'change'].includes(event) && Date.now() - throttle > 1000) {
       currentWs?.send('reload')
       throttle = Date.now()
     }
