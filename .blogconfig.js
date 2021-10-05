@@ -8,11 +8,13 @@ export default {
     layouts: 'layouts',
     cache: '_posts_cache',
     posts: 'posts',
-    public: 'public'
+    public: 'public',
+    js: 'js'
   },
-  route: {
+  routes: {
     posts: 'p',
     assets: 'assets',
-    public: 'public'
+    public: 'public',
+    js: 'assets'
   }
 }

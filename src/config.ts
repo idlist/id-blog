@@ -1,6 +1,6 @@
 import { cwd } from 'process'
 
-interface BlogConfig {
+interface TConfig {
   port: string
   src: string
   dist: string
@@ -11,14 +11,18 @@ interface BlogConfig {
     output: string
     metaDelimiter: string
     public: string
+    js: string
   },
-  route: {
+  routes: {
     posts: string
     assets: string
     public: string
+    js: string
+    [property: string]: string
   }
 }
 
-const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as BlogConfig
+const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as TConfig
 
 export default config
+export type { TConfig }

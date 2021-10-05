@@ -11,23 +11,20 @@ import jsBeautify from 'js-beautify'
 import type { RawPostMeta, PostMeta, MetaCategory, Meta, Layout } from '../.data-types.js'
 
 import c from '../../utils/colors.js'
-import config from '../config.js'
+import config, { TConfig } from '../config.js'
 import { noop, filename } from './utils.js'
 
 // Import Configurations
 
 const metaDelimiter = config.blog.metaDelimiter + '\r\n'
-const dir = {
-  output: config.blog.output,
-  cache: config.blog.cache,
+const dir: TConfig['blog'] = {
+  ...config.blog,
   layouts: `${config.dist}/${config.blog.layouts}`,
-  posts: config.blog.posts,
-  public: config.blog.public
+  js: `${config.dist}/${config.blog.js}`
 }
-const routes = {
-  posts: `${dir.output}/${config.route.posts}`,
-  assets: `${dir.output}/${config.route.assets}`,
-  public: `${dir.output}/${config.route.public}`
+const routes: TConfig['routes'] = { ...config.routes }
+for (const property in routes) {
+  routes[property] = `${dir.output}/${routes[property]}`
 }
 
 const options = {
@@ -70,9 +67,9 @@ try {
   await rm(dir.output, { recursive: true })
 } catch { noop() }
 await mkdir(dir.output)
-await mkdir(routes.posts)
-await mkdir(routes.assets)
-await mkdir(routes.public)
+for (const route of Object.values(routes)) {
+  await mkdir(route, { recursive: true })
+}
 
 try {
   AllMetaCache = JSON.parse(await readFile(`${dir.cache}/meta.json`, 'utf-8'))
@@ -120,12 +117,21 @@ const copyAssets = async () => {
   }
 
   const copyPublicAssets = async () => {
-    await cp(dir.public, routes.public, { recursive: true })
+    try {
+      await cp(dir.public, routes.public, { recursive: true })
+    } catch { noop() }
+  }
+
+  const copyJsAssets = async () => {
+    try {
+      await cp(dir.js, routes.js, { recursive: true })
+    } catch { noop() }
   }
 
   await Promise.all([
     ...layoutList.map(async (file) => { await copyCssAssets(file) }),
-    copyPublicAssets()
+    copyPublicAssets(),
+    copyJsAssets()
   ])
 }
 

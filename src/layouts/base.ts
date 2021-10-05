@@ -21,7 +21,7 @@ const Base: Layout = () => {
         <header>
           <div class="header">
             <img class="header-banner"
-              src="/${config.route.public}/banner.png"
+              src="/${config.routes.public}/banner.png"
               alt="banner">
             <hr class="header-divider">
             <div>i'D Blog</div>

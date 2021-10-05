@@ -25,7 +25,8 @@ const options = {
   buildOnly: argv.includes('--build-only')
 }
 const dir = {
-  layouts: `${config.src}/${config.blog.layouts}`
+  layouts: `${config.src}/${config.blog.layouts}`,
+  js: `${config.src}/${config.blog.js}`
 }
 
 const cleanDist = async () => {
@@ -64,12 +65,21 @@ const scriptsBuilder = async () => {
         ...glob(`${dir.layouts}/**/*.sass`)
       ],
       bundle: true,
-      loader: {
-        '.woff2': 'dataurl'
-      },
+      minify: !options.watch,
+      external: [
+        '/*'
+      ],
       plugins: [
         sassPlugin()
       ]
+    }),
+    esbuild.build({
+      ...esbuildCommonConfig,
+      entryPoints: [
+        ...glob(`${dir.js}/**/*.ts`)
+      ],
+      bundle: true,
+      minify: !options.watch
     })
   ])
 
