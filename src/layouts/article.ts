@@ -8,8 +8,10 @@ const Article: Layout = meta => {
       <div>${meta.date.year}/${meta.date.month}/${meta.date.day}</div>
       <div>标签：${meta.tags.join(', ')}</div>
       <article>
-        ${content}
+      ${content}
       </article>
+      <div id="app"></div>
+      <script type="module" src="/assets/article.js"></script>
     `,
     parentLayout: 'base',
     parentMeta: {

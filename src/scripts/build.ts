@@ -10,9 +10,9 @@ import jsBeautify from 'js-beautify'
 
 import type { RawPostMeta, PostMeta, MetaCategory, Meta, Layout } from '../.data-types.js'
 
-import c from '../../utils/colors.js'
 import config, { TConfig } from '../config.js'
 import { noop, filename } from './utils.js'
+import c from './colors.js'
 
 // Import Configurations
 

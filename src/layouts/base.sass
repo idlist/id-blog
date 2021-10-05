@@ -7,6 +7,8 @@
 *
   font-family: 'Open Sans', 'Microsoft YaHei UI', sans-serif
 
+$screen-small: 768px
+
 header
   position: fixed
   top: 0,
@@ -42,6 +44,9 @@ header
     align-items: center
 
     padding: 0 0.25rem
+
+    @media (max-width: $screen-small)
+      display: none
 
   &-link
     padding: 0 0.25rem

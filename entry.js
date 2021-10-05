@@ -28,6 +28,10 @@ const dir = {
   layouts: `${config.src}/${config.blog.layouts}`,
   js: `${config.src}/${config.blog.js}`
 }
+const route = {
+  layouts: `${config.dist}/${config.blog.layouts}`,
+  js: `${config.dist}/${config.blog.js}`
+}
 
 const cleanDist = async () => {
   try {
@@ -36,10 +40,18 @@ const cleanDist = async () => {
 }
 
 const esbuildCommonConfig = {
-  outbase: config.src,
-  outdir: config.dist,
   platform: 'node',
   target: ['esnext'],
+  format: 'esm',
+  incremental: true
+}
+
+const esbuildBundleConfig = {
+  bundle: true,
+  platform: 'browser',
+  target: ['chrome94'],
+  format: 'esm',
+  minify: !options.watch,
   incremental: true
 }
 
@@ -51,35 +63,34 @@ const scriptsBuilder = async () => {
         ...glob('src/*.ts'),
         ...glob('src/scripts/**/*.ts'),
         ...glob('src/inject-scripts/**/*.ts')
-      ]
+      ],
+      outbase: config.src,
+      outdir: config.dist
     }),
     esbuild.build({
       ...esbuildCommonConfig,
       entryPoints: [
         ...glob(`${dir.layouts}/**/*.ts`)
-      ]
+      ],
+      outdir: route.layouts
     }),
     esbuild.build({
-      ...esbuildCommonConfig,
+      ...esbuildBundleConfig,
       entryPoints: [
         ...glob(`${dir.layouts}/**/*.sass`)
       ],
-      bundle: true,
-      minify: !options.watch,
-      external: [
-        '/*'
-      ],
+      outdir: route.layouts,
+      external: ['/*'],
       plugins: [
         sassPlugin()
       ]
     }),
     esbuild.build({
-      ...esbuildCommonConfig,
+      ...esbuildBundleConfig,
       entryPoints: [
         ...glob(`${dir.js}/**/*.ts`)
       ],
-      bundle: true,
-      minify: !options.watch
+      outdir: route.js
     })
   ])
 
@@ -121,10 +132,11 @@ const main = async () => {
   if (!options.watch) return
 
   const watcher = chokidar.watch([
+    '.blogconfig.js',
     `${config.src}/**/*.ts`,
     `${config.src}/**/*.sass`,
     `${config.blog.posts}/**/*.md`,
-    '.blogconfig.js'
+    config.blog.public
   ], {
     ignoreInitial: true
   })

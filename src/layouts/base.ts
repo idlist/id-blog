@@ -13,6 +13,7 @@ const Base: Layout = () => {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${meta.title}</title>
+        <link rel="shortcut icon" type="image/png" href="/public/favicon.png">
         <link rel="stylesheet" type="text/css" href="/assets/base.css">
         ${meta.head}
       </head>
@@ -32,7 +33,7 @@ const Base: Layout = () => {
           </div>
         </header>
         <div class="container">
-          ${content}
+        ${content}
         </div>
         ${meta.liveReload ? html`<script type="module" src="/assets/live-reload.js"></script>` : html``}
       </body>
