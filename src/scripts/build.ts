@@ -4,16 +4,17 @@ import { cwd, argv, exit } from 'process'
 import { extname } from 'path'
 import { createHash } from 'crypto'
 
+import yaml from 'js-yaml'
 import markdownIt from 'markdown-it'
 import markdownItAnchor from 'markdown-it-anchor'
-import markdownItTOC from 'markdown-it-toc-done-right'
 import markdownItAttrs from 'markdown-it-attrs'
 import prism from 'prismjs'
 import prismLangs from 'prismjs/components/index.js'
 import jsBeautify from 'js-beautify'
-import yaml from 'js-yaml'
+import cheerio from 'cheerio'
 
-import type { RawPostMeta, PostMeta, MetaCategory, Meta, Layout } from '../.data-types.js'
+import type { RawPostMeta, PostMeta, MetaCategory, Meta } from '../.data-types.js'
+import type { Layout, TOCNode } from '../.data-types.js'
 
 import config, { TConfig } from '../config.js'
 import { noop, filename } from './utils.js'
@@ -70,7 +71,6 @@ const md: markdownIt = markdownIt({
 })
 
 md.use(markdownItAnchor)
-md.use(markdownItTOC)
 md.use(markdownItAttrs)
 
 const beautify = jsBeautify.html
@@ -235,6 +235,32 @@ const processPosts = async (post: string) => {
     return
   }
 
+  // Parse markdown to HTML
+
+  const article = content.slice(metaSection + metaDelimiter.length)
+  const parsedArticle = md.render(article)
+
+  // Extract table of contents from parsed HTML
+
+  const tocTree: TOCNode[] = []
+
+  const document = cheerio.load(parsedArticle)
+  const headers = ['h2', 'h3', 'h4']
+
+  document(headers.join(', ')).each((_, hx) => {
+    const text = document(hx).text()
+    const id = document(hx).attr('id') as string
+    const level = parseInt((document(hx).prop('tagName') as unknown as string)[1])
+    tocTree.push({ text, id, level })
+  })
+
+  // Write HTML cache
+
+  await writeFile(`${dir.cache}/${postName}.html`, parsedArticle)
+  console.log(`${c.blue('[I]')} Cache built for ${c.green(post)}.`)
+
+  // Summarize metadata
+
   const meta: PostMeta = {
     ...rawMeta,
     hash: contentHash,
@@ -248,7 +274,8 @@ const processPosts = async (post: string) => {
     timestamp: rawMeta.date.getTime(),
     tags: rawMeta.tags
       ? rawMeta.tags.split(' ').map(tag => tag.replace('_', ' ')).filter(tag => tag)
-      : []
+      : [],
+    toc: tocTree
   }
 
   // Categorize metadata
@@ -260,14 +287,6 @@ const processPosts = async (post: string) => {
   }
   AllMeta[postName] = meta
   categorizeMeta(meta)
-
-  // Parse markdown and write cache
-
-  const article = content.slice(metaSection + metaDelimiter.length)
-  const parsedArticle = md.render(article)
-  await writeFile(`${dir.cache}/${postName}.html`, parsedArticle)
-
-  console.log(`${c.blue('[I]')} Cache built for ${c.green(post)}.`)
 }
 
 // Wait for all asynchronous methods to finish

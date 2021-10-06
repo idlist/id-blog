@@ -8,6 +8,12 @@ export interface RawPostMeta {
 
 type ProcessedPostMeta = 'tags' | 'date'
 
+export interface TOCNode {
+  text: string
+  id: string
+  level: number
+}
+
 export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
   hash: string
   route: string
@@ -18,6 +24,7 @@ export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
   }
   timestamp: number
   tags: string[]
+  toc: TOCNode[]
 }
 
 export interface MetaCategory {
