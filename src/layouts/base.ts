@@ -24,7 +24,7 @@ const Base: Layout = () => {
         <a class="menu-expander">
           <img class="menu-button" src="/${routes.public}/buttons/menu.svg" alt="menu_button">
         </a>
-        <div class="menu-fullscreen">
+        <div class="menu-fullscreen hidden">
           <div class="menu-fs-container">
             <a class="menu-fs-link" href="https://idl.ist/">
               <span>To Homepage</span>
@@ -49,7 +49,7 @@ const Base: Layout = () => {
             <div class="menu-landscape">
               <a class="menu-link" href="/">Articles</a>
               <a class="menu-link" href="/${routes.tags}">Tags</a>
-              <a class="menu-link" href="http://idl.ist/">
+              <a class="menu-link" href="https://idl.ist/">
                 <span>To Homepage</span>
                 <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
               </a>
