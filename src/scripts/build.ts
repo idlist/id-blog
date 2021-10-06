@@ -4,12 +4,14 @@ import { cwd, argv, exit } from 'process'
 import { extname } from 'path'
 import { createHash } from 'crypto'
 
-import yaml from 'js-yaml'
 import markdownIt from 'markdown-it'
+import markdownItAnchor from 'markdown-it-anchor'
+import markdownItTOC from 'markdown-it-toc-done-right'
+import markdownItAttrs from 'markdown-it-attrs'
 import prism from 'prismjs'
 import prismLangs from 'prismjs/components/index.js'
 import jsBeautify from 'js-beautify'
-import html from 'outdent'
+import yaml from 'js-yaml'
 
 import type { RawPostMeta, PostMeta, MetaCategory, Meta, Layout } from '../.data-types.js'
 
@@ -59,21 +61,17 @@ const md: markdownIt = markdownIt({
 
     if (lang && lang in prism.languages) {
       try {
-        return html`
-        <pre>
-          <code>${prism.highlight(content, prism.languages[lang], 'js')}</code>
-        </pre>
-        `
+        return prism.highlight(content, prism.languages[lang], 'js')
       } catch { noop() }
     }
 
-    return html`
-    <pre>
-      <code>${md.utils.escapeHtml(content)}</code>
-    </pre>
-    `
+    return md.utils.escapeHtml(content)
   }
 })
+
+md.use(markdownItAnchor)
+md.use(markdownItTOC)
+md.use(markdownItAttrs)
 
 const beautify = jsBeautify.html
 

@@ -7,8 +7,32 @@
   padding: 1rem
 
 article
+  h1, h2, h3, h4, h5, h6
+    margin: 0.5rem 0
+
+  h1
+    font-size: 3rem
+
+  h2
+    font-size: 2.5rem
+
+  h3
+    font-size: 2rem
+
+  h4
+    font-size: 1.5rem
+
+  h5
+    font-size: 1.25rem
+
+  h6
+    font-size: 1rem
+
   p
-    line-height: 1.25rem
+    margin: 1rem 0
+
+  li
+    margin: 0.75rem 0
 
   pre
     background-color: #333
@@ -23,7 +47,6 @@ article
     position: relative
 
   pre code, code
-    font-family: $monospace
     font-size: 0.875rem
 
   code
@@ -38,7 +61,10 @@ article
     background-color: #eee
 
   pre code
-    color: #9cdcfe
     background-color: transparent
 
-    line-height: 1.15rem
+  code[class*=language-]
+    font-family: $monospace
+
+    font-size: 0.875rem
+    line-height: 1.125rem
