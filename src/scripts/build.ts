@@ -6,7 +6,10 @@ import { createHash } from 'crypto'
 
 import yaml from 'js-yaml'
 import markdownIt from 'markdown-it'
+import prism from 'prismjs'
+import prismLangs from 'prismjs/components/index.js'
 import jsBeautify from 'js-beautify'
+import html from 'outdent'
 
 import type { RawPostMeta, PostMeta, MetaCategory, Meta, Layout } from '../.data-types.js'
 
@@ -47,7 +50,30 @@ let layoutList: string[] = []
 
 // Prepare markdown factory
 
-const md = markdownIt()
+prismLangs(['sass'])
+
+const md: markdownIt = markdownIt({
+  html: true,
+  highlight: (content, lang) => {
+    content = content.trimEnd()
+
+    if (lang && lang in prism.languages) {
+      try {
+        return html`
+        <pre>
+          <code>${prism.highlight(content, prism.languages[lang], 'js')}</code>
+        </pre>
+        `
+      } catch { noop() }
+    }
+
+    return html`
+    <pre>
+      <code>${md.utils.escapeHtml(content)}</code>
+    </pre>
+    `
+  }
+})
 
 const beautify = jsBeautify.html
 

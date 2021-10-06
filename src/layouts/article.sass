@@ -1,4 +1,44 @@
 @import ../layouts-components/constants
 
+// https://github.com/PrismJS/prism-themes/blob/master/themes/prism-vsc-dark-plus.css
+@import ../assets/vscode.css
+
 .article-container
   padding: 1rem
+
+article
+  p
+    line-height: 1.25rem
+
+  pre
+    background-color: #333
+    padding: 0.5rem
+
+    display: flex
+    max-height: 20rem
+
+    overflow-x: auto
+    overflow-y: auto
+
+    position: relative
+
+  pre code, code
+    font-family: $monospace
+    font-size: 0.875rem
+
+  code
+    display: inline-block
+    vertical-align: text-bottom
+
+    padding: 0.25rem
+    border-radius: 0.25rem
+
+    line-height: 1rem
+    color: #333
+    background-color: #eee
+
+  pre code
+    color: #9cdcfe
+    background-color: transparent
+
+    line-height: 1.15rem

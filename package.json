@@ -39,6 +39,7 @@
     "mithril": "^2.0.0",
     "normalize.css": "^8.0.0",
     "outdent": "^0.8.0",
+    "prismjs": "^1.0.0",
     "sass": "^1.0.0",
     "ws": "^8.0.0"
   },
@@ -50,6 +51,7 @@
     "@types/markdown-it": "^12.0.0",
     "@types/mithril": "^2.0.8",
     "@types/node": "^16.10.0",
+    "@types/prismjs": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^4.0.0",
     "@typescript-eslint/parser": "^4.0.0",
     "eslint": "^7.0.0",
