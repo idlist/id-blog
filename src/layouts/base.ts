@@ -21,35 +21,38 @@ const Base: Layout = () => {
       </head>
 
       <body>
+        <a class="menu-expander">
+          <img class="menu-button" src="/${routes.public}/buttons/menu.svg" alt="menu_button">
+        </a>
+        <div class="menu-fullscreen">
+          <div class="menu-fs-container">
+            <a class="menu-fs-link" href="https://idl.ist/">
+              <span>To Homepage</span>
+              <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
+            </a>
+            <hr class="menu-fs-hr">
+            <a class="menu-fs-link" href="/">Articles</a>
+            <hr class="menu-fs-hr">
+            <a class="menu-fs-link" href="/${routes.tag}">Tags</a>
+            <hr class="menu-fs-hr">
+          </div>
+        </div>
         <header>
           <div class="header-container">
             <div class="header">
               <img class="header-banner"
                 src="/${routes.public}/banner.png"
                 alt="banner">
-              <div class="header-text">
-                <hr class="header-divider">
-                <div>i'D Blog</div>
-              </div>
+              <hr class="header-divider">
+              <div>i'D Blog</div>
             </div>
-            <div class="menu">
-              <div class="menu-fullscreen">
-                <a class="menu-link" href="/">Articles</a>
-                <a class="menu-link" href="/${routes.tags}">Tags</a>
-                <a class="menu-link" href="http://idl.ist/">To Homepage</a>
-              </div>
-              <div class="menu-mobile">
-                <a class="menu-expander">
-                  <img class="menu-button" src="/${routes.public}/buttons/menu.svg" alt="menu_button">
-                </a>
-                <div class="menu-dropdown hidden">
-                  <a class="menu-dropdown-link" href="/">Articles</a>
-                  <hr class="menu-dropdown-hr">
-                  <a class="menu-dropdown-link" href="/${routes.tag}">Tags</a>
-                  <hr class="menu-dropdown-hr">
-                  <a class="menu-dropdown-link" href="https://idl.ist/">To Homepage</a>
-                </div>
-              </div>
+            <div class="menu-landscape">
+              <a class="menu-link" href="/">Articles</a>
+              <a class="menu-link" href="/${routes.tags}">Tags</a>
+              <a class="menu-link" href="http://idl.ist/">
+                <span>To Homepage</span>
+                <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
+              </a>
             </div>
           </div>
         </header>

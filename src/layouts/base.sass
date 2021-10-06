@@ -1,6 +1,8 @@
 @import ../../node_modules/normalize.css/normalize.css
 @import ../layouts-components/constants
 
+// Fonts
+
 @font-face
   font-family: 'Open Sans'
   font-weight: normal
@@ -10,6 +12,8 @@
   font-family: 'Open Sans'
   font-weight: bold
   src: url('/public/fonts/open-sans-bold.woff2')
+
+// Global settings
 
 *
   font-family: 'Open Sans', 'Microsoft YaHei UI', sans-serif
@@ -23,10 +27,12 @@ input
   &:focus-visible
     outline: none
 
+// Elements
+
 header
   position: fixed
-  top: 0,
-  left: 0,
+  top: 0
+  left: 0
   right: 0
 
   color: #fff
@@ -51,13 +57,6 @@ header
   &-banner
     height: 3rem
 
-  &-text
-    display: flex
-    align-items: center
-
-    @media (max-width: $screen-small)
-      display: none
-
   &-divider
     height: 2rem
 
@@ -66,9 +65,7 @@ header
     border-left: 1px solid #fff
 
 .menu
-  display: flex
-
-  &-fullscreen
+  &-landscape
     display: flex
     align-items: center
 
@@ -91,48 +88,61 @@ header
     &:active
       background-color: #666
 
-  &-mobile
-    display: flex
+  &-link-external
+    width: 1rem
+    height: 1rem
 
-    @media (min-width: $screen-middle)
-      display: none
+    margin-left: 0.5rem
 
   &-expander
+    position: fixed
+    bottom: 1rem
+    right: 1rem
+    z-index: 20
+
     display: flex
     align-items: center
-
-    height: 100%
-    padding: 0 1rem
-
     cursor: pointer
 
-    &:hover
-      background-color: #484848
+    border-radius: 50%
+    background-color: #333
 
     &:active
       background-color: #666
 
-  &-button
-    height: 1.75rem
-    width: 1.75rem
+    @media (min-width: $screen-middle)
+      display: none
 
-  &-dropdown
+  &-button
+    height: 1.5rem
+    width: 1.5rem
+    padding: 1rem
+
+  &-fullscreen
     position: fixed
     left: 0
+    bottom: 0
     top: 0
     right: 0
+    z-index: 10
 
     display: grid
-    margin-top: 3rem
-    border-top: 1px solid #fff
+    align-items: end
 
-    background-color: #484848
+    padding: 1rem
+    background-color: rgba(48, 48, 48, 0.75)
 
-  &-dropdown-link
+    @media (min-width: $screen-middle)
+      display: none
+
+  &-fs-container
+    padding-bottom: 5rem
+
+  &-fs-link
     display: flex
-    justify-content: center
+    justify-content: right
 
-    padding: 0.75rem 0
+    padding: 0.75rem
 
     text-decoration: none
     color: #fff
@@ -140,9 +150,12 @@ header
     &:active
       background-color: #666
 
-  &-dropdown-hr
-    margin: 0 auto
-    width: calc(100% - 2rem)
+  &-fs-hr
+    margin: 0
+    padding: 0
+
+    display: flex
+    justify-content: center
 
     border: none
     border-bottom: 1px solid #fff
@@ -172,6 +185,8 @@ header
   z-index: -10
 
   background-color: #f0f0f0
+
+// Utilities
 
 .hidden
   display: none

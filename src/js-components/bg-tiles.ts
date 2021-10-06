@@ -3,7 +3,38 @@ import m from 'mithril'
 import { shuffle, throttle } from 'lodash-es'
 import { pick, randInt, range, randBag, fillArray } from './utils.js'
 
-const tiles = {
+import rect_1 from '../assets/tiles/rect_1.svg'
+import rect_2 from '../assets/tiles/rect_2.svg'
+import rect_3 from '../assets/tiles/rect_3.svg'
+import rect_4 from '../assets/tiles/rect_4.svg'
+import rect_5 from '../assets/tiles/rect_5.svg'
+
+import triangle_1 from '../assets/tiles/triangle_1.svg'
+import triangle_2 from '../assets/tiles/triangle_2.svg'
+import triangle_3 from '../assets/tiles/triangle_3.svg'
+
+import circle_1 from '../assets/tiles/circle_1.svg'
+import circle_2 from '../assets/tiles/circle_2.svg'
+import circle_3 from '../assets/tiles/circle_3.svg'
+
+import diamond_1 from '../assets/tiles/diamond_1.svg'
+
+const tiles: Record<string, string> = {
+  rect_1,
+  rect_2,
+  rect_3,
+  rect_4,
+  rect_5,
+  triangle_1,
+  triangle_2,
+  triangle_3,
+  circle_1,
+  circle_2,
+  circle_3,
+  diamond_1
+}
+
+const tileType = {
   rect: {
     rect_1: 4,
     rect_2: 4,
@@ -26,12 +57,10 @@ const tiles = {
   }
 }
 
-const allTiles: Record<string, number> = {}
 let tilePool: string[] = []
 
-for (const variants of Object.values(tiles)) {
+for (const variants of Object.values(tileType)) {
   for (const [variant, weight] of Object.entries(variants)) {
-    allTiles[variant] = weight
     tilePool = tilePool.concat(fillArray(weight, variant))
   }
 }
@@ -46,15 +75,18 @@ interface BigPileAttrs {
 const BigTile: m.ClosureComponent<BigPileAttrs> = () => {
   return {
     view({ attrs: { size, x, y, rotate } }) {
-      return m('image', {
+      return m('svg', {
         x: x,
         y: y,
         width: size,
-        height: size,
-        href: `/public/tiles/${pick(tilePool)}.svg`,
-        transform: `rotate(${rotate}, ${x + size / 2}, ${y + size / 2})`,
-        alt: 'tile'
-      })
+        height: size
+      }, [
+        m('g', {
+          transform: `rotate(${rotate}, ${size / 2}, ${size / 2})`
+        }, [
+          m.trust(tiles[pick(tilePool)])
+        ])
+      ])
     }
   }
 }
@@ -67,11 +99,11 @@ interface SmallPilesAttrs {
 
 const SmallTiles: m.ClosureComponent<SmallPilesAttrs> = () => {
   const rotate = randBag(4).map(d => d * 90)
-  const localTiles = shuffle([
-    pick(Object.keys(tiles.rect)),
-    pick(Object.keys(tiles.triangle)),
-    pick(Object.keys(tiles.circle)),
-    pick(Object.keys(tiles.diamond))
+  const selectedTiles = shuffle([
+    pick(Object.keys(tileType.rect)),
+    pick(Object.keys(tileType.triangle)),
+    pick(Object.keys(tileType.circle)),
+    pick(Object.keys(tileType.diamond))
   ])
 
   return {
@@ -83,15 +115,18 @@ const SmallTiles: m.ClosureComponent<SmallPilesAttrs> = () => {
           const px = x + psize * row
           const py = y + psize * column
 
-          return m('image', {
+          return m('svg', {
             x: px,
             y: py,
             width: psize,
-            height: psize,
-            href: `/public/tiles/${localTiles[i]}.svg`,
-            transform: `rotate(${rotate[i]}, ${px + psize / 2}, ${py + psize / 2})`,
-            alt: 'tile'
-          })
+            height: psize
+          }, [
+            m('g', {
+              transform: `rotate(${rotate[i]}, ${psize / 2}, ${psize / 2})`
+            }, [
+              m.trust(tiles[selectedTiles[i]])
+            ])
+          ])
         })
       )
     }
