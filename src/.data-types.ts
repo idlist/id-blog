@@ -15,6 +15,7 @@ export interface TOCNode {
 }
 
 export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
+  name: string
   hash: string
   route: string
   date: {
@@ -34,6 +35,7 @@ export interface MetaCategory {
 
 export interface LayoutMeta extends PostMeta {
   head: string
+  scripts: string[]
   liveReload: boolean
 }
 

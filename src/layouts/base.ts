@@ -1,6 +1,6 @@
 import html from 'outdent'
 
-import { Layout } from '../.data-types.js'
+import type { Layout } from '../.data-types.js'
 import config from '../config.js'
 
 const routes = config.routes
@@ -15,8 +15,8 @@ const Base: Layout = () => {
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${meta.title}</title>
-        <link rel="shortcut icon" type="image/png" href="/public/favicon.png">
-        <link rel="stylesheet" type="text/css" href="/assets/base.css">
+        <link rel="shortcut icon" type="image/png" href="/${config.routes.public}/favicon.png">
+        <link rel="stylesheet" type="text/css" href="/${config.routes.assets}/base.css">
         ${meta.head}
       </head>
 
@@ -63,7 +63,10 @@ const Base: Layout = () => {
         </div>
         <div id="bg-tiles"></div>
         <script type="module" src="/assets/base.js"></script>
-        ${meta.liveReload ? html`<script type="module" src="/assets/live-reload.js"></script>` : html``}
+        ${meta.liveReload ? html`<script type="module" src="/${config.routes.assets}/live-reload.js"></script>` : html``}
+        ${meta.scripts.map(script => html`
+        <script type="module" src="${script}"></script>
+        `)}
       </body>
 
       </html>

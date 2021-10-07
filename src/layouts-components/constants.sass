@@ -4,3 +4,19 @@ $content-width: 1024px
 
 $sans-serif: 'Open Sans', 'Microsoft YaHei UI', sans-serif
 $monospace: 'Cascadia Code', monospace
+
+:root
+  --color-green: #00887d
+  --color-pink: #fdedf6
+
+@mixin blog-link
+  color: #666
+
+  &:visited
+    color: var(--color-green)
+
+  &:hover
+    color: #999
+
+  &:active
+    color: #ccc

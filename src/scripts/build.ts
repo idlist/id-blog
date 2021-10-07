@@ -303,6 +303,7 @@ const processPosts = async (post: string) => {
 
   const meta: PostMeta = {
     ...rawMeta,
+    name: postName,
     hash: contentHash,
     route: rawMeta.route
       ?? encodeURI(rawMeta.title.toLowerCase().replace(/\s+/g, '-')),
@@ -312,9 +313,7 @@ const processPosts = async (post: string) => {
       day: rawMeta.date.getDate()
     },
     timestamp: rawMeta.date.getTime(),
-    tags: rawMeta.tags
-      ? rawMeta.tags.split(' ').map(tag => tag.replace('_', ' ')).filter(tag => tag)
-      : [],
+    tags: rawMeta.tags  ? rawMeta.tags.split(' ') : [],
     toc: toc
   }
 
@@ -357,10 +356,11 @@ const renderPost = async (post: string) => {
 
   let renderedHtml = postHtml
 
-  let currentMeta = {
+  let currentMeta: Meta = {
     ...AllMeta[postName],
     ...Category,
     head: '',
+    scripts: [],
     liveReload: options.watch
   }
   let layoutName = currentMeta.layout
