@@ -8,10 +8,11 @@ import yaml from 'js-yaml'
 import markdownIt from 'markdown-it'
 import markdownItAnchor from 'markdown-it-anchor'
 import markdownItAttrs from 'markdown-it-attrs'
+import { slugify } from 'transliteration'
 import prism from 'prismjs'
 import prismLangs from 'prismjs/components/index.js'
 import jsBeautify from 'js-beautify'
-import cheerio from 'cheerio'
+import HTMLparser from 'node-html-parser'
 
 import type { RawPostMeta, PostMeta, MetaCategory, Meta } from '../.data-types.js'
 import type { Layout, TOCNode } from '../.data-types.js'
@@ -70,7 +71,7 @@ const md: markdownIt = markdownIt({
   }
 })
 
-md.use(markdownItAnchor)
+md.use(markdownItAnchor, { slugify: s => slugify(s, { fixChineseSpacing: false }) })
 md.use(markdownItAttrs)
 
 const beautify = jsBeautify.html
@@ -244,15 +245,16 @@ const processPosts = async (post: string) => {
 
   const tocTree: TOCNode[] = []
 
-  const document = cheerio.load(parsedArticle)
+  const document = HTMLparser.parse(parsedArticle)
   const headers = ['h2', 'h3', 'h4']
 
-  document(headers.join(', ')).each((_, hx) => {
-    const text = document(hx).text()
-    const id = document(hx).attr('id') as string
-    const level = parseInt((document(hx).prop('tagName') as unknown as string)[1])
-    tocTree.push({ text, id, level })
-  })
+  const headerElements = document.querySelectorAll(headers.join(','))
+  for (const h of headerElements) {
+    const level = parseInt((h.tagName[1]))
+    const id = h.getAttribute('id') ?? ''
+    const text = h.innerHTML
+    tocTree.push({ level, id, text })
+  }
 
   // Write HTML cache
 
