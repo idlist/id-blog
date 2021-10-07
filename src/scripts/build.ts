@@ -12,7 +12,8 @@ import { slugify } from 'transliteration'
 import prism from 'prismjs'
 import prismLangs from 'prismjs/components/index.js'
 import jsBeautify from 'js-beautify'
-import HTMLparser from 'node-html-parser'
+import cheerio from 'cheerio'
+import html from 'outdent'
 
 import type { RawPostMeta, PostMeta, MetaCategory, Meta } from '../.data-types.js'
 import type { Layout, TOCNode } from '../.data-types.js'
@@ -71,7 +72,10 @@ const md: markdownIt = markdownIt({
   }
 })
 
-md.use(markdownItAnchor, { slugify: s => slugify(s, { fixChineseSpacing: false }) })
+md.use(markdownItAnchor, {
+  slugify: s => slugify(s, { fixChineseSpacing: false }),
+  tabIndex: false
+})
 md.use(markdownItAttrs)
 
 const beautify = jsBeautify.html
@@ -171,7 +175,6 @@ const processPosts = async (post: string) => {
 
   /**
    * Categorize Metadata
-   * @param meta
    */
   const categorizeMeta = (meta: PostMeta) => {
     if (!Category.allDate[meta.date.year]) {
@@ -239,24 +242,59 @@ const processPosts = async (post: string) => {
   // Parse markdown to HTML
 
   const article = content.slice(metaSection + metaDelimiter.length)
-  const parsedArticle = md.render(article)
+  let parsedArticle = md.render(article)
+
+  const $ = cheerio.load(parsedArticle)
 
   // Extract table of contents from parsed HTML
 
-  const tocTree: TOCNode[] = []
-
-  const document = HTMLparser.parse(parsedArticle)
+  const toc: TOCNode[] = []
   const headers = ['h2', 'h3', 'h4']
+  const level: number[] = []
 
-  const headerElements = document.querySelectorAll(headers.join(','))
-  for (const h of headerElements) {
-    const level = parseInt((h.tagName[1]))
-    const id = h.getAttribute('id') ?? ''
-    const text = h.innerHTML
-    tocTree.push({ level, id, text })
+  $(headers.join(', ')).each((_, header) => {
+    const node = {
+      level: parseInt(($(header).prop('tagName') as unknown as string)[1]),
+      id: $(header).attr('id') ?? '',
+      text: $(header).text()
+    }
+
+    toc.push(node)
+    level.push(node.level)
+  })
+
+  const parsedLevel: number[] = []
+  let highestLevel = 6
+  let rootLevel = 0
+  for (let i = 0; i < level.length; i++) {
+    if (level[i] < highestLevel) highestLevel = level[i]
+
+    if (!parsedLevel.length) {
+      parsedLevel.push(level[i])
+    } else if (level[i] == level[i - 1]) {
+      parsedLevel.push(parsedLevel[i - 1])
+    } else if (level[i] > level[i - 1]) {
+      parsedLevel.push(parsedLevel[i - 1] + 1)
+    } else if (level[i] < level[i - 1]) {
+      let upmost = 0
+      for (let j = rootLevel; j < i; j++) {
+        if (level[j] < level[i] && level[j] > level[upmost]) upmost = j
+      }
+      rootLevel = i
+      parsedLevel.push(level[upmost] + 1)
+    }
   }
 
+  highestLevel--
+  toc.forEach((node, i) => node.level = parsedLevel[i] - highestLevel)
+
+  // Wrap tables around a wrapper element
+
+  $('table').wrap(html`<div class="table-container"></div>`)
+
   // Write HTML cache
+
+  parsedArticle = $.html()
 
   await writeFile(`${dir.cache}/${postName}.html`, parsedArticle)
   console.log(`${c.blue('[I]')} Cache built for ${c.green(post)}.`)
@@ -277,7 +315,7 @@ const processPosts = async (post: string) => {
     tags: rawMeta.tags
       ? rawMeta.tags.split(' ').map(tag => tag.replace('_', ' ')).filter(tag => tag)
       : [],
-    toc: tocTree
+    toc: toc
   }
 
   // Categorize metadata

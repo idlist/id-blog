@@ -6,7 +6,60 @@
 .article-container
   padding: 1rem
 
+  display: grid
+  grid-template-columns: 70% 30%
+
+  @media (max-width: $screen-middle)
+    grid-template-columns: 100%
+
+  @media (max-width: $screen-small)
+    padding: 0.5rem
+
+.article-title
+  margin-bottom: 1rem
+
+  border-bottom: 1px solid #999
+
+.article-information
+  @media (min-width: $screen-small)
+    padding-left: 1rem
+
+  @media (max-width: $screen-small)
+    grid-row-start: 1
+
+.article-toc
+  padding: 0.25rem 0.5rem
+  border: 1px solid #999
+
+  &-title
+    color: #999
+    font-style: italic
+
+  &-l1, &-l2, &-l3, &-l4, &-l5, &-l6
+    display: block
+    color: #666
+
+    &:hover
+      color: #999
+
+  &-l2
+    margin-left: 1rem
+
+  &-l3
+    margin-left: 2rem
+
+  &-l4
+    margin-left: 3rem
+
+  &-l5
+    margin-left: 4rem
+
+  &-l6
+    margin-left: 5rem
+
 article
+  padding-left: 2rem
+
   h1, h2, h3, h4, h5, h6
     margin: 0.5rem 0
 
@@ -48,6 +101,23 @@ article
   li
     margin: 0.75rem 0
 
+  .table-container
+    width: 100%
+
+    @media (max-width: $screen-small)
+      overflow-x: auto
+
+  @media (max-width: $screen-small)
+    .table-150
+      width: 150%
+
+    .table-200
+      width: 200%
+
+  table
+    border-collapse: collapse
+    font-size: 0.875rem
+
   th, td
     padding: 0.25rem 0.5rem
 
@@ -59,9 +129,6 @@ article
 
   tr:nth-child(even)
     background-color: #eee
-
-  table
-    border-collapse: collapse
 
   hr
     width: 80%
@@ -75,25 +142,22 @@ article
     margin: 0.75rem 0
     padding: 0.5rem
 
-    display: flex
-    max-height: 20rem
+    max-height: 25rem
+    line-height: 1
 
     overflow-x: auto
     overflow-y: auto
-
-    position: relative
 
   pre code, code
     font-size: 0.875rem
 
   code
-    display: inline-block
+    display: inline
     vertical-align: text-bottom
 
-    padding: 0.25rem
+    padding: 0.125rem 0.25rem
     border-radius: 0.25rem
 
-    line-height: 1rem
     background-color: #eee
 
   pre code
@@ -102,5 +166,5 @@ article
   code[class*=language-]
     font-family: $monospace
 
-    font-size: 0.875rem
+    tab-size: 2
     line-height: 1.125rem
