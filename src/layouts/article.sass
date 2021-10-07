@@ -3,6 +3,15 @@
 // https://github.com/PrismJS/prism-themes/blob/master/themes/prism-vsc-dark-plus.css
 @import ../assets/vscode.css
 
+@mixin padding-fixed-header
+  content: ''
+  display: block
+  height: 3.25rem
+  margin-top: -3.25rem
+
+#top-of-document::before
+  @include padding-fixed-header
+
 .article-container
   padding: 1rem
 
@@ -18,16 +27,23 @@
 .article-title
   margin-bottom: 1rem
 
+  color: --var(--color-green)
   border-bottom: 1px solid #999
 
 .article-information
-  background-color: #fff
+  @media (min-width: $screen-middle)
+    margin-left: 1rem
 
-  @media (min-width: $screen-small)
-    padding-left: 1rem
+    &.sticky
+      position: fixed
+      top: 2rem
 
-  @media (max-width: $screen-small)
+  @media (max-width: $screen-middle)
     grid-row-start: 1
+
+.article-empty
+  @media (min-width: $screen-middle)
+    margin: 5rem 0
 
 .article-time
   display: flex
@@ -85,11 +101,27 @@
   &-l6
     margin-left: 5rem
 
+.article-back
+  @include blog-link
+
+  display: flex
+  justify-content: center
+  align-items: center
+  column-gap: 0.25rem
+  width: 100%
+
+  &-icon
+    width: 1.5rem
+    height: 1.5rem
+
 article
   padding-left: 2rem
 
   h1, h2, h3, h4, h5, h6
     margin: 0.5rem 0
+
+    &::before
+      @include padding-fixed-header
 
   h1
     font-size: 2.5rem

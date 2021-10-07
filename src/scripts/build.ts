@@ -249,7 +249,7 @@ const processPosts = async (post: string) => {
   // Extract table of contents from parsed HTML
 
   const toc: TOCNode[] = []
-  const headers = ['h2', 'h3', 'h4']
+  const headers = ['h1', 'h2', 'h3', 'h4']
   const level: number[] = []
 
   $(headers.join(', ')).each((_, header) => {
@@ -264,11 +264,7 @@ const processPosts = async (post: string) => {
   })
 
   const parsedLevel: number[] = []
-  let highestLevel = 6
-  let rootLevel = 0
   for (let i = 0; i < level.length; i++) {
-    if (level[i] < highestLevel) highestLevel = level[i]
-
     if (!parsedLevel.length) {
       parsedLevel.push(level[i])
     } else if (level[i] == level[i - 1]) {
@@ -277,15 +273,19 @@ const processPosts = async (post: string) => {
       parsedLevel.push(parsedLevel[i - 1] + 1)
     } else if (level[i] < level[i - 1]) {
       let upmost = 0
-      for (let j = rootLevel; j < i; j++) {
+      for (let j = 0; j < i; j++) {
         if (level[j] < level[i] && level[j] > level[upmost]) upmost = j
       }
-      rootLevel = i
-      parsedLevel.push(level[upmost] + 1)
+
+      if (level[i] > level[upmost]) {
+        parsedLevel.push(level[upmost] + 1)
+      } else {
+        parsedLevel.push(level[upmost])
+      }
     }
   }
 
-  highestLevel--
+  const highestLevel = Math.min(...parsedLevel) - 1
   toc.forEach((node, i) => node.level = parsedLevel[i] - highestLevel)
 
   // Wrap tables around a wrapper element

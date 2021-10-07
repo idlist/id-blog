@@ -8,16 +8,18 @@ const Article: Layout = meta => {
     layout: (meta, content) => html`
     <div class="article-container">
       <article>
+        <div id="top-of-document"></div>
         <h1 class="article-title">${meta.title}</h1>
         ${content}
       </article>
       <div class="article-information">
+        <div class="article-empty"></div>
         <div class="article-time">
-          <img class="article-time-icon" src="/${config.routes.public}/icon/time.svg">
+          <img class="article-time-icon" src="/${config.routes.public}/icon/time.svg" alt="time">
           <span>${meta.date.year}/${meta.date.month}/${meta.date.day}</span>
         </div>
         <div class="article-tags">
-          <img class="article-tags-icon" src="/${config.routes.public}/icon/tags.svg">
+          <img class="article-tags-icon" src="/${config.routes.public}/icon/tags.svg" alt="tags">
           ${meta.tags.map(tag => html`
           <a class="article-tags-tagname" href="/${config.routes.tags}/${tag}">${tag.replace('_', ' ')}</a>
           `).join('')}
@@ -28,6 +30,11 @@ const Article: Layout = meta => {
           <a href="#${h.id}" class="article-toc-l${h.level}">${h.text}</a>
           `).join('')}
         </div>
+        <a href="#top-of-document" class="article-back">
+          <img class="article-back-icon" src="/${config.routes.public}/icon/top.svg" alt="back to top">
+          <span>回到顶部</span>
+          <img class="article-back-icon" src="/${config.routes.public}/icon/top.svg" alt="back to top">
+        </a>
       </div>
     </div>
     `,

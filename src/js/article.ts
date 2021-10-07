@@ -1,3 +1,1 @@
-
-
-export default {}
+import '../js-components/sticky-info'
