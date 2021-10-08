@@ -13,12 +13,17 @@ const Article: Layout = meta => {
     ${Container(meta).layout(meta, html`
       <div class="article-container">
         <article>
-          <div id="top-of-document"></div>
+          <div id="top-of-article"></div>
           <h1 class="article-title">${meta.title}</h1>
           ${content}
         </article>
         <div class="article-information">
-          <div class="article-empty"></div>
+          <div class="article-me">
+            <div class="article-me-icon-container">
+              <img class="article-me-icon" src="/${routes.public}/idlist.png" alt="me">
+            </div>
+            <span class="article-me-text">Idealist</span>
+          </div>
           <div class="article-time">
             <img class="article-time-icon" src="/${routes.public}/icon/time.svg" alt="time">
             <span>${meta.date.year}/${meta.date.month}/${meta.date.day}</span>
@@ -29,6 +34,12 @@ const Article: Layout = meta => {
             <a class="article-tags-tagname" href="/${routes.tags}/${tag}">${tag.replace('_', ' ')}</a>
             `).join('')}
           </div>
+          <div class="article-license">
+            <img class="article-license-icon" src="/${routes.public}/icon/creative-common.svg" alt="tags">
+            <a class="article-license-link" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+              CC-BY-NC-SA 4.0
+            </a>
+          </div>
           <div class="article-toc">
             <div class="article-toc-title">Table of contents</div>
             ${meta.toc.map(h => html`
@@ -36,14 +47,14 @@ const Article: Layout = meta => {
             `).join('')}
             ${!meta.toc.length ? html`<span class="article-toc-nomenu">暂无目录</span>`: ''}
           </div>
-          <a class="article-back" href="#top-of-document">
+          <a class="article-back" href="#top-of-article">
             <img class="article-back-icon" src="/${routes.public}/icon/back-to-top.svg" alt="back to top">
             <span>回到顶部</span>
           </a>
         </div>
       </div>
     `)}
-    <a class="article-back-mobile" href="#top-of-document">
+    <a class="article-back-mobile" href="#top-of-article">
       <img class="article-back-mobile-button" src="/${routes.public}/buttons/back-to-top.svg" alt="menu_button">
     </a>
     `,

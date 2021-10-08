@@ -72,11 +72,11 @@ const md: markdownIt = markdownIt({
   }
 })
 
+md.use(markdownItAttrs)
 md.use(markdownItAnchor, {
   slugify: s => slugify(s, { fixChineseSpacing: false }),
   tabIndex: false
 })
-md.use(markdownItAttrs)
 
 const beautify = jsBeautify.html
 
@@ -268,6 +268,14 @@ const processPosts = async (post: string) => {
 
     toc.push(node)
     level.push(node.level)
+
+
+    $(header).html(html`
+    <a href="#${node.id}" aria-hidden="true">
+      <img class="article-anchor" src="/${config.routes.public}/buttons/link.svg">
+    </a>
+    ${$(header).html()}
+    `)
   })
 
   const parsedLevel: number[] = []

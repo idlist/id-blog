@@ -1,35 +1,39 @@
-import { throttle } from 'lodash-es'
+import dynamicLayout from './dynamic-layout'
 
 const Information = document.querySelector('.article-information') as HTMLElement
-const offsetLimit = 16 * 2
+const Me = document.querySelector('.article-me') as HTMLElement
+
+const offsetLimit = 16 * 6
 
 let state = false
 
-const toggleSticker = () => {
+const addSticky = () => {
+  const elWidth = Information.clientWidth
+  const elRight = document.body.offsetWidth - Information.offsetLeft - Information.offsetWidth
+
+  state = true
+  Me.classList.add('hidden')
+  Information.classList.add('sticky')
+  Information.style.width = `${elWidth}px`
+  Information.style.right = `${elRight}px`
+}
+
+const removeSticky = () => {
+  state = false
+  Me.classList.remove('hidden')
+  Information.classList.remove('sticky')
+  Information.style.width = ''
+  Information.style.right = ''
+}
+
+const toggleSticky = () => {
   const offset = document.documentElement.scrollTop
 
-  if (!state && offset > offsetLimit) {
-    const elWidth = Information.clientWidth
-    const elRight = document.body.offsetWidth - Information.offsetLeft - Information.offsetWidth
-
-    state = true
-    Information.classList.add('sticky')
-    Information.style.width = `${elWidth}px`
-    Information.style.right = `${elRight}px`
-  } else if (state && offset < offsetLimit || document.body.offsetWidth < 640) {
-    state = false
-    Information.classList.remove('sticky')
-    Information.style.width = ''
-    Information.style.right = ''
+  if (!state && offset >= offsetLimit) {
+    addSticky()
+  } else if (state && offset < offsetLimit) {
+    removeSticky()
   }
 }
 
-window.addEventListener('scroll', throttle(() => {
-  toggleSticker()
-}, 50))
-
-window.addEventListener('resize', throttle(() => {
-  state = true
-  toggleSticker()
-  toggleSticker()
-}, 100))
+dynamicLayout(toggleSticky, removeSticky)
