@@ -27,10 +27,12 @@ const options = {
 }
 const dir = {
   layouts: `${config.src}/${config.blog.layouts}`,
+  layoutsComponents: `${config.src}/${config.blog.layoutsComponents}`,
   js: `${config.src}/${config.blog.js}`
 }
 const route = {
   layouts: `${config.dist}/${config.blog.layouts}`,
+  layoutsComponents: `${config.dist}/${config.blog.layoutsComponents}`,
   js: `${config.dist}/${config.blog.js}`
 }
 
@@ -71,9 +73,10 @@ const scriptsBuilder = async () => {
     esbuild.build({
       ...esbuildCommonConfig,
       entryPoints: [
-        ...glob(`${dir.layouts}/**/*.ts`)
+        ...glob(`${dir.layouts}/**/*.ts`),
+        ...glob(`${dir.layoutsComponents}/**/*.ts`)
       ],
-      outdir: route.layouts
+      outdir: config.dist
     }),
     esbuild.build({
       ...esbuildBundleConfig,

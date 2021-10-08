@@ -34,6 +34,7 @@ export interface MetaCategory {
 }
 
 export interface LayoutMeta extends PostMeta {
+  allMeta: PostMeta[]
   head: string
   scripts: string[]
   liveReload: boolean

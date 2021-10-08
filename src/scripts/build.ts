@@ -157,10 +157,17 @@ const copyAssets = async () => {
     } catch { noop() }
   }
 
+  const copyPostAssets = async () => {
+    try {
+      await cp(dir.postAssets, routes.postAssets, { recursive: true })
+    } catch { noop() }
+  }
+
   await Promise.all([
     ...layoutList.map(async (file) => { await copyCssAssets(file) }),
     copyPublicAssets(),
-    copyJsAssets()
+    copyJsAssets(),
+    copyPostAssets()
   ])
 }
 
@@ -306,14 +313,15 @@ const processPosts = async (post: string) => {
     name: postName,
     hash: contentHash,
     route: rawMeta.route
-      ?? encodeURI(rawMeta.title.toLowerCase().replace(/\s+/g, '-')),
+      ? slugify(rawMeta.route, { fixChineseSpacing: true })
+      : slugify(rawMeta.title, { fixChineseSpacing: true }),
     date: {
       year: rawMeta.date.getFullYear(),
       month: rawMeta.date.getMonth() + 1,
       day: rawMeta.date.getDate()
     },
     timestamp: rawMeta.date.getTime(),
-    tags: rawMeta.tags  ? rawMeta.tags.split(' ') : [],
+    tags: rawMeta.tags ? rawMeta.tags.split(' ').map(tag => tag.toLowerCase()).sort() : [],
     toc: toc
   }
 
@@ -341,24 +349,26 @@ await Promise.all([
   copyAssets()
 ])
 
+
 // Write metadata cache
 
 await writeFile(`${dir.cache}/meta.json`, JSON.stringify(AllMeta))
+const AllMetaArray = Object.values(AllMeta).sort((a, b) => b.timestamp - a.timestamp)
 
 /**
  * Render the posts
- * @param post Filename of the post, with extension.
+ * @param route Filename of the post, with extension.
  */
-const renderPost = async (post: string) => {
-  const postName = filename(post)
-  const postHtml = await readFile(`${dir.cache}/${postName}.html`, 'utf-8')
-  const postRoute = `${routes.posts}/${AllMeta[postName].route}`
+const renderPost = async (meta: PostMeta) => {
+  const postHtml = await readFile(`${dir.cache}/${meta.name}.html`, 'utf-8')
+  const postRoute = `${routes.posts}/${meta.route}`
 
   let renderedHtml = postHtml
 
   let currentMeta: Meta = {
-    ...AllMeta[postName],
+    ...meta,
     ...Category,
+    allMeta: AllMetaArray,
     head: '',
     scripts: [],
     liveReload: options.watch
@@ -382,4 +392,4 @@ const renderPost = async (post: string) => {
 
 // Wait for all posts to be rendered
 
-await Promise.all(postList.map(async (post) => await renderPost(post)))
+await Promise.all(Object.values(AllMeta).map(async (meta) => await renderPost(meta)))

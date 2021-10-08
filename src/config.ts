@@ -6,7 +6,9 @@ interface TConfig {
   dist: string
   blog: {
     layouts: string
+    layoutsComponents: string
     posts: string
+    postAssets: string
     cache: string
     output: string
     metaDelimiter: string
@@ -16,10 +18,14 @@ interface TConfig {
   routes: {
     [property: string]: string
     posts: string
+    postAssets: string
+    page: string
     assets: string
     public: string
     js: string
     tags: string
+    timeline: string
+    category: string
   }
 }
 

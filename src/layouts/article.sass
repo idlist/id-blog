@@ -101,11 +101,13 @@
   &-l6
     margin-left: 5rem
 
+  &-nomenu
+    color: #666
+
 .article-back
   @include blog-link
 
   display: flex
-  justify-content: center
   align-items: center
   column-gap: 0.25rem
   width: 100%
@@ -113,6 +115,21 @@
   &-icon
     width: 1.5rem
     height: 1.5rem
+
+  @media (max-width: $screen-middle)
+    display: none
+
+.article-back-mobile
+  @include bottom-button
+  bottom: 5rem
+  z-index: 10
+
+  @media (min-width: $screen-middle)
+    display: none
+
+  &-button
+    height: 1.75rem
+    width: 1.75rem
 
 article
   padding-left: 2rem
@@ -168,6 +185,21 @@ article
 
     .table-200
       width: 200%
+
+  img
+    width: 100%
+
+  img.image-small
+    width: 200px
+
+  img.image-middle
+    width: 400px
+
+  img.image-large
+    width: 600px
+
+    @media (max-width: $screen-middle)
+      width: 100%
 
   table
     border-collapse: collapse

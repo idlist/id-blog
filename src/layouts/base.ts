@@ -15,8 +15,8 @@ const Base: Layout = () => {
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${meta.title}</title>
-        <link rel="shortcut icon" type="image/png" href="/${config.routes.public}/favicon.png">
-        <link rel="stylesheet" type="text/css" href="/${config.routes.assets}/base.css">
+        <link rel="shortcut icon" type="image/png" href="/${routes.public}/favicon.png">
+        <link rel="stylesheet" type="text/css" href="/${routes.assets}/base.css">
         ${meta.head}
       </head>
 
@@ -33,7 +33,7 @@ const Base: Layout = () => {
             <hr class="menu-fs-hr">
             <a class="menu-fs-link" href="/">Articles</a>
             <hr class="menu-fs-hr">
-            <a class="menu-fs-link" href="/${routes.tag}">Tags</a>
+            <a class="menu-fs-link" href="/${routes.category}">Category</a>
             <hr class="menu-fs-hr">
           </div>
         </div>
@@ -48,7 +48,7 @@ const Base: Layout = () => {
             </div>
             <div class="menu-landscape">
               <a class="menu-link" href="/">Articles</a>
-              <a class="menu-link" href="/${routes.tags}">Tags</a>
+              <a class="menu-link" href="/${routes.category}">Category</a>
               <a class="menu-link" href="https://idl.ist/">
                 <span>To Homepage</span>
                 <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
@@ -56,14 +56,11 @@ const Base: Layout = () => {
             </div>
           </div>
         </header>
-        <div class="container-wrapper">
-          <div class="container">
-          ${content}
-          </div>
+        ${content}
         </div>
         <div id="bg-tiles"></div>
         <script type="module" src="/assets/base.js"></script>
-        ${meta.liveReload ? html`<script type="module" src="/${config.routes.assets}/live-reload.js"></script>` : html``}
+        ${meta.liveReload ? html`<script type="module" src="/${routes.assets}/live-reload.js"></script>` : html``}
         ${meta.scripts.map(script => html`
         <script type="module" src="${script}"></script>
         `)}

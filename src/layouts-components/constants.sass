@@ -20,3 +20,27 @@ $monospace: 'Cascadia Code', monospace
 
   &:active
     color: #ccc
+
+@mixin bottom-button
+  position: fixed
+  right: 1rem
+  z-index: 10
+
+  display: flex
+  justify-content: center
+  align-items: center
+  cursor: pointer
+
+  width: 3.5rem
+  height: 3.5rem
+
+  border-radius: 50%
+  background-color: #333
+
+  user-select: none
+
+  &:active
+    background-color: #666
+
+  @media (min-width: $screen-middle)
+    display: none

@@ -107,17 +107,9 @@ header
     margin-left: 0.5rem
 
   &-expander
-    position: fixed
+    @include bottom-button
     bottom: 1rem
-    right: 1rem
     z-index: 50
-
-    display: flex
-    align-items: center
-    cursor: pointer
-
-    border-radius: 50%
-    background-color: #333
 
     &:active
       background-color: #666
@@ -128,7 +120,6 @@ header
   &-button
     height: 1.5rem
     width: 1.5rem
-    padding: 1rem
 
   &-fullscreen
     position: fixed
@@ -148,7 +139,8 @@ header
       display: none
 
   &-fs-container
-    padding-bottom: 5rem
+    padding-bottom: 0.5rem
+    padding-right: 4.5rem
 
   &-fs-link
     display: flex

@@ -6,16 +6,22 @@ export default {
     metaDelimiter: '---',
     output: '_site',
     layouts: 'layouts',
+    layoutsComponents: 'layouts-components',
     cache: '_posts_cache',
     posts: 'posts',
+    postAssets: 'post_assets',
     public: 'public',
     js: 'js'
   },
   routes: {
     posts: 'a',
+    postAssets: 'pa',
+    page: 'p',
     assets: 'assets',
     public: 'public',
     js: 'assets',
-    tags: 'tags'
+    tags: 'tags',
+    timeline: 'tl',
+    category: 'category'
   }
 }
