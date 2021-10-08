@@ -33,20 +33,22 @@ export interface MetaCategory {
   allDate: Record<string, Record<string, string[]>>
 }
 
-export interface LayoutMeta extends PostMeta {
+interface InheritMeta {
   allMeta: PostMeta[]
-  head: string
-  scripts: string[]
+  head?: string
+  scripts?: string[]
   liveReload: boolean
 }
+
+type LayoutMeta = InheritMeta & PostMeta
 
 export type Meta = LayoutMeta & MetaCategory
 
 interface LayoutOutput {
-  layout: (meta: Meta, content: string) => string
+  layout: (meta?: Partial<Meta>, content?: string) => string
   unavailable?: boolean
-  parentMeta?: Meta
+  parentMeta?: Partial<Meta>
   parentLayout?: string
 }
 
-export type Layout = (meta: Meta) => LayoutOutput
+export type Layout = (meta?: Partial<Meta>) => LayoutOutput

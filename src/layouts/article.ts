@@ -10,11 +10,11 @@ const routes = config.routes
 const Article: Layout = meta => {
   return {
     layout: (meta, content) => html`
-    ${Container(meta).layout(meta, html`
+    ${Container().layout(meta, html`
       <div class="article-container">
         <article>
           <div id="top-of-article"></div>
-          <h1 class="article-title">${meta.title}</h1>
+          <h1 class="article-title">${meta?.title}</h1>
           ${content}
         </article>
         <div class="article-information">
@@ -26,11 +26,11 @@ const Article: Layout = meta => {
           </div>
           <div class="article-time">
             <img class="article-time-icon" src="/${routes.public}/icon/time.svg" alt="time">
-            <span>${meta.date.year}/${meta.date.month}/${meta.date.day}</span>
+            <span>${meta?.date?.year}/${meta?.date?.month}/${meta?.date?.day}</span>
           </div>
           <div class="article-tags">
             <img class="article-tags-icon" src="/${routes.public}/icon/tags.svg" alt="tags">
-            ${meta.tags.map(tag => html`
+            ${meta?.tags?.map(tag => html`
             <a class="article-tags-tagname" href="/${routes.tags}/${tag}">${tag.replace('_', ' ')}</a>
             `).join('')}
           </div>
@@ -42,10 +42,10 @@ const Article: Layout = meta => {
           </div>
           <div class="article-toc">
             <div class="article-toc-title">Table of contents</div>
-            ${meta.toc.map(h => html`
+            ${meta?.toc?.map(h => html`
             <a href="#${h.id}" class="article-toc-l${h.level}">${h.text}</a>
             `).join('')}
-            ${!meta.toc.length ? html`<span class="article-toc-nomenu">暂无目录</span>`: ''}
+            ${!meta?.toc?.length ? html`<span class="article-toc-nomenu">暂无目录</span>`: ''}
           </div>
           <a class="article-back" href="#top-of-article">
             <img class="article-back-icon" src="/${routes.public}/icon/back-to-top.svg" alt="back to top">
@@ -61,7 +61,7 @@ const Article: Layout = meta => {
     parentLayout: 'base',
     parentMeta: {
       ...meta,
-      title: html`${meta.title} | i'D Blog`,
+      title: html`${meta?.title} | i'D Blog`,
       head: html`
       <link rel="stylesheet" type="text/css" href="/${routes.assets}/article.css">
       `,

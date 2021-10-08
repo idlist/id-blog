@@ -364,29 +364,27 @@ await writeFile(`${dir.cache}/meta.json`, JSON.stringify(AllMeta))
 const AllMetaArray = Object.values(AllMeta).sort((a, b) => b.timestamp - a.timestamp)
 
 /**
- * Render the posts
- * @param route Filename of the post, with extension.
+ * Render a webpage
+ * @param meta
  */
-const renderPost = async (meta: PostMeta) => {
-  const postHtml = await readFile(`${dir.cache}/${meta.name}.html`, 'utf-8')
-  const postRoute = `${routes.posts}/${meta.route}`
-
-  let renderedHtml = postHtml
-
-  let currentMeta: Meta = {
+const renderPage = (meta: Partial<Meta>, innerHtml?: string): string => {
+  let currentMeta = {
     ...meta,
     ...Category,
     allMeta: AllMetaArray,
-    head: '',
-    scripts: [],
     liveReload: options.watch
   }
-  let layoutName = currentMeta.layout
+
+  let renderedHtml = innerHtml ?? ''
+  let layoutName = currentMeta.layout as string
+
   do {
     const currentLayout = Layouts[layoutName](currentMeta)
     renderedHtml = currentLayout.layout(currentMeta, renderedHtml)
     layoutName = currentLayout.parentLayout ?? ''
-    if (layoutName) currentMeta = currentLayout.parentMeta as Meta
+    if (layoutName && currentLayout.parentMeta) {
+      currentMeta = currentLayout.parentMeta as Meta
+    }
   } while (layoutName)
 
   renderedHtml = beautify(renderedHtml, {
@@ -394,10 +392,51 @@ const renderPost = async (meta: PostMeta) => {
     preserve_newlines: false
   })
 
+  return renderedHtml
+}
+
+/**
+ * Render the posts
+ * @param meta Metadata of the post
+ */
+const renderPost = async (meta: PostMeta) => {
+  const postHtml = await readFile(`${dir.cache}/${meta.name}.html`, 'utf-8')
+  const postRoute = `${routes.posts}/${meta.route}`
+
+  const renderedHtml = renderPage(meta, postHtml)
+
   await mkdir(postRoute)
   await writeFile(`${postRoute}/index.html`, renderedHtml)
 }
 
-// Wait for all posts to be rendered
+/**
+ * Render the homepage
+ */
+const renderHomepage = async () => {
+  const renderedHtml = renderPage({
+    title: html`i'D Blog - Reinventing the Wheel`,
+    layout: 'homepage'
+  })
 
-await Promise.all(Object.values(AllMeta).map(async (meta) => await renderPost(meta)))
+  await writeFile(`${dir.output}/index.html`, renderedHtml)
+}
+
+/**
+ * Render the Category page
+ */
+const renderCategory = async () => {
+  const renderedHtml = renderPage({
+    title: html`i'D Blog | Category`,
+    layout: 'category'
+  })
+
+  await writeFile(`${routes.category}/index.html`, renderedHtml)
+}
+
+// Wait for all pages to be rendered
+
+await Promise.all([
+  ...Object.values(AllMeta).map(async (meta) => await renderPost(meta)),
+  renderHomepage(),
+  renderCategory()
+])

@@ -14,10 +14,10 @@ const Base: Layout = () => {
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${meta.title}</title>
+        <title>${meta?.title}</title>
         <link rel="shortcut icon" type="image/png" href="/${routes.public}/favicon.png">
         <link rel="stylesheet" type="text/css" href="/${routes.assets}/base.css">
-        ${meta.head}
+        ${meta?.head}
       </head>
 
       <body>
@@ -60,8 +60,8 @@ const Base: Layout = () => {
         </div>
         <div id="bg-tiles"></div>
         <script type="module" src="/assets/base.js"></script>
-        ${meta.liveReload ? html`<script type="module" src="/${routes.assets}/live-reload.js"></script>` : html``}
-        ${meta.scripts.map(script => html`
+        ${meta?.liveReload ? html`<script type="module" src="/${routes.assets}/live-reload.js"></script>` : html``}
+        ${meta?.scripts?.map(script => html`
         <script type="module" src="${script}"></script>
         `)}
       </body>
