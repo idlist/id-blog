@@ -1,6 +1,7 @@
 import { readFile, writeFile, copyFile } from 'fs/promises'
 import { readdir, access, mkdir, rm, cp } from 'fs/promises'
 import { cwd, argv, exit } from 'process'
+import { platform } from 'os'
 import { extname } from 'path'
 import { createHash } from 'crypto'
 
@@ -24,7 +25,7 @@ import c from './colors.js'
 
 // Import Configurations
 
-const metaDelimiter = config.blog.metaDelimiter + '\r\n'
+const metaDelimiter = config.blog.metaDelimiter + (platform() == 'win32' ? '\r\n' : '\n')
 const dir: TConfig['blog'] = {
   ...config.blog,
   layouts: `${config.dist}/${config.blog.layouts}`,
