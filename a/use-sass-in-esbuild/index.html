@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在 esbuild 中使用 Sass | i'D Blog</title>
+  <link rel="shortcut icon" type="image/png" href="/public/favicon.png">
+  <link rel="stylesheet" type="text/css" href="/assets/base.css">
+  <link rel="stylesheet" type="text/css" href="/assets/article.css">
+</head>
+
+<body>
+  <a class="menu-expander">
+    <img class="menu-button" src="/public/buttons/menu.svg" alt="menu_button">
+  </a>
+  <div class="menu-fullscreen hidden">
+    <div class="menu-fs-container">
+      <a class="menu-fs-link" href="https://idl.ist/">
+        <span>To Homepage</span>
+        <img class="menu-link-external" src="/public/buttons/external.svg" alt="external">
+      </a>
+      <hr class="menu-fs-hr">
+      <a class="menu-fs-link" href="/">Articles</a>
+      <hr class="menu-fs-hr">
+      <a class="menu-fs-link" href="/category">Category</a>
+      <hr class="menu-fs-hr">
+    </div>
+  </div>
+  <header>
+    <div class="header-container">
+      <div class="header">
+        <img class="header-banner" src="/public/banner.png" alt="banner">
+        <hr class="header-divider">
+        <div>i'D Blog</div>
+      </div>
+      <div class="menu-landscape">
+        <a class="menu-link" href="/">Articles</a>
+        <a class="menu-link" href="/category">Category</a>
+        <a class="menu-link" href="https://idl.ist/">
+          <span>To Homepage</span>
+          <img class="menu-link-external" src="/public/buttons/external.svg" alt="external">
+        </a>
+      </div>
+    </div>
+  </header>
+  <div class="container-wrapper">
+    <div class="container">
+      <div class="article-container">
+        <article>
+          <div id="top-of-article"></div>
+          <h1 class="article-title">在 esbuild 中使用 Sass</h1>
+          <html>
+
+          <head></head>
+
+          <body>
+            <p><a href="https://esbuild.github.io/">esbuild</a> 是一个非常快的 JavaScript 打包 / 转译器，虽然说覆盖的功能没有 Webpack 等老牌打包器全面，但是它足够用，配置简捷，而且最重要的是它实在是<strong>太快了</strong>。</p>
+          </body>
+
+          </html>
+        </article>
+        <div class="article-information">
+          <div class="article-me">
+            <div class="article-me-icon-container">
+              <img class="article-me-icon" src="/public/idlist.png" alt="me">
+            </div>
+            <span class="article-me-text">Idealist</span>
+          </div>
+          <div class="article-time">
+            <img class="article-time-icon" src="/public/icon/time.svg" alt="time">
+            <span>2021/10/8</span>
+          </div>
+          <div class="article-tags">
+            <img class="article-tags-icon" src="/public/icon/tags.svg" alt="tags">
+            <a class="article-tags-tagname" href="/tags/esbuild">esbuild</a><a class="article-tags-tagname" href="/tags/javascript">javascript</a><a class="article-tags-tagname" href="/tags/nodejs">nodejs</a><a class="article-tags-tagname" href="/tags/sass">sass</a>
+          </div>
+          <div class="article-license">
+            <img class="article-license-icon" src="/public/icon/creative-common.svg" alt="tags">
+            <a class="article-license-link" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"> CC-BY-NC-SA 4.0 </a>
+          </div>
+          <div class="article-toc">
+            <div class="article-toc-title">Table of contents</div>
+            <span class="article-toc-nomenu">暂无目录</span>
+          </div>
+          <a class="article-back" href="#top-of-article">
+            <img class="article-back-icon" src="/public/icon/back-to-top.svg" alt="back to top">
+            <span>回到顶部</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="article-back-mobile" href="#top-of-article">
+    <img class="article-back-mobile-button" src="/public/buttons/back-to-top.svg" alt="menu_button">
+  </a>
+  </div>
+  <div id="bg-tiles"></div>
+  <script type="module" src="/assets/base.js"></script>
+  <script type="module" src="/assets/article.js"></script>
+</body>
+
+</html>
