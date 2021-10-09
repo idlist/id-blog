@@ -308,6 +308,20 @@ const processPosts = async (post: string) => {
 
   $('table').wrap(html`<div class="table-container"></div>`)
 
+  // Add copy icon to code block
+
+  const codeBlocks = $('pre code')
+    .parent()
+    .wrap(html`<div class="code-wrapper"></div>`)
+
+  $(html`
+  <div class="code-copy-success hidden">Copy Succeeded!</div>
+  <div class="code-copy">
+    <img class="code-copy-icon" alt="copy"
+      src="/${config.routes.public}/buttons/copy.svg">
+  </div>
+  `).insertBefore(codeBlocks)
+
   // Write HTML cache
 
   parsedArticle = $.html()
