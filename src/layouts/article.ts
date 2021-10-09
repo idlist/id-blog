@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+
 import html from 'outdent'
 
 import type { Layout } from '../.data-types.js'
@@ -20,9 +22,9 @@ const Article: Layout = meta => {
         <div class="article-information">
           <div class="article-me">
             <div class="article-me-icon-container">
-              <img class="article-me-icon" src="/${routes.public}/idlist.png" alt="me">
+              <img class="article-me-icon" src="/${routes.public}/idlist.png" alt="idlist">
             </div>
-            <span class="article-me-text">Idealist</span>
+            <a class="article-me-text" href="mailto:me@idl.ist">me@idl.ist</a>
           </div>
           <div class="article-time">
             <img class="article-time-icon" src="/${routes.public}/icon/time.svg" alt="time">
@@ -30,9 +32,11 @@ const Article: Layout = meta => {
           </div>
           <div class="article-tags">
             <img class="article-tags-icon" src="/${routes.public}/icon/tags.svg" alt="tags">
-            ${meta?.tags?.map(tag => html`
-            <a class="article-tags-tagname" href="/${routes.tags}/${tag}">${tag.replace('_', ' ')}</a>
-            `).join('')}
+            ${meta?.tags?.length
+            ? meta?.tags?.map(tag => html`
+              <a class="article-tags-tagname" href="/${routes.tags}/${tag}">${tag.replace('_', ' ')}</a>
+              `).join('')
+            : html`<div class="article-tags-notag">没有标签</div>`}
           </div>
           <div class="article-license">
             <img class="article-license-icon" src="/${routes.public}/icon/creative-common.svg" alt="tags">
@@ -60,7 +64,6 @@ const Article: Layout = meta => {
     `,
     parentLayout: 'base',
     parentMeta: {
-      ...meta,
       title: html`${meta?.title} | i'D Blog`,
       head: html`
       <link rel="stylesheet" type="text/css" href="/${routes.assets}/article.css">

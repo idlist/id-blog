@@ -9,7 +9,7 @@ export default {
     layoutsComponents: 'layouts-components',
     cache: '_posts_cache',
     posts: 'posts',
-    postAssets: 'post_assets',
+    postAssets: 'post-assets',
     public: 'public',
     js: 'js'
   },

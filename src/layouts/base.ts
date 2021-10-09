@@ -27,7 +27,7 @@ const Base: Layout = () => {
         <div class="menu-fullscreen hidden">
           <div class="menu-fs-container">
             <a class="menu-fs-link" href="https://idl.ist/">
-              <span>To Homepage</span>
+              <span>To Index</span>
               <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
             </a>
             <hr class="menu-fs-hr">
@@ -50,7 +50,7 @@ const Base: Layout = () => {
               <a class="menu-link" href="/">Articles</a>
               <a class="menu-link" href="/${routes.category}">Category</a>
               <a class="menu-link" href="https://idl.ist/">
-                <span>To Homepage</span>
+                <span>To Index</span>
                 <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
               </a>
             </div>
@@ -63,7 +63,7 @@ const Base: Layout = () => {
         ${meta?.liveReload ? html`<script type="module" src="/${routes.assets}/live-reload.js"></script>` : html``}
         ${meta?.scripts?.map(script => html`
         <script type="module" src="${script}"></script>
-        `)}
+        `) ?? ''}
       </body>
 
       </html>

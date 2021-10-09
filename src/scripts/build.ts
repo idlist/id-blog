@@ -193,7 +193,7 @@ const processPosts = async (post: string) => {
     }
     Category.allDate[meta.date.year][meta.date.month].push(meta.route)
 
-    for (const tag in meta.tags) {
+    for (const tag of meta.tags) {
       if (!Category.allTags[tag]) Category.allTags[tag] = []
       Category.allTags[tag].push(meta.route)
     }
@@ -317,6 +317,11 @@ const processPosts = async (post: string) => {
 
   // Summarize metadata
 
+  const processTags = (tagString: string): string[] => {
+    const tags = tagString.split(' ').map(tag => tag.toLowerCase())
+    return [...new Set(tags)].sort()
+  }
+
   const meta: PostMeta = {
     ...rawMeta,
     name: postName,
@@ -330,7 +335,7 @@ const processPosts = async (post: string) => {
       day: rawMeta.date.getDate()
     },
     timestamp: rawMeta.date.getTime(),
-    tags: rawMeta.tags ? rawMeta.tags.split(' ').map(tag => tag.toLowerCase()).sort() : [],
+    tags: rawMeta.tags ? processTags(rawMeta.tags) : [],
     toc: toc
   }
 
@@ -384,7 +389,10 @@ const renderPage = (meta: Partial<Meta>, innerHtml?: string): string => {
     renderedHtml = currentLayout.layout(currentMeta, renderedHtml)
     layoutName = currentLayout.parentLayout ?? ''
     if (layoutName && currentLayout.parentMeta) {
-      currentMeta = currentLayout.parentMeta as Meta
+      currentMeta = {
+        ...currentMeta,
+        ...currentLayout.parentMeta
+      }
     }
   } while (layoutName)
 
