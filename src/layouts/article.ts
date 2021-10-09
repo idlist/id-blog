@@ -28,12 +28,12 @@ const Article: Layout = meta => {
           </div>
           <div class="article-time">
             <img class="article-time-icon" src="/${routes.public}/icon/time.svg" alt="time">
-            <span>${meta?.date?.year}/${meta?.date?.month}/${meta?.date?.day}</span>
+            <span>${meta?.date?.year} / ${meta?.date?.month} / ${meta?.date?.day}</span>
           </div>
           <div class="article-tags">
             <img class="article-tags-icon" src="/${routes.public}/icon/tags.svg" alt="tags">
             ${meta?.tags?.length
-            ? meta?.tags?.map(tag => html`
+            ? meta.tags.map(tag => html`
               <a class="article-tags-tagname" href="/${routes.tags}/${tag}">${tag.replace('_', ' ')}</a>
               `).join('')
             : html`<div class="article-tags-notag">没有标签</div>`}
@@ -46,10 +46,11 @@ const Article: Layout = meta => {
           </div>
           <div class="article-toc">
             <div class="article-toc-title">Table of contents</div>
-            ${meta?.toc?.map(h => html`
+            ${meta?.toc?.length
+            ? meta.toc.map(h => html`
             <a href="#${h.id}" class="article-toc-l${h.level}">${h.text}</a>
-            `).join('')}
-            ${!meta?.toc?.length ? html`<span class="article-toc-nomenu">暂无目录</span>`: ''}
+            `).join('')
+            : html`<span class="article-toc-nomenu">暂无目录</span>`}
           </div>
           <a class="article-back" href="#top-of-article">
             <img class="article-back-icon" src="/${routes.public}/icon/back-to-top.svg" alt="back to top">

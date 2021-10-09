@@ -23,5 +23,6 @@ export default {
     tags: 'tags',
     timeline: 'tl',
     category: 'category'
-  }
+  },
+  postPerPage: 10
 }

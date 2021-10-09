@@ -254,6 +254,11 @@ const processPosts = async (post: string) => {
 
   const $ = cheerio.load(parsedArticle)
 
+  // Truncate summary
+
+  let summary = $.text()
+  if (summary.length > 192) summary = summary.slice(0, 192).trim() + ' ......'
+
   // Extract table of contents from parsed HTML
 
   const toc: TOCNode[] = []
@@ -269,7 +274,6 @@ const processPosts = async (post: string) => {
 
     toc.push(node)
     level.push(node.level)
-
 
     $(header).html(html`
     <a href="#${node.id}" aria-hidden="true">
@@ -350,7 +354,8 @@ const processPosts = async (post: string) => {
     },
     timestamp: rawMeta.date.getTime(),
     tags: rawMeta.tags ? processTags(rawMeta.tags) : [],
-    toc: toc
+    toc: toc,
+    summary: summary
   }
 
   // Categorize metadata
@@ -389,10 +394,10 @@ const AllMetaArray = Object.values(AllMeta).sort((a, b) => b.timestamp - a.times
  */
 const renderPage = (meta: Partial<Meta>, innerHtml?: string): string => {
   let currentMeta = {
-    ...meta,
     ...Category,
     allMeta: AllMetaArray,
-    liveReload: options.watch
+    liveReload: options.watch,
+    ...meta
   }
 
   let renderedHtml = innerHtml ?? ''
@@ -436,12 +441,24 @@ const renderPost = async (meta: PostMeta) => {
  * Render the homepage
  */
 const renderHomepage = async () => {
-  const renderedHtml = renderPage({
-    title: html`i'D Blog - Reinventing the Wheel`,
-    layout: 'homepage'
-  })
+  const pageLength = Math.ceil(AllMetaArray.length / config.postPerPage)
 
-  await writeFile(`${dir.output}/index.html`, renderedHtml)
+  for (let i = 1; i <= pageLength; i++) {
+    const renderedHtml = renderPage({
+      title: html`i'D Blog - Reinventing the Wheel`,
+      layout: 'homepage',
+      postNumber: AllMetaArray.length,
+      pagination: {
+        current: i,
+        length: pageLength
+      },
+      allMeta: AllMetaArray.slice(config.postPerPage * (i - 1), config.postPerPage * i)
+    })
+
+    await mkdir(`${routes.page}/${i}`, { recursive: true })
+    await writeFile(`${routes.page}/${i}/index.html`, renderedHtml)
+    if (i == 1) await writeFile(`${dir.output}/index.html`, renderedHtml)
+  }
 }
 
 /**

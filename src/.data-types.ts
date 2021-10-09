@@ -26,6 +26,7 @@ export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
   timestamp: number
   tags: string[]
   toc: TOCNode[]
+  summary: string
 }
 
 export interface MetaCategory {
@@ -35,6 +36,11 @@ export interface MetaCategory {
 
 interface InheritMeta {
   allMeta: PostMeta[]
+  postNumber?: number
+  pagination?: {
+    current: number
+    length: number
+  }
   head?: string
   scripts?: string[]
   liveReload: boolean
