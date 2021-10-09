@@ -1,0 +1,68 @@
+@import ./pagination
+
+.post
+  margin: 1.5rem 0
+
+  &:last-child
+    margin-bottom: 0
+
+  &-link
+    text-decoration: none
+
+  &-title
+    font-size: 1.75rem
+    font-weight: bold
+    margin: 0
+
+    color: var(--color-green)
+
+    &:hover
+      color: var(--color-green-light)
+
+    &:active
+      color: var(--color-green-exlight)
+
+  &-meta
+    display: grid
+    align-items: center
+    grid-template-columns: max-content auto
+    column-gap: 1rem
+
+    @media (max-width: $screen-middle)
+      grid-template-columns: 1fr
+
+  &-time
+    display: flex
+    align-items: center
+    column-gap: 0.25rem
+
+    &-icon
+      width: 1.25rem
+      height: 1.25rem
+
+  &-tags
+    display: flex
+    align-items: center
+    column-gap: 0.25rem
+    flex-wrap: wrap
+
+    &-icon
+      @extend .post-time-icon
+
+    &-item
+      @include blog-link
+
+      line-height: 1.25
+      word-break: break-word
+
+  &-hr
+    margin: 0.25rem 0 0.5rem 0
+
+    border: none
+    border-bottom: 1px solid #999
+
+  &-summary
+    padding-left: 1rem
+
+.post-noarticle
+  color: #999

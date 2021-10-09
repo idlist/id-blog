@@ -6,6 +6,7 @@ import type { Layout } from '../.data-types.js'
 import config from '../config.js'
 
 import Container from '../layouts-components/container.js'
+import PostList from '../layouts-components/post-list.js'
 
 const routes = config.routes
 
@@ -34,23 +35,23 @@ const Homepage: Layout = () => {
         ${Contact('twitter', '@i_dlist', 'https://twitter.com/i_dlist')}
         ${Contact('soundcloud', 'i\'DLisT', 'https://soundcloud.com/idlist')}
         <div class="homepage-stat">
-          ${meta?.postNumber
-          ? html`<div>共有 <b>${meta?.postNumber}</b> 篇文章。</div>`
-          : html`<div>没有文章。</div>`}
+        ${meta?.postNumber
+        ? html`<div>共有 <b>${meta?.postNumber}</b> 篇文章。</div>`
+        : html`<div>没有文章。</div>`}
         </div>
         <div class="homepage-tags">
           <div class="homepage-tags-title">Tags</div>
           <div class="homepage-tags-content">
-            ${Object.keys(meta?.allTags ?? {}).length
-            ? Object.entries(meta?.allTags ?? {})
-              .sort((a, b) => a[0].localeCompare(b[0]))
-              .map(([tagname, tagRoutes]) => html`
-              <a class="homepage-tags-item" href="/${routes.tags}/${tagname}">
-                <span class="homepage-tags-name">${tagname.replace('_', ' ')}</span>
-                <span class="homepage-tags-number">${tagRoutes.length}</span>
-              </a>
-              `).join('')
-            : html`<div class="homepage-tags-notag">没有标签</div>`}
+          ${Object.keys(meta?.allTags ?? {}).length
+          ? Object.entries(meta?.allTags ?? {})
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([tagname, tagRoutes]) => html`
+            <a class="homepage-tags-item" href="/${routes.tags}/${tagname}">
+              <span class="homepage-tags-name">${tagname.replace('_', ' ')}</span>
+              <span class="homepage-tags-number">${tagRoutes.length}</span>
+            </a>
+            `).join('')
+          : html`<div class="homepage-tags-notag">没有标签</div>`}
           </div>
         </div>
         <div class="homepage-tl">
@@ -75,32 +76,7 @@ const Homepage: Layout = () => {
         </div>
       </div>
       <div class="homepage">
-        <div class="pagination">${meta?.pagination?.current}/${meta?.pagination?.length}</div>
-        ${meta?.allMeta?.length
-        ? meta.allMeta.map(postMeta => html`
-          <div class="post">
-            <a class="post-link" href="/${routes.posts}/${postMeta.route}">
-              <h2 class="post-title">${postMeta.title}</h2>
-            </a>
-            <div class="post-meta">
-              <div class="post-time">
-                <img class="post-time-icon" src="/${routes.public}/icon/time.svg" alt="time">
-                <span>${postMeta.date.year} / ${postMeta.date.month} / ${postMeta.date.day}</span>
-              </div>
-              <div class="post-tags">
-                <img class="post-tags-icon" src="/${routes.public}/icon/tags.svg" alt="tags">
-                ${postMeta.tags.map(tag => html`
-                <a class="post-tags-item" href="/${routes.tags}/${tag}">
-                  ${tag.replace('_', ' ')}
-                </a>
-                `).join('')}
-              </div>
-            </div>
-            <hr class="post-hr">
-            <div class="post-summary">${postMeta.summary}</div>
-          </div>
-          `).join('')
-        : html`<div class="homepage-noarticle">没有文章。</div>`}
+      ${PostList().layout(meta)}
       </div>
     </div>`)}
     `,
@@ -108,7 +84,8 @@ const Homepage: Layout = () => {
     parentMeta: {
       head: html`
       <link rel="stylesheet" type="text/css" href="/${routes.assets}/homepage.css">
-      `
+      `,
+      scripts: [`/${routes.assets}/homepage.js`]
     }
   }
 }

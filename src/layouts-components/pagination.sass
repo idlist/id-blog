@@ -1,0 +1,64 @@
+@import ./utils
+
+.pagination-container
+  display: flex
+  justify-content: center
+
+  width: 100%
+
+.pagination
+  display: flex
+  align-items: center
+  column-gap: 0.5rem
+
+  &-button
+    text-decoration: none
+
+    display: flex
+    align-items: center
+    justify-content: center
+
+    width: 2rem
+    height: 2rem
+
+    color: #333
+    border: 1px solid #333
+    border-radius: 50%
+
+    cursor: pointer
+    user-select: none
+
+    &:hover
+      color: #999
+      border-color: #999
+
+    &:active
+      color: #ccc
+      border-color: #ccc
+
+  &-go
+    @extend .pagination-button
+
+    font-size: 0.875rem
+
+  &-current
+    display: flex
+    align-items: center
+    justify-content: center
+
+    width: 2rem
+    height: 2rem
+
+    color: #fff
+    background-color: #333
+    border: 1px solid #333
+    border-radius: 50%
+
+  &-input
+    border: none
+    border-bottom: 1px solid #333
+
+    width: 2rem
+
+    text-align: center
+    line-height: 1.5
