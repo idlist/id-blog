@@ -16,7 +16,7 @@ import jsBeautify from 'js-beautify'
 import cheerio from 'cheerio'
 import html from 'outdent'
 
-import type { RawPostMeta, PostMeta, MetaCategory, Meta } from '../data-types.js'
+import type { RawPostMeta, PostMeta, CategoryType, Meta } from '../data-types.js'
 import type { Layout, TOCNode, DefaultProps } from '../data-types.js'
 
 import config, { TConfig } from '../config.js'
@@ -44,7 +44,7 @@ const options = {
 // Prepare global variables
 
 const AllMeta: Record<string, PostMeta> = {}
-const Category: MetaCategory = {
+const Category: CategoryType = {
   allTags: {},
   allDate: {}
 }
@@ -401,9 +401,20 @@ const renderPage = (meta: Partial<Meta>, props?: DefaultProps): string => {
 
   let renderedHtml = (props?.content ?? '')
   let layoutName = currentMeta.layout as string
+  let firstLayout = true
 
   do {
+    if (!Layouts[layoutName]) {
+      console.log(`${c.yellow('[W]')} layout ${layoutName} does not exist, skipped`)
+      return ''
+    }
+
     const currentLayout = Layouts[layoutName](currentMeta)
+    if (firstLayout && currentLayout.unavailable) {
+      console.log(`${c.yellow('[W]')} layout ${layoutName} should not be used directly, skipped`)
+      return ''
+    }
+
     renderedHtml = currentLayout.layout(currentMeta, {
       ...props,
       content: renderedHtml
@@ -415,6 +426,8 @@ const renderPage = (meta: Partial<Meta>, props?: DefaultProps): string => {
         ...currentLayout.parentMeta
       }
     }
+
+    firstLayout = false
   } while (layoutName)
 
   renderedHtml = beautify(renderedHtml, {

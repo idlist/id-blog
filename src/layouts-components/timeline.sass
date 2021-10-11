@@ -1,0 +1,30 @@
+@import ./tags
+
+.timeline
+  margin: 1rem 0
+
+  &-title
+    font-size: 1.5rem
+    font-weight: bold
+
+  &-year
+    font-size: 1.25rem
+    font-weight: bold
+    margin-bottom: 0.25rem
+
+    color: var(--color-green)
+
+  &-content
+    @extend .tags-content
+
+  &-item
+    @extend .tags-item
+
+  &-month
+    @extend .tags-name
+
+  &-number
+    @extend .tags-number
+
+  &-notl
+    @extend .tags-notag

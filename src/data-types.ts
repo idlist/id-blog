@@ -34,7 +34,7 @@ export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
   summary: string
 }
 
-export interface MetaCategory {
+export interface CategoryType {
   allTags: Record<string, string[]>
   allDate: Record<string, Record<string, string[]>>
 }
@@ -51,7 +51,7 @@ interface InheritMeta {
   scripts?: string[]
 }
 
-export type Meta = Partial<PostMeta> & InheritMeta & MetaCategory
+export type Meta = Partial<PostMeta> & InheritMeta & CategoryType
 
 export interface DefaultProps {
   [property: string]: unknown
@@ -59,9 +59,9 @@ export interface DefaultProps {
 }
 
 interface LayoutOutput<T> {
-  layout: (meta: Meta, props: T & DefaultProps) => string
+  layout: (meta: Meta, props?: T & DefaultProps) => string
   unavailable?: boolean
-  parentMeta?: Meta
+  parentMeta?: Partial<Meta>
   parentLayout?: string
 }
 

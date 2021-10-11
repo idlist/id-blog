@@ -9,7 +9,12 @@ import Container from '../layouts-components/container.js'
 
 const routes = config.routes
 
-const Category: Layout = () => {
+interface CategoryProps {
+  prompt: string
+  route: string
+}
+
+const Category: Layout<CategoryProps> = () => {
   return {
     layout: (meta) => html`
     ${Container().layout(meta, {
