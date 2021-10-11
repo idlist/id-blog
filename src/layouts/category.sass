@@ -1,14 +1,37 @@
 @import ../layouts-components/utils
 @import ../layouts-components/container
+@import ../layouts-components/post-list
+@import ../layouts-components/tags
+@import ../layouts-components/timeline
 
 .category-container
   padding: 1rem
 
   display: grid
-  grid-template-columns: 1fr 1fr
+  grid-template-columns: 30% 70%
 
   @media (max-width: $screen-middle)
-    grid-template-columns: 1fr
+    grid-template-columns: 100%
 
   @media (max-width: $screen-small)
     padding: 0.5rem
+
+.category-sidebar
+  @media (max-width: $screen-middle)
+    margin-top: 2rem
+
+.category
+  @media (min-width: $screen-middle)
+    margin-left: 1rem
+
+  @media (max-width: $screen-middle)
+    grid-row-start: 1
+
+.category-info
+  margin: 0.5rem 0
+
+.category-name
+  color: var(--color-green)
+
+.category-stat
+  margin: 1rem 0

@@ -459,7 +459,8 @@ interface PaginationOption {
   i: number
   length: number
   route: string
-  extraIndex?: boolean
+  extraIndex?: string,
+  props?: DefaultProps
 }
 
 const renderPagination = async (meta: Partial<Meta>, options: PaginationOption) => {
@@ -471,11 +472,13 @@ const renderPagination = async (meta: Partial<Meta>, options: PaginationOption) 
       length: options.length
     },
     allMeta: meta.allMeta?.slice(config.postPerPage * (options.i - 1), config.postPerPage * options.i) ?? []
-  })
+  }, options.props)
 
   await mkdir(`${options.route}/${options.i}`, { recursive: true })
   await writeFile(`${options.route}/${options.i}/index.html`, renderedHtml)
-  if (options.extraIndex && options.i == 1) await writeFile(`${options.route}/../index.html`, renderedHtml)
+  if (options.extraIndex && options.i == 1) {
+    await writeFile(`${options.route}/${options.extraIndex}/index.html`, renderedHtml)
+  }
 }
 
 const renderHomepage = async () => {
@@ -493,7 +496,7 @@ const renderHomepage = async () => {
       i: i,
       length: pageNumber,
       route: routes.page,
-      extraIndex: true
+      extraIndex: '..'
     })
   }))
 }
@@ -517,7 +520,13 @@ const renderTags = async () => {
       }, {
         i: i,
         length: pageNumber,
-        route: `${routes.tags}/${tag}`
+        route: `${routes.tags}/${tag}`,
+        extraIndex: '.',
+        props: {
+          type: 'Tags: ',
+          category: tag.replace('_', ' '),
+          route: `${config.routes.tags}/${tag}`
+        }
       })
     }))
   }

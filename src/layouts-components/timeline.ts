@@ -10,25 +10,25 @@ const routes = config.routes
 const Timeline: Layout = () => {
   return {
     layout: (meta) => html`
-    <div class="tl">
+    <div class="timeline">
       <div class="timeline-title">Timeline</div>
-      ${Object.keys(meta?.allDate ?? {}).length
-      ? Object.entries(meta?.allDate ?? {})
-        .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
-        .map(([year, monthData]) => html`
-        <div class="timeline-year">${year}</div>
-        <div class="timeline-content">
-        ${Object.entries(monthData)
+        ${Object.keys(meta?.allDate ?? {}).length
+        ? Object.entries(meta?.allDate ?? {})
           .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
-          .map(([month, monthRoutes]) => html`
-          <a class="timeline-item" href="/${routes.timeline}/${year}-${month}/1">
-            <span class="timeline-month">${month}</span>
-            <span class="timeline-number">${monthRoutes.length}</span>
-          </a>
-          `).join('')}
-        </div>
-        `).join('')
-      : html`<div class="timeline-notl">没有时间线</div>`}
+          .map(([year, monthData]) => html`
+          <div class="timeline-year">${year}</div>
+          <div class="timeline-content">
+          ${Object.entries(monthData)
+            .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
+            .map(([month, monthRoutes]) => html`
+            <a class="timeline-item" href="/${routes.timeline}/${year}-${month}">
+              <span class="timeline-month">${month}</span>
+              <span class="timeline-number">${monthRoutes.length}</span>
+            </a>
+            `).join('')}
+          </div>
+          `).join('')
+        : html`<div class="timeline-notl">没有时间线</div>`}
     </div>
     `
   }

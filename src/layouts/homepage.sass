@@ -15,9 +15,14 @@
 
 .homepage-information
   @media (max-width: $screen-middle)
-    grid-row-start: 2
-
     margin-top: 2rem
+
+.homepage
+  @media (min-width: $screen-middle)
+    margin-left: 1rem
+
+  @media (max-width: $screen-middle)
+    grid-row-start: 1
 
 .homepage-me
   display: flex
@@ -58,7 +63,3 @@
 
 .homepage-stat
   margin: 1rem 0
-
-.homepage
-  @media (min-width: $screen-middle)
-    margin-left: 1rem

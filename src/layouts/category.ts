@@ -6,31 +6,49 @@ import type { Layout } from '../data-types.js'
 import config from '../config.js'
 
 import Container from '../layouts-components/container.js'
+import Tags from '../layouts-components/tags.js'
+import Timeline from '../layouts-components/timeline.js'
+import PostList from '../layouts-components/post-list.js'
 
 const routes = config.routes
 
 interface CategoryProps {
-  prompt: string
+  type: string
+  category: string
   route: string
 }
 
 const Category: Layout<CategoryProps> = () => {
   return {
-    layout: (meta) => html`
+    layout: (meta, props) => html`
     ${Container().layout(meta, {
       content: html`
       <div class="category-container">
-        <div>Test</div>
+        <div class="category-sidebar">
+          ${Tags().layout(meta)}
+          ${Timeline().layout(meta)}
+        </div>
+        <div class="category">
+          <h1 class="category-info">
+            <span>${props?.type}</span>
+            <span class="category-name">${props?.category}</span>
+          </h1>
+          <div class="category-stat">
+            ${meta?.postNumber
+            ? html`<div>共有 <b>${meta?.postNumber}</b> 篇文章。</div>`
+            : html`<div>没有文章。</div>`}
+          </div>
+          ${PostList().layout(meta, props)}
+        </div>
       </div>
-      `
-    })}
+    `})}
     `,
     parentLayout: 'base',
     parentMeta: {
       head: html`
       <link rel="stylesheet" type="text/css" href="/${routes.assets}/category.css">
       `,
-      scripts: [`/${routes.assets}/homepage.js`]
+      scripts: [`/${routes.assets}/category.js`]
     }
   }
 }

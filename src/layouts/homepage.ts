@@ -50,9 +50,9 @@ const Homepage: Layout = () => {
           ${Contact().layout(meta, { icon: 'twitter', text: '@i_dlist', link: 'https://twitter.com/i_dlist' })}
           ${Contact().layout(meta, { icon: 'soundcloud', text: 'i\'DLisT', link: 'https://soundcloud.com/idlist' })}
           <div class="homepage-stat">
-          ${meta?.postNumber
-          ? html`<div>共有 <b>${meta?.postNumber}</b> 篇文章。</div>`
-          : html`<div>没有文章。</div>`}
+            ${meta?.postNumber
+            ? html`<div>共有 <b>${meta?.postNumber}</b> 篇文章。</div>`
+            : html`<div>没有文章。</div>`}
           </div>
           ${Tags().layout(meta)}
           ${Timeline().layout(meta)}

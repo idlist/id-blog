@@ -52,7 +52,7 @@ const Base: Layout = () => {
             </div>
           </div>
         </header>
-        ${props.content}
+          ${props?.content}
         </div>
         <div id="bg-tiles"></div>
         <script type="module" src="/assets/base.js"></script>

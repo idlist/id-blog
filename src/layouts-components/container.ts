@@ -11,7 +11,7 @@ const Container: Layout<ContainerProps> = () => {
     layout: (_, props) => html`
     <div class="container-wrapper">
       <div class="container">
-      ${props.content}
+        ${props?.content}
       </div>
     </div>
     `

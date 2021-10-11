@@ -18,7 +18,7 @@ const Article: Layout = meta => {
         <article>
           <div id="top-of-article"></div>
           <h1 class="article-title">${meta?.title}</h1>
-          ${props.content}
+          ${props?.content}
         </article>
         <div class="article-information">
           <div class="article-me">
