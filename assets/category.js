@@ -1,0 +1,1 @@
+var i=document.querySelectorAll(".pagination-go"),a=document.querySelectorAll(".pagination-input"),c=document.querySelectorAll(".pagination-limit");i.forEach((o,n)=>{o.addEventListener("click",()=>{let t=parseInt(a[n].value),e=parseInt(c[n].innerText);!isNaN(t)&&t<=e&&(location.href=`${location.origin}/p/${t}`)})});

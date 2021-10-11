@@ -4,10 +4,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>i'D Blog - Reinventing the Wheel</title>
+  <title>Tag: frontend_js | i'D Blog</title>
   <link rel="shortcut icon" type="image/png" href="/public/favicon.png">
   <link rel="stylesheet" type="text/css" href="/assets/base.css">
-  <link rel="stylesheet" type="text/css" href="/assets/homepage.css">
+  <link rel="stylesheet" type="text/css" href="/assets/category.css">
 </head>
 
 <body>
@@ -42,37 +42,8 @@
   </header>
   <div class="container-wrapper">
     <div class="container">
-      <div class="homepage-container">
-        <div class="homepage-information">
-          <div class="homepage-me">
-            <div class="homepage-me-icon-container">
-              <img class="homepage-me-icon" src="/public/idlist.png" alt="idlist">
-            </div>
-            <div class="homepage-me-name">i'DLisT</div>
-          </div>
-          <div class="homepage-contact">
-            <img class="homepage-contact-icon" src="/public/icon/email.svg" alt="email">
-            <a class="homepage-contact-link" href="mailto:me@idl.ist">me@idl.ist</a>
-          </div>
-          <div class="homepage-contact">
-            <img class="homepage-contact-icon" src="/public/icon/home.svg" alt="home">
-            <a class="homepage-contact-link" href="https://idl.ist">idl.ist</a>
-          </div>
-          <div class="homepage-contact">
-            <img class="homepage-contact-icon" src="/public/icon/github.svg" alt="github">
-            <a class="homepage-contact-link" href="https://github.com/idlist">idlist</a>
-          </div>
-          <div class="homepage-contact">
-            <img class="homepage-contact-icon" src="/public/icon/twitter.svg" alt="twitter">
-            <a class="homepage-contact-link" href="https://twitter.com/i_dlist">@i_dlist</a>
-          </div>
-          <div class="homepage-contact">
-            <img class="homepage-contact-icon" src="/public/icon/soundcloud.svg" alt="soundcloud">
-            <a class="homepage-contact-link" href="https://soundcloud.com/idlist">i'DLisT</a>
-          </div>
-          <div class="homepage-stat">
-            <div>共有 <b>1</b> 篇文章。</div>
-          </div>
+      <div class="category-container">
+        <div class="category-sidebar">
           <div class="tags">
             <div class="tags-title">Tags</div>
             <div class="tags-content">
@@ -102,12 +73,19 @@
             </div>
           </div>
         </div>
-        <div class="homepage">
+        <div class="category">
+          <h1 class="category-info">
+            <span>Tags: </span>
+            <span class="category-name">frontend js</span>
+          </h1>
+          <div class="category-stat">
+            <div>共有 <b>1</b> 篇文章。</div>
+          </div>
           <div class="pagination-container">
             <div class="pagination">
-              <a class="pagination-button" href="/p/1"> &lt; </a>
+              <a class="pagination-button" href="/tags/frontend_js/1"> &lt; </a>
               <div class="pagination-current">1</div>
-              <a class="pagination-button" href="/p/1"> &gt; </a>
+              <a class="pagination-button" href="/tags/frontend_js/1"> &gt; </a>
               <input class="pagination-input" type="text">
               <div class="pagination-divider">/</div>
               <div class="pagination-limit">1</div>
@@ -133,9 +111,9 @@
           </div>
           <div class="pagination-container">
             <div class="pagination">
-              <a class="pagination-button" href="/p/1"> &lt; </a>
+              <a class="pagination-button" href="/tags/frontend_js/1"> &lt; </a>
               <div class="pagination-current">1</div>
-              <a class="pagination-button" href="/p/1"> &gt; </a>
+              <a class="pagination-button" href="/tags/frontend_js/1"> &gt; </a>
               <input class="pagination-input" type="text">
               <div class="pagination-divider">/</div>
               <div class="pagination-limit">1</div>
@@ -149,7 +127,7 @@
   </div>
   <div id="bg-tiles"></div>
   <script type="module" src="/assets/base.js"></script>
-  <script type="module" src="/assets/homepage.js"></script>
+  <script type="module" src="/assets/category.js"></script>
 </body>
 
 </html>
