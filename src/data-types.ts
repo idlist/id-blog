@@ -1,9 +1,14 @@
-export interface RawPostMeta {
+/* eslint-disable no-unused-vars */
+
+interface RequiredMeta {
   title: string
-  route?: string
-  date: Date
-  tags?: string
   layout: string
+}
+
+export interface RawPostMeta extends RequiredMeta {
+  date: Date
+  route?: string
+  tags?: string
 }
 
 type ProcessedPostMeta = 'tags' | 'date'
@@ -35,7 +40,8 @@ export interface MetaCategory {
 }
 
 interface InheritMeta {
-  allMeta: PostMeta[]
+  liveReload: boolean
+  allMeta?: PostMeta[]
   postNumber?: number
   pagination?: {
     current: number
@@ -43,18 +49,20 @@ interface InheritMeta {
   }
   head?: string
   scripts?: string[]
-  liveReload: boolean
 }
 
-type LayoutMeta = InheritMeta & PostMeta
+export type Meta = Partial<PostMeta> & InheritMeta & MetaCategory
 
-export type Meta = LayoutMeta & MetaCategory
+export interface DefaultProps {
+  [property: string]: unknown
+  content?: string
+}
 
 interface LayoutOutput<T> {
-  layout: (meta: Partial<Meta>, props: T) => string
+  layout: (meta: Meta, props: T & DefaultProps) => string
   unavailable?: boolean
-  parentMeta?: Partial<Meta>
+  parentMeta?: Meta
   parentLayout?: string
 }
 
-export type Layout<T = any> = (meta?: Partial<Meta>) => LayoutOutput<T>
+export type Layout<T = Record<string, unknown>> = (meta?: Meta) => LayoutOutput<T>

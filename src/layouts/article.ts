@@ -2,22 +2,23 @@
 
 import html from 'outdent'
 
-import type { Layout } from '../.data-types.js'
+import type { Layout } from '../data-types.js'
 import config from '../config.js'
 
 import Container from '../layouts-components/container.js'
 
 const routes = config.routes
 
-const Article: Layout<string> = meta => {
+const Article: Layout = meta => {
   return {
-    layout: (meta, content) => html`
-    ${Container().layout(meta, html`
+    layout: (meta, props) => html`
+    ${Container().layout(meta, {
+      content: html`
       <div class="article-container">
         <article>
           <div id="top-of-article"></div>
           <h1 class="article-title">${meta?.title}</h1>
-          ${content}
+          ${props.content}
         </article>
         <div class="article-information">
           <div class="article-me">
@@ -58,7 +59,8 @@ const Article: Layout<string> = meta => {
           </a>
         </div>
       </div>
-    `)}
+    `
+    })}
     <a class="article-back-mobile" href="#top-of-article">
       <img class="article-back-mobile-button" src="/${routes.public}/buttons/back-to-top.svg" alt="menu_button">
     </a>

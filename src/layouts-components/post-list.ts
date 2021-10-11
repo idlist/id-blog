@@ -1,17 +1,19 @@
 import html from 'outdent'
 
-import type { Layout } from '../.data-types.js'
+import type { Layout } from '../data-types.js'
 import config from '../config.js'
 
-import Pagination from './pagination.js'
+import Pagination, { PaginationProps } from './pagination.js'
 
 const routes = config.routes
 
-const PostList: Layout<string> = () => {
+type PostListProps = PaginationProps
+
+const PostList: Layout<PostListProps> = () => {
   return {
-    layout: (meta, route) => meta?.allMeta?.length
+    layout: (meta, props) => meta?.allMeta?.length
       ? meta.allMeta.map(postMeta => html`
-        ${Pagination().layout(meta, route)}
+        ${Pagination().layout(meta, props)}
         <div class="post">
           <a class="post-link" href="/${routes.posts}/${postMeta.route}">
             <h2 class="post-title">${postMeta.title}</h2>
@@ -33,7 +35,7 @@ const PostList: Layout<string> = () => {
           <hr class="post-hr">
           <div class="post-summary">${postMeta.summary}</div>
         </div>
-        ${Pagination().layout(meta, route)}
+        ${Pagination().layout(meta, props)}
         `).join('')
       : html`<div class="post-noarticle">没有文章。</div>`
   }

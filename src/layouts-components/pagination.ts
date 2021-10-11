@@ -1,8 +1,12 @@
 import html from 'outdent'
 
-import type { Layout } from '../.data-types.js'
+import type { Layout } from '../data-types.js'
 
-const Pagination: Layout<string> = () => {
+interface PaginationProps {
+  route: string
+}
+
+const Pagination: Layout<PaginationProps> = () => {
   const prevPage = (current: number): number => {
     if (current <= 1) return 1
     else return current - 1
@@ -14,7 +18,7 @@ const Pagination: Layout<string> = () => {
   }
 
   return {
-    layout: (meta, route) => {
+    layout: (meta, props) => {
       const current = meta?.pagination?.current ?? 1
       const length = meta?.pagination?.length ?? 1
 
@@ -22,12 +26,12 @@ const Pagination: Layout<string> = () => {
       <div class="pagination-container">
         <div class="pagination">
           <a class="pagination-button"
-            href="/${route}/${prevPage(current)}">
+            href="/${props.route}/${prevPage(current)}">
             &lt;
           </a>
           <div class="pagination-current">${current}</div>
           <a class="pagination-button"
-            href="/${route}/${nextPage(current, length)}">
+            href="/${props.route}/${nextPage(current, length)}">
             &gt;
           </a>
           <input class="pagination-input" type="text">
@@ -42,3 +46,4 @@ const Pagination: Layout<string> = () => {
 }
 
 export default Pagination
+export type { PaginationProps }

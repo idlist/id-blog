@@ -1,13 +1,13 @@
 import html from 'outdent'
 
-import type { Layout } from '../.data-types.js'
+import type { Layout } from '../data-types.js'
 import config from '../config.js'
 
 const routes = config.routes
 
-const Base: Layout<string> = () => {
+const Base: Layout = () => {
   return {
-    layout: (meta, content) => html`
+    layout: (meta, props) => html`
       <!DOCTYPE html>
       <html lang="zh-CN">
 
@@ -52,7 +52,7 @@ const Base: Layout<string> = () => {
             </div>
           </div>
         </header>
-        ${content}
+        ${props.content}
         </div>
         <div id="bg-tiles"></div>
         <script type="module" src="/assets/base.js"></script>

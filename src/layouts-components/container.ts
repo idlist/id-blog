@@ -1,13 +1,17 @@
 import html from 'outdent'
 
-import type { Layout } from '../.data-types.js'
+import type { Layout } from '../data-types.js'
 
-const Container: Layout<string> = () => {
+interface ContainerProps {
+  content: string
+}
+
+const Container: Layout<ContainerProps> = () => {
   return {
-    layout: (_, content) => html`
+    layout: (_, props) => html`
     <div class="container-wrapper">
       <div class="container">
-      ${content}
+      ${props.content}
       </div>
     </div>
     `

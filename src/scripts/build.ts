@@ -16,8 +16,8 @@ import jsBeautify from 'js-beautify'
 import cheerio from 'cheerio'
 import html from 'outdent'
 
-import type { RawPostMeta, PostMeta, MetaCategory, Meta } from '../.data-types.js'
-import type { Layout, TOCNode } from '../.data-types.js'
+import type { RawPostMeta, PostMeta, MetaCategory, Meta } from '../data-types.js'
+import type { Layout, TOCNode, DefaultProps } from '../data-types.js'
 
 import config, { TConfig } from '../config.js'
 import { noop, filename } from './utils.js'
@@ -392,20 +392,22 @@ const AllMetaArray = Object.values(AllMeta).sort((a, b) => b.timestamp - a.times
  * Render a webpage
  * @param meta
  */
-const renderPage = (meta: Partial<Meta>, innerHtml?: string): string => {
+const renderPage = (meta: Partial<Meta>, props?: DefaultProps): string => {
   let currentMeta = {
     ...Category,
-    allMeta: AllMetaArray,
     liveReload: options.watch,
     ...meta
   }
 
-  let renderedHtml = innerHtml ?? ''
+  let renderedHtml = (props?.content ?? '')
   let layoutName = currentMeta.layout as string
 
   do {
     const currentLayout = Layouts[layoutName](currentMeta)
-    renderedHtml = currentLayout.layout(currentMeta, renderedHtml)
+    renderedHtml = currentLayout.layout(currentMeta, {
+      ...props,
+      content: renderedHtml
+    })
     layoutName = currentLayout.parentLayout ?? ''
     if (layoutName && currentLayout.parentMeta) {
       currentMeta = {
@@ -427,11 +429,14 @@ const renderPage = (meta: Partial<Meta>, innerHtml?: string): string => {
  * Render the posts
  * @param meta Metadata of the post
  */
-const renderPost = async (meta: PostMeta) => {
+const renderPost = async (meta: PostMeta, props?: DefaultProps) => {
   const postHtml = await readFile(`${dir.cache}/${meta.name}.html`, 'utf-8')
   const postRoute = `${routes.posts}/${meta.route}`
 
-  const renderedHtml = renderPage(meta, postHtml)
+  const renderedHtml = renderPage(meta, {
+    ...props,
+    content: postHtml
+  })
 
   await mkdir(postRoute)
   await writeFile(`${postRoute}/index.html`, renderedHtml)
@@ -461,47 +466,53 @@ const renderPagination = async (meta: Partial<Meta>, options: PaginationOption) 
 }
 
 const renderHomepage = async () => {
-  const pageLength = Math.ceil(AllMetaArray.length / config.postPerPage)
+  const pageNumber = Math.ceil(AllMetaArray.length / config.postPerPage)
 
-  const pageIndex = []
-  for (let i = 1; i <= pageLength; i++) pageIndex.push(i)
+  const pageIndex: number[] = []
+  for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
 
-  await Promise.all([
-    ...pageIndex.map(async (i) => {
-      await renderPagination({
-        title: html`i'D Blog - Reinventing the Wheel`,
-        layout: 'homepage',
-        allMeta: AllMetaArray
-      }, {
-        i: i,
-        length: pageLength,
-        route: routes.page,
-        extraIndex: true
-      })
+  await Promise.all(pageIndex.map(async (i) => {
+    await renderPagination({
+      title: html`i'D Blog - Reinventing the Wheel`,
+      layout: 'homepage',
+      allMeta: AllMetaArray
+    }, {
+      i: i,
+      length: pageNumber,
+      route: routes.page,
+      extraIndex: true
     })
-  ])
+  }))
 }
 
 /**
  * Render the Category page
  */
 const renderTags = async () => {
-  const renderOneTag = async (i: number, meta: Partial<Meta>, tag: string) => {
-    const renderedHtml = renderPage({
-      title: html`Tag: ${tag} | i'D Blog`,
-      layout: 'homepage',
-      postNumber: meta.allMeta?.length ?? 0,
-      pagination: {
-        current: i,
-        length: Math.ceil((meta.allMeta?.length ?? 0) / config.postPerPage)
-      },
-      allMeta: AllMetaArray.slice(config.postPerPage * (i - 1), config.postPerPage * i)
-    })
+  const renderSingleTag = async (tag: string) => {
+    const AllMetaUnderTag = AllMetaArray.filter(meta => meta.tags.includes(tag))
+    const pageNumber = Math.ceil(AllMetaUnderTag.length / config.postPerPage)
 
-    await mkdir(`${routes.tags}/${tag}`, { recursive: true })
-    await writeFile(`${routes.tags}/${tag}/index.html`, renderedHtml)
+    const pageIndex: number[] = []
+    for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
+
+    await Promise.all(pageIndex.map(async (i) => {
+      await renderPagination({
+        title: html`Tag: ${tag} | i'D Blog`,
+        layout: 'category',
+        allMeta: AllMetaUnderTag
+      }, {
+        i: i,
+        length: pageNumber,
+        route: `${routes.tags}/${tag}`
+      })
+    }))
   }
 
+  await Promise.all(Object.keys(Category.allTags).map(async (tag) => {
+    await mkdir(`${routes.tags}/${tag}`, { recursive: true })
+    renderSingleTag(tag)
+  }))
 }
 
 // Wait for all pages to be rendered
