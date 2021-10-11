@@ -54,6 +54,12 @@ const Homepage: Layout = () => {
             ? html`<div>共有 <b>${meta?.postNumber}</b> 篇文章。</div>`
             : html`<div>没有文章。</div>`}
           </div>
+          <div class="homepage-source">
+            <code>//</code>
+            <span>看看这个博客的</span>
+            <a class="homepage-source-link" href="https://github.com/idlist/id-blog">源码</a>
+            <code>//</code>
+          </div>
           ${Tags().layout(meta)}
           ${Timeline().layout(meta)}
         </div>
