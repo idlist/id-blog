@@ -463,6 +463,9 @@ interface PaginationOption {
   props?: DefaultProps
 }
 
+/**
+ * Render single page in a page list with pagination
+ */
 const renderPagination = async (meta: Partial<Meta>, options: PaginationOption) => {
   const renderedHtml = renderPage({
     ...meta,
@@ -501,9 +504,6 @@ const renderHomepage = async () => {
   }))
 }
 
-/**
- * Render the Category page
- */
 const renderTags = async () => {
   const renderSingleTag = async (tag: string) => {
     const AllMetaUnderTag = AllMetaArray.filter(meta => meta.tags.includes(tag))
@@ -533,7 +533,44 @@ const renderTags = async () => {
 
   await Promise.all(Object.keys(Category.allTags).map(async (tag) => {
     await mkdir(`${routes.tags}/${tag}`, { recursive: true })
-    renderSingleTag(tag)
+    await renderSingleTag(tag)
+  }))
+}
+
+const renderTimeline = async () => {
+  const renderSingleTimeline = async (year: number, month: number) => {
+    const AllMetaUnderTime = AllMetaArray.filter(meta => {
+      return meta.date.year == year && meta.date.month == month
+    })
+    const pageNumber = Math.ceil(AllMetaUnderTime.length / config.postPerPage)
+
+    const pageIndex: number[] = []
+    for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
+
+    await Promise.all(pageIndex.map(async (i) => {
+      await renderPagination({
+        title: html`Timeline: ${year} / ${month} | i'D Blog`,
+        layout: 'category',
+        allMeta: AllMetaUnderTime
+      }, {
+        i: i,
+        length: pageNumber,
+        route: `${routes.timeline}/${year}-${month}`,
+        extraIndex: '.',
+        props: {
+          type: 'Timeline: ',
+          category: `${year} / ${month}`,
+          route: `${config.routes.timeline}/${year}-${month}`
+        }
+      })
+    }))
+  }
+
+  await Promise.all(Object.entries(Category.allDate).map(async ([year, allMonths]) => {
+    await Promise.all(Object.keys(allMonths).map(async (month) => {
+      await mkdir(`${routes.timeline}/${year}-${month}`, { recursive: true })
+      await renderSingleTimeline(parseInt(year), parseInt(month))
+    }))
   }))
 }
 
@@ -542,5 +579,6 @@ const renderTags = async () => {
 await Promise.all([
   ...Object.values(AllMeta).map(async (meta) => await renderPost(meta)),
   renderHomepage(),
-  renderTags()
+  renderTags(),
+  renderTimeline()
 ])
