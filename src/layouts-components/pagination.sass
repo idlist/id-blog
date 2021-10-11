@@ -11,6 +11,8 @@
   align-items: center
   column-gap: 0.5rem
 
+  margin: 0.5rem 0
+
   &-button
     text-decoration: none
 
@@ -35,6 +37,9 @@
     &:active
       color: #ccc
       border-color: #ccc
+
+  &-button-prev, &-button-next
+    @extend .pagination-button
 
   &-go
     @extend .pagination-button

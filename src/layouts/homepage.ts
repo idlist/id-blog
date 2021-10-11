@@ -76,7 +76,7 @@ const Homepage: Layout = () => {
         </div>
       </div>
       <div class="homepage">
-      ${PostList().layout(meta)}
+      ${PostList().layout(meta, routes.page)}
       </div>
     </div>`)}
     `,

@@ -2,7 +2,7 @@ import html from 'outdent'
 
 import type { Layout } from '../.data-types.js'
 
-const Container: Layout = () => {
+const Container: Layout<string> = () => {
   return {
     layout: (_, content) => html`
     <div class="container-wrapper">

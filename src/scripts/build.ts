@@ -437,40 +437,71 @@ const renderPost = async (meta: PostMeta) => {
   await writeFile(`${postRoute}/index.html`, renderedHtml)
 }
 
-/**
- * Render the homepage
- */
+interface PaginationOption {
+  i: number
+  length: number
+  route: string
+  extraIndex?: boolean
+}
+
+const renderPagination = async (meta: Partial<Meta>, options: PaginationOption) => {
+  const renderedHtml = renderPage({
+    ...meta,
+    postNumber: meta.allMeta?.length ?? 0,
+    pagination: {
+      current: options.i,
+      length: options.length
+    },
+    allMeta: meta.allMeta?.slice(config.postPerPage * (options.i - 1), config.postPerPage * options.i) ?? []
+  })
+
+  await mkdir(`${options.route}/${options.i}`, { recursive: true })
+  await writeFile(`${options.route}/${options.i}/index.html`, renderedHtml)
+  if (options.extraIndex && options.i == 1) await writeFile(`${options.route}/../index.html`, renderedHtml)
+}
+
 const renderHomepage = async () => {
   const pageLength = Math.ceil(AllMetaArray.length / config.postPerPage)
 
-  for (let i = 1; i <= pageLength; i++) {
-    const renderedHtml = renderPage({
-      title: html`i'D Blog - Reinventing the Wheel`,
-      layout: 'homepage',
-      postNumber: AllMetaArray.length,
-      pagination: {
-        current: i,
-        length: pageLength
-      },
-      allMeta: AllMetaArray.slice(config.postPerPage * (i - 1), config.postPerPage * i)
-    })
+  const pageIndex = []
+  for (let i = 1; i <= pageLength; i++) pageIndex.push(i)
 
-    await mkdir(`${routes.page}/${i}`, { recursive: true })
-    await writeFile(`${routes.page}/${i}/index.html`, renderedHtml)
-    if (i == 1) await writeFile(`${dir.output}/index.html`, renderedHtml)
-  }
+  await Promise.all([
+    ...pageIndex.map(async (i) => {
+      await renderPagination({
+        title: html`i'D Blog - Reinventing the Wheel`,
+        layout: 'homepage',
+        allMeta: AllMetaArray
+      }, {
+        i: i,
+        length: pageLength,
+        route: routes.page,
+        extraIndex: true
+      })
+    })
+  ])
 }
 
 /**
  * Render the Category page
  */
-const renderCategory = async () => {
-  const renderedHtml = renderPage({
-    title: html`i'D Blog | Category`,
-    layout: 'category'
-  })
+const renderTags = async () => {
+  const renderOneTag = async (i: number, meta: Partial<Meta>, tag: string) => {
+    const renderedHtml = renderPage({
+      title: html`Tag: ${tag} | i'D Blog`,
+      layout: 'homepage',
+      postNumber: meta.allMeta?.length ?? 0,
+      pagination: {
+        current: i,
+        length: Math.ceil((meta.allMeta?.length ?? 0) / config.postPerPage)
+      },
+      allMeta: AllMetaArray.slice(config.postPerPage * (i - 1), config.postPerPage * i)
+    })
 
-  await writeFile(`${routes.category}/index.html`, renderedHtml)
+    await mkdir(`${routes.tags}/${tag}`, { recursive: true })
+    await writeFile(`${routes.tags}/${tag}/index.html`, renderedHtml)
+  }
+
 }
 
 // Wait for all pages to be rendered
@@ -478,5 +509,5 @@ const renderCategory = async () => {
 await Promise.all([
   ...Object.values(AllMeta).map(async (meta) => await renderPost(meta)),
   renderHomepage(),
-  renderCategory()
+  renderTags()
 ])

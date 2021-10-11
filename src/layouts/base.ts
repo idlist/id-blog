@@ -5,7 +5,7 @@ import config from '../config.js'
 
 const routes = config.routes
 
-const Base: Layout = () => {
+const Base: Layout<string> = () => {
   return {
     layout: (meta, content) => html`
       <!DOCTYPE html>
@@ -32,9 +32,6 @@ const Base: Layout = () => {
             </a>
             <hr class="menu-fs-hr">
             <a class="menu-fs-link" href="/">Articles</a>
-            <hr class="menu-fs-hr">
-            <a class="menu-fs-link" href="/${routes.category}">Category</a>
-            <hr class="menu-fs-hr">
           </div>
         </div>
         <header>
@@ -48,7 +45,6 @@ const Base: Layout = () => {
             </div>
             <div class="menu-landscape">
               <a class="menu-link" href="/">Articles</a>
-              <a class="menu-link" href="/${routes.category}">Category</a>
               <a class="menu-link" href="https://idl.ist/">
                 <span>To Index</span>
                 <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">

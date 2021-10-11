@@ -9,7 +9,7 @@ import Container from '../layouts-components/container.js'
 
 const routes = config.routes
 
-const Article: Layout = meta => {
+const Article: Layout<string> = meta => {
   return {
     layout: (meta, content) => html`
     ${Container().layout(meta, html`

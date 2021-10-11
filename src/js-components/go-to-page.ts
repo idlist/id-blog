@@ -1,14 +1,16 @@
-const GoButton = document.querySelector('.pagination-go') as HTMLLinkElement
-const GoInput = document.querySelector('.pagination-input') as HTMLInputElement
-const GoLimit = document.querySelector('.pagination-limit') as HTMLElement
+const GoButtons = document.querySelectorAll('.pagination-go')
+const GoInputs = document.querySelectorAll('.pagination-input')
+const GoLimits = document.querySelectorAll('.pagination-limit')
 
-GoButton.addEventListener('click', () => {
-  const dest = parseInt(GoInput.value)
-  const length = parseInt(GoLimit.innerText)
+GoButtons.forEach((GoButton, i) => {
+  GoButton.addEventListener('click', () => {
+    const dest = parseInt((GoInputs[i] as HTMLInputElement).value)
+    const length = parseInt((GoLimits[i] as HTMLElement).innerText)
 
-  if (!isNaN(dest) && dest <= length) {
-    location.href = `${location.origin}/p/${dest}`
-  }
+    if (!isNaN(dest) && dest <= length) {
+      location.href = `${location.origin}/p/${dest}`
+    }
+  })
 })
 
 export {}

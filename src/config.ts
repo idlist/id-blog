@@ -25,7 +25,6 @@ interface TConfig {
     js: string
     tags: string
     timeline: string
-    category: string
   }
   postPerPage: number
 }

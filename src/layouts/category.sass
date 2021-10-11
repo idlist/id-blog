@@ -1,0 +1,14 @@
+@import ../layouts-components/utils
+@import ../layouts-components/container
+
+.category-container
+  padding: 1rem
+
+  display: grid
+  grid-template-columns: 1fr 1fr
+
+  @media (max-width: $screen-middle)
+    grid-template-columns: 1fr
+
+  @media (max-width: $screen-small)
+    padding: 0.5rem

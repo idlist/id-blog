@@ -1,11 +1,8 @@
 import html from 'outdent'
 
 import type { Layout } from '../.data-types.js'
-import config from '../config.js'
 
-const routes = config.routes
-
-const Pagination: Layout = () => {
+const Pagination: Layout<string> = () => {
   const prevPage = (current: number): number => {
     if (current <= 1) return 1
     else return current - 1
@@ -17,7 +14,7 @@ const Pagination: Layout = () => {
   }
 
   return {
-    layout: (meta) => {
+    layout: (meta, route) => {
       const current = meta?.pagination?.current ?? 1
       const length = meta?.pagination?.length ?? 1
 
@@ -25,16 +22,17 @@ const Pagination: Layout = () => {
       <div class="pagination-container">
         <div class="pagination">
           <a class="pagination-button"
-            href="/${routes.page}/${prevPage(current)}">
+            href="/${route}/${prevPage(current)}">
             &lt;
           </a>
           <div class="pagination-current">${current}</div>
           <a class="pagination-button"
-            href="/${routes.page}/${nextPage(current, length)}">
+            href="/${route}/${nextPage(current, length)}">
             &gt;
           </a>
           <input class="pagination-input" type="text">
-          <div class="pagination-limit">/ ${length}</div>
+          <div class="pagination-divider">/</div>
+          <div class="pagination-limit">${length}</div>
           <a class="pagination-go">GO</a>
         </div>
       </div>

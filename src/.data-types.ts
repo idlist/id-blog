@@ -50,11 +50,11 @@ type LayoutMeta = InheritMeta & PostMeta
 
 export type Meta = LayoutMeta & MetaCategory
 
-interface LayoutOutput {
-  layout: (meta?: Partial<Meta>, content?: string) => string
+interface LayoutOutput<T> {
+  layout: (meta: Partial<Meta>, props: T) => string
   unavailable?: boolean
   parentMeta?: Partial<Meta>
   parentLayout?: string
 }
 
-export type Layout = (meta?: Partial<Meta>) => LayoutOutput
+export type Layout<T = any> = (meta?: Partial<Meta>) => LayoutOutput<T>

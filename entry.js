@@ -223,12 +223,15 @@ const main = async () => {
     })
   })
 
-  let throttle = Date.now()
+  let refreshHandler
 
   hostWatcher.on('all', (event) => {
-    if (['add', 'change'].includes(event) && Date.now() - throttle > 1000) {
-      currentWs?.send('reload')
-      throttle = Date.now()
+    if (['add', 'change'].includes(event)) {
+      if (refreshHandler) clearTimeout(refreshHandler)
+
+      refreshHandler = setTimeout(() => {
+        currentWs?.send('reload')
+      }, 500)
     }
   })
 

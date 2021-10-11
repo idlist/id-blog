@@ -7,11 +7,11 @@ import Pagination from './pagination.js'
 
 const routes = config.routes
 
-const PostList: Layout = () => {
+const PostList: Layout<string> = () => {
   return {
-    layout: (meta) => meta?.allMeta?.length
+    layout: (meta, route) => meta?.allMeta?.length
       ? meta.allMeta.map(postMeta => html`
-        ${Pagination().layout(meta)}
+        ${Pagination().layout(meta, route)}
         <div class="post">
           <a class="post-link" href="/${routes.posts}/${postMeta.route}">
             <h2 class="post-title">${postMeta.title}</h2>
@@ -33,7 +33,7 @@ const PostList: Layout = () => {
           <hr class="post-hr">
           <div class="post-summary">${postMeta.summary}</div>
         </div>
-        ${Pagination().layout(meta)}
+        ${Pagination().layout(meta, route)}
         `).join('')
       : html`<div class="post-noarticle">没有文章。</div>`
   }

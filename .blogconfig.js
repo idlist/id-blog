@@ -22,7 +22,6 @@ export default {
     js: 'assets',
     tags: 'tags',
     timeline: 'tl',
-    category: 'category'
   },
   postPerPage: 10
 }
