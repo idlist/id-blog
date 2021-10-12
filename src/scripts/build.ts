@@ -82,35 +82,40 @@ const beautify = jsBeautify.html
 
 // Prepare folders and files
 
-try {
-  await access(dir.cache)
-  if (options.rebuild) {
-    await rm(dir.cache, { recursive: true })
+const makeOutputDir = async () => {
+  try {
+    await access(dir.cache)
+    if (options.rebuild) {
+      await rm(dir.cache, { recursive: true })
+      await mkdir(dir.cache, { recursive: true })
+    }
+  } catch {
     await mkdir(dir.cache, { recursive: true })
   }
-} catch {
-  await mkdir(dir.cache, { recursive: true })
+
+  try {
+    await rm(dir.output, { recursive: true })
+  } catch { noop() }
+  await mkdir(dir.output, { recursive: true })
+
+  await Promise.all(Object.values(routes).map(async (route) => {
+    await mkdir(route, { recursive: true })
+  }))
+
+  await Promise.all(Lang.map(async (lang) => {
+    if (lang == DefaultLang) return
+
+    await mkdir(`${dir.output}/${lang}`)
+    await Promise.all([
+      await mkdir(`${dir.output}/${lang}/${config.routes.posts}`),
+      await mkdir(`${dir.output}/${lang}/${config.routes.page}`),
+      await mkdir(`${dir.output}/${lang}/${config.routes.tags}`),
+      await mkdir(`${dir.output}/${lang}/${config.routes.timeline}`)
+    ])
+  }))
 }
 
-try {
-  await rm(dir.output, { recursive: true })
-} catch { noop() }
-await mkdir(dir.output, { recursive: true })
-
-for (const route of Object.values(routes)) {
-  await mkdir(route, { recursive: true })
-}
-
-await Promise.all(Lang.map(async (lang) => {
-  if (lang == DefaultLang) return
-
-  await mkdir(`${dir.output}/${lang}`)
-  await Promise.all([
-    await mkdir(`${dir.output}/${lang}/${config.routes.posts}`),
-    await mkdir(`${dir.output}/${lang}/${config.routes.tags}`),
-    await mkdir(`${dir.output}/${lang}/${config.routes.timeline}`)
-  ])
-}))
+await makeOutputDir()
 
 try {
   AllMetaCache = JSON.parse(await readFile(`${dir.cache}/meta.json`, 'utf-8'))
@@ -456,16 +461,13 @@ await Promise.all([
 await writeFile(`${dir.cache}/meta.json`, JSON.stringify(AllMeta))
 
 const renderLangPages = async (lang: TLang) => {
-  if (!AllMeta[lang]) return
-
-  const LangMeta = AllMeta[lang] as TLangMeta
+  const LangMeta = AllMeta[lang] ?? {}
   const LangMetaArray = Object.values(LangMeta).sort((a, b) => b.timestamp - a.timestamp)
-  const LangCategory = AllCategory[lang] as TCategory
+  const LangCategory = AllCategory[lang] ?? { allDate: {}, allTags: {} }
   const LangRoute = lang == DefaultLang ? '.' : lang
 
   /**
    * Render a webpage
-   * @param meta
    */
   const renderPage = (meta: Partial<Meta>, props?: DefaultProps): string => {
     let currentMeta = {
@@ -515,7 +517,6 @@ const renderLangPages = async (lang: TLang) => {
 
   /**
    * Render the posts
-   * @param meta Metadata of the post
    */
   const renderPost = async (meta: PostMeta, props?: DefaultProps) => {
     const postHtml = await readFile(`${dir.cache}/${meta.name}.html`, 'utf-8')
@@ -560,7 +561,7 @@ const renderLangPages = async (lang: TLang) => {
   }
 
   const renderHomepage = async () => {
-    const pageNumber = Math.ceil(LangMetaArray.length / config.postPerPage)
+    const pageNumber = Math.max(Math.ceil(LangMetaArray.length / config.postPerPage), 1)
 
     const pageIndex: number[] = []
     for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
@@ -630,7 +631,7 @@ const renderLangPages = async (lang: TLang) => {
         }, {
           i: i,
           length: pageNumber,
-          route: `${dir.output}/${LangRoute}/${config.routes.timeline}//${year}-${month}`,
+          route: `${dir.output}/${LangRoute}/${config.routes.timeline}/${year}-${month}`,
           extraIndex: '.',
           props: {
             type: 'Timeline: ',
