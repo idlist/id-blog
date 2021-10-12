@@ -14,27 +14,27 @@ const i18n: I18nData = {
   noTags: {
     c: '没有标签',
     j: 'タグがありません',
-    e: 'No Tags'
+    e: 'No tags'
+  },
+  noTimeline: {
+    c: '没有时间线',
+    j: 'タイムラインがありません',
+    e: 'No timeline'
   },
   noTOC: {
     c: '没有目录',
     j: '目次がありません',
     e: 'No table of contents'
   },
-  noTimeLine: {
-    c: '没有时间线',
-    j: 'タイムラインがありません',
-    e: 'No timeline'
-  },
-  seeSourceCodeOuter: {
+  sourceCodeOuter: {
     c: '查看这个博客的 {}',
-    j: 'このブログの {} をチェックする',
-    e: 'See the {} of this blog'
+    j: '{} を見る',
+    e: 'See {} of this blog'
   },
-  seeSourceCodeInner: {
+  sourceCodeInner: {
     c: '源码',
     j: 'ソースコード',
-    e: 'source code'
+    e: 'source codes'
   },
   backToTop: {
     c: '回到顶部',

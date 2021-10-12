@@ -27,7 +27,7 @@ export interface TOCNode {
   level: number
 }
 
-interface PostDate {
+export interface PostDate {
   year: number
   month: number
   day: number

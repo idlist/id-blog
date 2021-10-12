@@ -33,7 +33,11 @@ const Contact: Layout<ContactProps> = () => {
 
 const routes = config.routes
 
-const Homepage: Layout = () => {
+interface HomepageProps {
+  route: string
+}
+
+const Homepage: Layout<HomepageProps> = () => {
   return {
     layout: (meta, props) => {
       const t = new LanguageTemplate(props?.lang)
@@ -61,14 +65,15 @@ const Homepage: Layout = () => {
             </div>
             <div class="homepage-source">
               <code>//</code>
-              ${t.use('seeSourceCodeOuter', html`<a class="homepage-source-link" href="https://github.com/idlist/id-blog">${t.use('seeSourceCodeInner')}</a>`)}
+              ${t.use('sourceCodeOuter', html`
+              <a class="homepage-source-link" href="https://github.com/idlist/id-blog">${t.use('sourceCodeInner')}</a>`)}
               <code>//</code>
             </div>
-            ${Tags().layout(meta)}
-            ${Timeline().layout(meta)}
+            ${Tags().layout(meta, props)}
+            ${Timeline().layout(meta, props)}
           </div>
           <div class="homepage">
-          ${PostList().layout(meta, { route: routes.page })}
+          ${PostList().layout(meta, props)}
           </div>
         </div>
       `})}

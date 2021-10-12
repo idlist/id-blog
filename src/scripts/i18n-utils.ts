@@ -25,8 +25,9 @@ export default class LanguageTemplate {
   }
 
   use(data: string, ...nested: string[]): string {
-    const template = i18n[data][this.lang]
-    if (!template) return ''
+    const templateSet = i18n[data]
+    if (!templateSet) return ''
+    const template = templateSet[this.lang]
 
     const tokens = template.split('{}')
     let result = ''

@@ -577,7 +577,10 @@ const renderLangPages = async (lang: TLang) => {
         length: pageNumber,
         route: `${dir.output}/${LangRoute}/${config.routes.page}`,
         extraIndex: '..',
-        props: { lang: lang }
+        props: {
+          route: `${config.routes.page}`,
+          lang: lang
+        }
       })
     }))
   }

@@ -30,8 +30,8 @@ const Category: Layout<CategoryProps> = () => {
         content: html`
         <div class="category-container">
           <div class="category-sidebar">
-            ${Tags().layout(meta)}
-            ${Timeline().layout(meta)}
+            ${Tags().layout(meta, props)}
+            ${Timeline().layout(meta, props)}
           </div>
           <div class="category">
             <h1 class="category-info">
