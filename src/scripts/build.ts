@@ -16,8 +16,9 @@ import jsBeautify from 'js-beautify'
 import cheerio from 'cheerio'
 import html from 'outdent'
 
-import type { TLang, RawPostMeta, PostMeta } from '../data-types.js'
-import type { CategoryType, Meta } from '../data-types.js'
+import { Lang, TLang, DefaultLang } from '../data-types.js'
+import type { RawPostMeta, PostMeta } from '../data-types.js'
+import type { TAllCategory, TCategory, Meta, TLangMeta, TAllMeta } from '../data-types.js'
 import type { Layout, TOCNode, DefaultProps } from '../data-types.js'
 
 import config, { TConfig } from '../config.js'
@@ -44,14 +45,11 @@ const options = {
 
 // Prepare global variables
 
-const AllMeta: Record<string, PostMeta> = {}
-const Category: CategoryType = {
-  allTags: {},
-  allDate: {}
-}
+const AllMeta: TAllMeta = {}
+const AllCategory: TAllCategory = {}
 const Layouts: Record<string, Layout> = {}
 
-let AllMetaCache: Record<string, PostMeta> = {}
+let AllMetaCache: TAllMeta = {}
 let postList: string[] = []
 let layoutList: string[] = []
 
@@ -88,19 +86,31 @@ try {
   await access(dir.cache)
   if (options.rebuild) {
     await rm(dir.cache, { recursive: true })
-    await mkdir(dir.cache)
+    await mkdir(dir.cache, { recursive: true })
   }
 } catch {
-  await mkdir(dir.cache)
+  await mkdir(dir.cache, { recursive: true })
 }
 
 try {
   await rm(dir.output, { recursive: true })
 } catch { noop() }
-await mkdir(dir.output)
+await mkdir(dir.output, { recursive: true })
+
 for (const route of Object.values(routes)) {
   await mkdir(route, { recursive: true })
 }
+
+await Promise.all(Lang.map(async (lang) => {
+  if (lang == DefaultLang) return
+
+  await mkdir(`${dir.output}/${lang}`)
+  await Promise.all([
+    await mkdir(`${dir.output}/${lang}/${config.routes.posts}`),
+    await mkdir(`${dir.output}/${lang}/${config.routes.tags}`),
+    await mkdir(`${dir.output}/${lang}/${config.routes.timeline}`)
+  ])
+}))
 
 try {
   AllMetaCache = JSON.parse(await readFile(`${dir.cache}/meta.json`, 'utf-8'))
@@ -178,38 +188,38 @@ const copyAssets = async () => {
  * @param post Filename of the post, with extension.
  */
 const processPosts = async (post: string) => {
-  const content = await readFile(`${dir.posts}/${post}`, 'utf-8')
-  const contentHash = createHash('md5').update(content).digest('hex')
-  const postName = filename(post)
-
   /**
    * Categorize Metadata
    */
   const categorizeMeta = (meta: PostMeta) => {
-    if (!Category.allDate[meta.date.year]) {
-      Category.allDate[meta.date.year] = {}
+    if (!AllCategory[meta.lang]) {
+      AllCategory[meta.lang] = {
+        allTags: {},
+        allDate: {}
+      }
     }
-    if (!Category.allDate[meta.date.year][meta.date.month]) {
-      Category.allDate[meta.date.year][meta.date.month] = []
+
+    const category = AllCategory[meta.lang] as TCategory
+
+    if (!category.allDate[meta.date.year]) {
+      category.allDate[meta.date.year] = {}
     }
-    Category.allDate[meta.date.year][meta.date.month].push(meta.name)
+    if (!category.allDate[meta.date.year][meta.date.month]) {
+      category.allDate[meta.date.year][meta.date.month] = []
+    }
+    category.allDate[meta.date.year][meta.date.month].push(meta.name)
 
     for (const tag of meta.tags) {
-      if (!Category.allTags[tag]) Category.allTags[tag] = []
-      Category.allTags[tag].push(meta.name)
+      if (!category.allTags[tag]) category.allTags[tag] = []
+      category.allTags[tag].push(meta.name)
     }
   }
 
-  // Read from cached metadata
+  // Read post files
 
-  if (AllMetaCache[postName] &&
-    AllMetaCache[postName].hash === contentHash &&
-    !options.rebuild) {
-
-    AllMeta[postName] = { ...AllMetaCache[postName] }
-    categorizeMeta(AllMeta[postName])
-    return
-  }
+  const content = await readFile(`${dir.posts}/${post}`, 'utf-8')
+  const contentHash = createHash('md5').update(content).digest('hex')
+  const postName = filename(post)
 
   // Extract metadata from posts
 
@@ -238,19 +248,7 @@ const processPosts = async (post: string) => {
     return
   }
 
-  const wrongMeta: (keyof RawPostMeta)[] = []
-
-  if (!rawMeta.title) wrongMeta.push('title')
-  if (!rawMeta.date || !(rawMeta.date instanceof Date)) wrongMeta.push('date')
-  if (!rawMeta.layout) wrongMeta.push('layout')
-  if (wrongMeta.length) {
-    console.warn(`${c.yellow('[W]')} Post ${c.green(post)} does not have or has wrong ` +
-      `metadata: ${wrongMeta.map(str => c.blue(str)).join(', ')}. skipped.`)
-    return
-  }
-
-  // See if the metadata post is duplicated
-  // (Same route and language)
+  // Get language of the post
 
   let postLang: TLang
   switch (rawMeta.lang?.toLowerCase()) {
@@ -266,15 +264,46 @@ const processPosts = async (post: string) => {
       postLang = 'e'
       break
     default:
-      postLang = 'c'
+      postLang = DefaultLang
       break
   }
+
+  // Read from cached metadata
+
+  const metaCacle = AllMetaCache[postLang]
+
+  if (metaCacle &&
+    metaCacle[postName] &&
+    metaCacle[postName].hash === contentHash &&
+    !options.rebuild) {
+
+    if (!AllMeta[postLang]) AllMeta[postLang] = {}
+    const allMeta = AllMeta[postLang] as TLangMeta
+
+    allMeta[postName] = { ...metaCacle[postName] }
+    categorizeMeta(allMeta[postName])
+    return
+  }
+
+  const wrongMeta: (keyof RawPostMeta)[] = []
+
+  if (!rawMeta.title) wrongMeta.push('title')
+  if (!rawMeta.date || !(rawMeta.date instanceof Date)) wrongMeta.push('date')
+  if (!rawMeta.layout) wrongMeta.push('layout')
+  if (wrongMeta.length) {
+    console.warn(`${c.yellow('[W]')} Post ${c.green(post)} does not have or has wrong ` +
+      `metadata: ${wrongMeta.map(str => c.blue(str)).join(', ')}. skipped.`)
+    return
+  }
+
+  // See if the metadata post is duplicated
+  // (Same route and language)
 
   const postRoute = rawMeta.route
     ? slugify(rawMeta.route, { fixChineseSpacing: true })
     : slugify(rawMeta.title, { fixChineseSpacing: true })
 
-  if (Object.values(AllMeta).find(existedMeta => {
+  if (Object.values(AllMeta[postLang] ?? {}).find(existedMeta => {
     return existedMeta.route == postRoute && existedMeta.lang == postLang
   })) {
     console.warn(`${c.yellow('[W]')} Metadata of post ${c.green(post)} ` +
@@ -403,7 +432,9 @@ const processPosts = async (post: string) => {
 
   // Categorize metadata
 
-  AllMeta[postName] = meta
+  if (!AllMeta[postLang]) AllMeta[postLang] = {}
+  const allLangMeta = AllMeta[postLang] as TLangMeta
+  allLangMeta[postName] = meta
   categorizeMeta(meta)
 }
 
@@ -423,199 +454,209 @@ await Promise.all([
 // Write metadata cache
 
 await writeFile(`${dir.cache}/meta.json`, JSON.stringify(AllMeta))
-const AllMetaArray = Object.values(AllMeta).sort((a, b) => b.timestamp - a.timestamp)
 
-/**
- * Render a webpage
- * @param meta
- */
-const renderPage = (meta: Partial<Meta>, props?: DefaultProps): string => {
-  let currentMeta = {
-    ...Category,
-    liveReload: options.watch,
-    ...meta
-  }
+const renderLangPages = async (lang: TLang) => {
+  if (!AllMeta[lang]) return
 
-  let renderedHtml = (props?.content ?? '')
-  let layoutName = currentMeta.layout as string
-  let firstLayout = true
+  const LangMeta = AllMeta[lang] as TLangMeta
+  const LangMetaArray = Object.values(LangMeta).sort((a, b) => b.timestamp - a.timestamp)
+  const LangCategory = AllCategory[lang] as TCategory
+  const LangRoute = lang == DefaultLang ? '.' : lang
 
-  do {
-    if (!Layouts[layoutName]) {
-      console.log(`${c.yellow('[W]')} layout ${layoutName} does not exist, skipped`)
-      return ''
+  /**
+   * Render a webpage
+   * @param meta
+   */
+  const renderPage = (meta: Partial<Meta>, props?: DefaultProps): string => {
+    let currentMeta = {
+      ...LangCategory,
+      liveReload: options.watch,
+      ...meta
     }
 
-    const currentLayout = Layouts[layoutName](currentMeta)
-    if (firstLayout && currentLayout.unavailable) {
-      console.log(`${c.yellow('[W]')} layout ${layoutName} should not be used directly, skipped`)
-      return ''
-    }
+    let renderedHtml = (props?.content ?? '')
+    let layoutName = currentMeta.layout as string
+    let firstLayout = true
 
-    renderedHtml = currentLayout.layout(currentMeta, {
-      ...props,
-      content: renderedHtml
-    })
-    layoutName = currentLayout.parentLayout ?? ''
-    if (layoutName && currentLayout.parentMeta) {
-      currentMeta = {
-        ...currentMeta,
-        ...currentLayout.parentMeta
+    do {
+      if (!Layouts[layoutName]) {
+        console.log(`${c.yellow('[W]')} layout ${layoutName} does not exist, skipped`)
+        return ''
       }
+
+      const currentLayout = Layouts[layoutName](currentMeta)
+      if (firstLayout && currentLayout.unavailable) {
+        console.log(`${c.yellow('[W]')} layout ${layoutName} should not be used directly, skipped`)
+        return ''
+      }
+
+      renderedHtml = currentLayout.layout(currentMeta, {
+        ...props,
+        content: renderedHtml
+      })
+      layoutName = currentLayout.parentLayout ?? ''
+      if (layoutName && currentLayout.parentMeta) {
+        currentMeta = {
+          ...currentMeta,
+          ...currentLayout.parentMeta
+        }
+      }
+
+      firstLayout = false
+    } while (layoutName)
+
+    renderedHtml = beautify(renderedHtml, {
+      indent_size: 2,
+      preserve_newlines: false
+    })
+
+    return renderedHtml
+  }
+
+  /**
+   * Render the posts
+   * @param meta Metadata of the post
+   */
+  const renderPost = async (meta: PostMeta, props?: DefaultProps) => {
+    const postHtml = await readFile(`${dir.cache}/${meta.name}.html`, 'utf-8')
+    const postRoute = `${dir.output}/${LangRoute}/${config.routes.posts}/${meta.route}`
+
+    const renderedHtml = renderPage(meta, {
+      ...props,
+      content: postHtml
+    })
+
+    await mkdir(postRoute)
+    await writeFile(`${postRoute}/index.html`, renderedHtml)
+  }
+
+  interface PaginationOption {
+    i: number
+    length: number
+    route: string
+    extraIndex?: string,
+    props?: DefaultProps
+  }
+
+  /**
+   * Render single page in a page list with pagination
+   */
+  const renderPagination = async (meta: Partial<Meta>, options: PaginationOption) => {
+    const renderedHtml = renderPage({
+      ...meta,
+      postNumber: meta.allMeta?.length ?? 0,
+      pagination: {
+        current: options.i,
+        length: options.length
+      },
+      allMeta: meta.allMeta?.slice(config.postPerPage * (options.i - 1), config.postPerPage * options.i) ?? []
+    }, options.props)
+
+    await mkdir(`${options.route}/${options.i}`, { recursive: true })
+    await writeFile(`${options.route}/${options.i}/index.html`, renderedHtml)
+    if (options.extraIndex && options.i == 1) {
+      await writeFile(`${options.route}/${options.extraIndex}/index.html`, renderedHtml)
+    }
+  }
+
+  const renderHomepage = async () => {
+    const pageNumber = Math.ceil(LangMetaArray.length / config.postPerPage)
+
+    const pageIndex: number[] = []
+    for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
+
+    await Promise.all(pageIndex.map(async (i) => {
+      await renderPagination({
+        title: html`i'D Blog - Reinventing the Wheel`,
+        layout: 'homepage',
+        allMeta: LangMetaArray
+      }, {
+        i: i,
+        length: pageNumber,
+        route: `${dir.output}/${LangRoute}/${config.routes.page}`,
+        extraIndex: '..'
+      })
+    }))
+  }
+
+  const renderTags = async () => {
+    const renderSingleTag = async (tag: string) => {
+      const postWithTag = LangCategory.allTags[tag]
+      const allMetaWithTag = postWithTag.map(postName => LangMeta[postName])
+      const pageNumber = Math.ceil(allMetaWithTag.length / config.postPerPage)
+
+      const pageIndex: number[] = []
+      for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
+
+      await Promise.all(pageIndex.map(async (i) => {
+        await renderPagination({
+          title: html`Tag: ${tag} | i'D Blog`,
+          layout: 'category',
+          allMeta: allMetaWithTag
+        }, {
+          i: i,
+          length: pageNumber,
+          route: `${dir.output}/${LangRoute}/${config.routes.tags}/${tag}`,
+          extraIndex: '.',
+          props: {
+            type: 'Tags: ',
+            category: tag.replace('_', ' '),
+            route: `${config.routes.tags}/${tag}`
+          }
+        })
+      }))
     }
 
-    firstLayout = false
-  } while (layoutName)
-
-  renderedHtml = beautify(renderedHtml, {
-    indent_size: 2,
-    preserve_newlines: false
-  })
-
-  return renderedHtml
-}
-
-/**
- * Render the posts
- * @param meta Metadata of the post
- */
-const renderPost = async (meta: PostMeta, props?: DefaultProps) => {
-  const postHtml = await readFile(`${dir.cache}/${meta.name}.html`, 'utf-8')
-  const postRoute = `${routes.posts}/${meta.route}`
-
-  const renderedHtml = renderPage(meta, {
-    ...props,
-    content: postHtml
-  })
-
-  await mkdir(postRoute)
-  await writeFile(`${postRoute}/index.html`, renderedHtml)
-}
-
-interface PaginationOption {
-  i: number
-  length: number
-  route: string
-  extraIndex?: string,
-  props?: DefaultProps
-}
-
-/**
- * Render single page in a page list with pagination
- */
-const renderPagination = async (meta: Partial<Meta>, options: PaginationOption) => {
-  const renderedHtml = renderPage({
-    ...meta,
-    postNumber: meta.allMeta?.length ?? 0,
-    pagination: {
-      current: options.i,
-      length: options.length
-    },
-    allMeta: meta.allMeta?.slice(config.postPerPage * (options.i - 1), config.postPerPage * options.i) ?? []
-  }, options.props)
-
-  await mkdir(`${options.route}/${options.i}`, { recursive: true })
-  await writeFile(`${options.route}/${options.i}/index.html`, renderedHtml)
-  if (options.extraIndex && options.i == 1) {
-    await writeFile(`${options.route}/${options.extraIndex}/index.html`, renderedHtml)
-  }
-}
-
-const renderHomepage = async () => {
-  const pageNumber = Math.ceil(AllMetaArray.length / config.postPerPage)
-
-  const pageIndex: number[] = []
-  for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
-
-  await Promise.all(pageIndex.map(async (i) => {
-    await renderPagination({
-      title: html`i'D Blog - Reinventing the Wheel`,
-      layout: 'homepage',
-      allMeta: AllMetaArray
-    }, {
-      i: i,
-      length: pageNumber,
-      route: routes.page,
-      extraIndex: '..'
-    })
-  }))
-}
-
-const renderTags = async () => {
-  const renderSingleTag = async (tag: string) => {
-    const postWithTag = Category.allTags[tag]
-    const allMetaWithTag = postWithTag.map(postName => AllMeta[postName])
-    const pageNumber = Math.ceil(allMetaWithTag.length / config.postPerPage)
-
-    const pageIndex: number[] = []
-    for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
-
-    await Promise.all(pageIndex.map(async (i) => {
-      await renderPagination({
-        title: html`Tag: ${tag} | i'D Blog`,
-        layout: 'category',
-        allMeta: allMetaWithTag
-      }, {
-        i: i,
-        length: pageNumber,
-        route: `${routes.tags}/${tag}`,
-        extraIndex: '.',
-        props: {
-          type: 'Tags: ',
-          category: tag.replace('_', ' '),
-          route: `${config.routes.tags}/${tag}`
-        }
-      })
+    await Promise.all(Object.keys(LangCategory.allTags).map(async (tag) => {
+      await mkdir(`${routes.tags}/${tag}`, { recursive: true })
+      await renderSingleTag(tag)
     }))
   }
 
-  await Promise.all(Object.keys(Category.allTags).map(async (tag) => {
-    await mkdir(`${routes.tags}/${tag}`, { recursive: true })
-    await renderSingleTag(tag)
-  }))
-}
+  const renderTimeline = async () => {
+    const renderSingleTimeline = async (year: number, month: number) => {
+      const postWithTime = LangCategory.allDate[year][month]
+      const allMetaWithTime = postWithTime.map(postName => LangMeta[postName])
+      const pageNumber = Math.ceil(allMetaWithTime.length / config.postPerPage)
 
-const renderTimeline = async () => {
-  const renderSingleTimeline = async (year: number, month: number) => {
-    const postWithTime = Category.allDate[year][month]
-    const allMetaWithTime = postWithTime.map(postName => AllMeta[postName])
-    const pageNumber = Math.ceil(allMetaWithTime.length / config.postPerPage)
+      const pageIndex: number[] = []
+      for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
 
-    const pageIndex: number[] = []
-    for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
+      await Promise.all(pageIndex.map(async (i) => {
+        await renderPagination({
+          title: html`Timeline: ${year} / ${month} | i'D Blog`,
+          layout: 'category',
+          allMeta: allMetaWithTime
+        }, {
+          i: i,
+          length: pageNumber,
+          route: `${dir.output}/${LangRoute}/${config.routes.timeline}//${year}-${month}`,
+          extraIndex: '.',
+          props: {
+            type: 'Timeline: ',
+            category: `${year} / ${month}`,
+            route: `${config.routes.timeline}/${year}-${month}`
+          }
+        })
+      }))
+    }
 
-    await Promise.all(pageIndex.map(async (i) => {
-      await renderPagination({
-        title: html`Timeline: ${year} / ${month} | i'D Blog`,
-        layout: 'category',
-        allMeta: allMetaWithTime
-      }, {
-        i: i,
-        length: pageNumber,
-        route: `${routes.timeline}/${year}-${month}`,
-        extraIndex: '.',
-        props: {
-          type: 'Timeline: ',
-          category: `${year} / ${month}`,
-          route: `${config.routes.timeline}/${year}-${month}`
-        }
-      })
+    await Promise.all(Object.entries(LangCategory.allDate).map(async ([year, allMonths]) => {
+      await Promise.all(Object.keys(allMonths).map(async (month) => {
+        await mkdir(`${routes.timeline}/${year}-${month}`, { recursive: true })
+        await renderSingleTimeline(parseInt(year), parseInt(month))
+      }))
     }))
   }
 
-  await Promise.all(Object.entries(Category.allDate).map(async ([year, allMonths]) => {
-    await Promise.all(Object.keys(allMonths).map(async (month) => {
-      await mkdir(`${routes.timeline}/${year}-${month}`, { recursive: true })
-      await renderSingleTimeline(parseInt(year), parseInt(month))
-    }))
-  }))
+  // Wait for all pages to be rendered
+
+  await Promise.all([
+    ...Object.values(LangMeta).map(async (meta) => await renderPost(meta)),
+    renderHomepage(),
+    renderTags(),
+    renderTimeline()
+  ])
 }
 
-// Wait for all pages to be rendered
-
-await Promise.all([
-  ...Object.values(AllMeta).map(async (meta) => await renderPost(meta)),
-  renderHomepage(),
-  renderTags(),
-  renderTimeline()
-])
+await Promise.all(Lang.map(async (lang) => await renderLangPages(lang)))

@@ -7,12 +7,14 @@ interface RequiredMeta {
 
 export const Lang = ['c', 'j', 'e'] as const
 
+export const DefaultLang = 'c'
+
 export type TLang = typeof Lang[number]
 
 export interface RawPostMeta extends RequiredMeta {
   date: Date
   lastUpdate?: Date
-  lang?:  string
+  lang?: string
   route?: string
   tags?: string
 }
@@ -44,9 +46,19 @@ export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
   summary: string
 }
 
-export interface CategoryType {
+export type TLangMeta = Record<string, PostMeta>
+
+export type TAllMeta = {
+  [lang in TLang]?: TLangMeta
+}
+
+export interface TCategory {
   allTags: Record<string, string[]>
   allDate: Record<string, Record<string, string[]>>
+}
+
+export type TAllCategory = {
+  [lang in TLang]?: TCategory
 }
 
 interface InheritMeta {
@@ -61,7 +73,7 @@ interface InheritMeta {
   scripts?: string[]
 }
 
-export type Meta = Partial<PostMeta> & InheritMeta & CategoryType
+export type Meta = Partial<PostMeta> & InheritMeta & TCategory
 
 export interface DefaultProps {
   [property: string]: unknown
