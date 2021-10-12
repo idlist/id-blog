@@ -17,11 +17,17 @@
   <div class="menu-fullscreen hidden">
     <div class="menu-fs-container">
       <a class="menu-fs-link" href="https://idl.ist/">
-        <span>To Index</span>
+        <span>個人ページ</span>
         <img class="menu-link-external" src="/public/buttons/external.svg" alt="external">
       </a>
       <hr class="menu-fs-hr">
-      <a class="menu-fs-link" href="/j">Articles</a>
+      <div class="menu-fs-link-title">言語</div>
+      <a class="menu-fs-link" href="/">简体中文</a>
+      <a class="menu-fs-link" href="/e/">English</a>
+      <a class="menu-fs-link" href="/j/">日本語</a>
+      <hr class="menu-fs-hr">
+      <a class="menu-fs-link" href="/j/">記事</a>
+      <hr class="menu-fs-hr">
     </div>
   </div>
   <header>
@@ -32,9 +38,17 @@
         <div>i'D Blog</div>
       </div>
       <div class="menu-landscape">
-        <a class="menu-link" href="/j">Articles</a>
+        <a class="menu-link" href="/j/">記事</a>
+        <div class="menu-link-dropdown">
+          <div>言語</div>
+          <div class="menu-link-dropdown-content">
+            <a class="menu-link-dropdown-link" href="/">简体中文</a>
+            <a class="menu-link-dropdown-link" href="/e/">English</a>
+            <a class="menu-link-dropdown-link" href="/j/">日本語</a>
+          </div>
+        </div>
         <a class="menu-link" href="https://idl.ist/">
-          <span>To Index</span>
+          <span>個人ページ</span>
           <img class="menu-link-external" src="/public/buttons/external.svg" alt="external">
         </a>
       </div>
@@ -74,8 +88,7 @@
             <div>記事がありません。</div>
           </div>
           <div class="homepage-source">
-            <code>//</code>
-            <a class="homepage-source-link" href="https://github.com/idlist/id-blog">ソースコード</a> を見る <code>//</code>
+            <code>//</code> このブログの <a class="homepage-source-link" href="https://github.com/idlist/id-blog">ソースコード</a> を見る
           </div>
           <div class="tags">
             <div class="tags-title">Tags</div>
@@ -89,7 +102,7 @@
           </div>
         </div>
         <div class="homepage">
-          <div class="post-noarticle">記事がありません。</div>
+          <div class="post-noarticle">この言語で書いた記事がまたありません。</div>
         </div>
       </div>
     </div>
