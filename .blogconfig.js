@@ -23,5 +23,5 @@ export default {
     tags: 'tags',
     timeline: 'tl',
   },
-  postPerPage: 10
+  postPerPage: 10,
 }

@@ -16,7 +16,7 @@ import jsBeautify from 'js-beautify'
 import cheerio from 'cheerio'
 import html from 'outdent'
 
-import type { TPostLang, RawPostMeta, PostMeta } from '../data-types.js'
+import type { TLang, RawPostMeta, PostMeta } from '../data-types.js'
 import type { CategoryType, Meta } from '../data-types.js'
 import type { Layout, TOCNode, DefaultProps } from '../data-types.js'
 
@@ -252,7 +252,7 @@ const processPosts = async (post: string) => {
   // See if the metadata post is duplicated
   // (Same route and language)
 
-  let postLang: TPostLang
+  let postLang: TLang
   switch (rawMeta.lang?.toLowerCase()) {
     case 'j':
     case 'ja':

@@ -5,9 +5,9 @@ interface RequiredMeta {
   layout: string
 }
 
-export const PostLang = ['c', 'j', 'e'] as const
+export const Lang = ['c', 'j', 'e'] as const
 
-export type TPostLang = typeof PostLang[number]
+export type TLang = typeof Lang[number]
 
 export interface RawPostMeta extends RequiredMeta {
   date: Date
@@ -34,7 +34,7 @@ interface PostDate {
 export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
   name: string
   hash: string
-  lang: TPostLang
+  lang: TLang
   route: string
   date: PostDate
   lastUpdate: PostDate
