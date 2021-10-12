@@ -32,8 +32,8 @@ const Base: Layout = () => {
         <div class="menu-fullscreen hidden">
           <div class="menu-fs-container">
             <a class="menu-fs-link" href="https://idl.ist/">
-              <span>${t.use('toIndex')}</span>
-              <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
+              <span class="menu-fs-link-text">${t.use('toIndex')}</span>
+              <img class="menu-fs-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
             </a>
             <hr class="menu-fs-hr">
             <div class="menu-fs-link-title">${t.use('language')}</div>

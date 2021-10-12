@@ -173,16 +173,16 @@ header
     padding-right: 4.5rem
 
   &-fs-link-title
-    display: flex
-    justify-content: right
+    display: block
+    text-align: right
 
     padding: 0.75rem
 
     color: #ccc
 
   &-fs-link
-    display: flex
-    justify-content: right
+    display: block
+    text-align: right
 
     padding: 0.75rem
 
@@ -191,6 +191,17 @@ header
 
     &:active
       background-color: #666
+
+  &-fs-link-text
+    display: inline
+    vertical-align: middle
+
+
+  &-fs-link-external
+    @extend .menu-link-external
+
+    display: inline
+    vertical-align: middle
 
   &-fs-hr
     margin: 0
