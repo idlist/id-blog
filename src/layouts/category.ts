@@ -39,7 +39,11 @@ const Category: Layout<CategoryProps> = () => {
               <span class="category-name">${props?.category}</span>
             </h1>
             <div class="category-stat">
-              <div>${t.use('totalPosts', html`<b>${meta?.postNumber}</b>`)}</div>
+              <div>
+              ${meta?.postNumber == 1
+              ? t.use('totalPostSingle', html`<b>${meta?.postNumber}</b>`)
+              : t.use('totalPosts', html`<b>${meta?.postNumber}</b>`)}
+              </div>
             </div>
             ${PostList().layout(meta, props)}
           </div>

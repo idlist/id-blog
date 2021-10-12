@@ -23,7 +23,7 @@ const PostList: Layout<PostListProps> = () => {
         ? allMeta.map(postMeta => html`
           ${Pagination().layout(meta, props)}
           <div class="post">
-            <a class="post-link" href="${t.root}/${routes.posts}/${postMeta.route}">
+            <a class="post-link" href="${t.root}${routes.posts}/${postMeta.route}">
               <h2 class="post-title">${postMeta.title}</h2>
             </a>
             <div class="post-meta">
@@ -35,7 +35,7 @@ const PostList: Layout<PostListProps> = () => {
                 <img class="post-tags-icon" src="/${routes.public}/icon/tags.svg" alt="tags">
                 ${postMeta.tags.length
                 ? postMeta.tags.map(tag => html`
-                <a class="post-tags-item" href="${t.root}/${routes.tags}/${tag}">
+                <a class="post-tags-item" href="${t.root}${routes.tags}/${tag}">
                   ${tag.replace('_', ' ')}
                 </a>
                 `).join('')

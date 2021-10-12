@@ -6,6 +6,11 @@ const i18n: I18nData = {
     j: '総計 {} 編の記事。',
     e: 'There are {} articles in total.'
   },
+  totalPostSingle: {
+    c: '共有 {} 篇文章。',
+    j: '総計 {} 編の記事。',
+    e: 'There is {} article in total.'
+  },
   noPosts: {
     c: '没有文章。',
     j: '記事がありません。',

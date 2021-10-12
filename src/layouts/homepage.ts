@@ -60,7 +60,10 @@ const Homepage: Layout<HomepageProps> = () => {
             ${Contact().layout(meta, { icon: 'soundcloud', text: 'i\'DLisT', link: 'https://soundcloud.com/idlist' })}
             <div class="homepage-stat">
               ${meta?.postNumber
-              ? html`<div>${t.use('totalPosts', html`<b>${meta?.postNumber}</b>`)}</div>`
+              ? ( meta?.postNumber == 1
+                ? t.use('totalPostSingle', html`<b>${meta?.postNumber}</b>`)
+                : t.use('totalPosts', html`<b>${meta?.postNumber}</b>`)
+              )
               : html`<div>${t.use('noPosts')}</div>`}
             </div>
             <div class="homepage-source">

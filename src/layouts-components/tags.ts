@@ -22,7 +22,7 @@ const Tags: Layout = () => {
           ? Object.entries(meta?.allTags ?? {})
             .sort((a, b) => a[0].localeCompare(b[0]))
             .map(([tagname, tagRoutes]) => html`
-            <a class="tags-item" href="${t.root}/${routes.tags}/${tagname}">
+            <a class="tags-item" href="${t.root}${routes.tags}/${tagname}">
               <span class="tags-name">${tagname.replace('_', ' ')}</span>
               <span class="tags-number">${tagRoutes.length}</span>
             </a>

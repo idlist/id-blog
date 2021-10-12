@@ -29,12 +29,12 @@ const Pagination: Layout<PaginationProps> = () => {
       <div class="pagination-container">
         <div class="pagination">
           <a class="pagination-button"
-            href="${t.root}/${props?.route}/${prevPage(current)}">
+            href="${t.root}${props?.route}/${prevPage(current)}">
             &lt;
           </a>
           <div class="pagination-current">${current}</div>
           <a class="pagination-button"
-            href="${t.root}/${props?.route}/${nextPage(current, length)}">
+            href="${t.root}${props?.route}/${nextPage(current, length)}">
             &gt;
           </a>
           <input class="pagination-input" type="text">

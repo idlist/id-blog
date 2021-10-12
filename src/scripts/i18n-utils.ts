@@ -21,7 +21,7 @@ export default class LanguageTemplate {
 
   constructor(lang: string | undefined) {
     this.lang = getLang(lang)
-    this.root = this.lang == DefaultLang ? '' : `/${this.lang}`
+    this.root = this.lang == DefaultLang ? '/' : `/${this.lang}/`
   }
 
   use(data: string, ...nested: string[]): string {

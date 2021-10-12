@@ -26,7 +26,7 @@ const Timeline: Layout = () => {
             ${Object.entries(monthData)
               .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
               .map(([month, monthRoutes]) => html`
-              <a class="timeline-item" href="${t.root}/${routes.timeline}/${year}-${month}">
+              <a class="timeline-item" href="${t.root}${routes.timeline}/${year}-${month}">
                 <span class="timeline-month">${month}</span>
                 <span class="timeline-number">${monthRoutes.length}</span>
               </a>

@@ -23,8 +23,10 @@ const startTs = Date.now()
 
 const options = {
   watch: argv.includes('--watch') || argv.includes('-w'),
+  host: argv.includes('--host') || argv.includes('-h'),
   buildOnly: argv.includes('--build-only')
 }
+
 const dir = {
   layouts: `${config.src}/${config.blog.layouts}`,
   layoutsComponents: `${config.src}/${config.blog.layoutsComponents}`,
@@ -131,6 +133,14 @@ const blogBuilder = async () => {
   }
 }
 
+const createServerHandler = () => {
+  const host = new Koa()
+  host.use(KoaStatic(config.blog.output))
+  const hostHandler = host.listen(config.port)
+
+  return hostHandler
+}
+
 const main = async () => {
   await cleanDist()
   let scriptsWatcher = await scriptsBuilder()
@@ -201,9 +211,7 @@ const main = async () => {
     }
   })
 
-  const host = new Koa()
-  host.use(KoaStatic(config.blog.output))
-  const hostHandler = host.listen(config.port)
+  const hostHandler = createServerHandler()
 
   const devServer = new WebSocketServer({
     server: hostHandler
@@ -260,6 +268,15 @@ const buildOnly = async () => {
 
 if (options.buildOnly) {
   buildOnly()
-} else {
+} else if (options.host) {
+  const hostHandler = createServerHandler()
+  console.log(`${c.green('[S]')} Server is listening at ${c.purple(`http://localhost:${config.port}/`)}`)
+
+  process.on('SIGINT', () => {
+    hostHandler.close()
+    console.log(`${c.orange('[U]')} Ended by SIGINT.`)
+    exit(0)
+  })
+}else {
   main()
 }

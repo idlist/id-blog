@@ -17,8 +17,9 @@
   "main": "entry.js",
   "type": "module",
   "scripts": {
-    "start": "node entry.js --watch",
+    "start": "node entry.js -w",
     "build": "node entry.js",
+    "host": "node entry.js -h",
     "rebuild": "node entry.js --rebuild-cache",
     "quickbuild": "node entry.js --build-only",
     "count": "cd .. && cloc id-blog --exclude-dir=node_modules,dist,_site,_posts_cache, --include-ext=js,ts,sass"
