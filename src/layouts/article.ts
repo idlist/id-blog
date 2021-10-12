@@ -27,36 +27,42 @@ const Article: Layout = meta => {
             </div>
             <a class="article-me-text" href="mailto:me@idl.ist">me@idl.ist</a>
           </div>
-          <div class="article-time">
-            <img class="article-time-icon" src="/${routes.public}/icon/time.svg" alt="time">
-            <span>${meta?.date?.year} / ${meta?.date?.month} / ${meta?.date?.day}</span>
-          </div>
-          <div class="article-tags">
-            <img class="article-tags-icon" src="/${routes.public}/icon/tags.svg" alt="tags">
-            ${meta?.tags?.length
-            ? meta.tags.map(tag => html`
-              <a class="article-tags-tagname" href="/${routes.tags}/${tag}">${tag.replace('_', ' ')}</a>
+          <div class="article-sidebar">
+            <div class="article-item">
+              <img class="article-item-icon" src="/${routes.public}/icon/time.svg" alt="time">
+              <span>${meta?.date?.year} / ${meta?.date?.month} / ${meta?.date?.day}</span>
+            </div>
+            <div class="article-item">
+              <img class="article-item-icon" src="/${routes.public}/icon/update.svg" alt="time">
+              <span>${meta?.lastUpdate?.year} / ${meta?.lastUpdate?.month} / ${meta?.lastUpdate?.day}</span>
+            </div>
+            <div class="article-tags">
+              <img class="article-tags-icon" src="/${routes.public}/icon/tags.svg" alt="tags">
+              ${meta?.tags?.length
+              ? meta.tags.map(tag => html`
+                <a class="article-tags-tagname" href="/${routes.tags}/${tag}">${tag.replace('_', ' ')}</a>
+                `).join('')
+              : html`<div class="article-tags-notag">没有标签</div>`}
+            </div>
+            <div class="article-item">
+              <img class="article-item-icon-small" src="/${routes.public}/icon/creative-common.svg" alt="tags">
+              <a class="article-item-link" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                CC-BY-NC-SA 4.0
+              </a>
+            </div>
+            <div class="article-toc">
+              <div class="article-toc-title">Table of contents</div>
+              ${meta?.toc?.length
+              ? meta.toc.map(h => html`
+              <a href="#${h.id}" class="article-toc-l${h.level}">${h.text}</a>
               `).join('')
-            : html`<div class="article-tags-notag">没有标签</div>`}
-          </div>
-          <div class="article-license">
-            <img class="article-license-icon" src="/${routes.public}/icon/creative-common.svg" alt="tags">
-            <a class="article-license-link" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
-              CC-BY-NC-SA 4.0
+              : html`<span class="article-toc-nomenu">暂无目录</span>`}
+            </div>
+            <a class="article-back" href="#top-of-article">
+              <img class="article-back-icon" src="/${routes.public}/icon/back-to-top.svg" alt="back to top">
+              <span>回到顶部</span>
             </a>
           </div>
-          <div class="article-toc">
-            <div class="article-toc-title">Table of contents</div>
-            ${meta?.toc?.length
-            ? meta.toc.map(h => html`
-            <a href="#${h.id}" class="article-toc-l${h.level}">${h.text}</a>
-            `).join('')
-            : html`<span class="article-toc-nomenu">暂无目录</span>`}
-          </div>
-          <a class="article-back" href="#top-of-article">
-            <img class="article-back-icon" src="/${routes.public}/icon/back-to-top.svg" alt="back to top">
-            <span>回到顶部</span>
-          </a>
         </div>
       </div>
     `
