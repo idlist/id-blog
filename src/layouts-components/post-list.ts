@@ -47,7 +47,7 @@ const PostList: Layout<PostListProps> = () => {
           </div>
           ${Pagination().layout(meta, props)}
           `).join('')
-        : html`<div class="post-noarticle">${t.use('noPosts')}</div>`
+        : html`<div class="post-noarticle">${t.use('noPostsLong')}</div>`
     }
   }
 }

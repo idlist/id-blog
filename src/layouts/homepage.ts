@@ -70,7 +70,6 @@ const Homepage: Layout<HomepageProps> = () => {
               <code>//</code>
               ${t.use('sourceCodeOuter', html`
               <a class="homepage-source-link" href="https://github.com/idlist/id-blog">${t.use('sourceCodeInner')}</a>`)}
-              <code>//</code>
             </div>
             ${Tags().layout(meta, props)}
             ${Timeline().layout(meta, props)}

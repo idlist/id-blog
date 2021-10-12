@@ -1,6 +1,21 @@
 import type { I18nData } from './scripts/i18n-utils.js'
 
 const i18n: I18nData = {
+  articles: {
+    c: '文章',
+    j: '記事',
+    e: 'Articles'
+  },
+  language: {
+    c: '语言',
+    j: '言語',
+    e: 'Language'
+  },
+  toIndex: {
+    c: '个人页',
+    j: '個人ページ',
+    e: 'To Index'
+  },
   totalPosts: {
     c: '共有 {} 篇文章。',
     j: '総計 {} 編の記事。',
@@ -15,6 +30,11 @@ const i18n: I18nData = {
     c: '没有文章。',
     j: '記事がありません。',
     e: 'No articles.'
+  },
+  noPostsLong: {
+    c: '暂时没有这个语言的文章。',
+    j: 'この言語で書いた記事がまたありません。',
+    e: 'There are no articles in this language now.'
   },
   noTags: {
     c: '没有标签',
@@ -33,13 +53,13 @@ const i18n: I18nData = {
   },
   sourceCodeOuter: {
     c: '查看这个博客的 {}',
-    j: '{} を見る',
+    j: 'このブログの {} を見る',
     e: 'See {} of this blog'
   },
   sourceCodeInner: {
     c: '源码',
     j: 'ソースコード',
-    e: 'source codes'
+    e: 'source code'
   },
   backToTop: {
     c: '回到顶部',

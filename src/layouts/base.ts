@@ -32,11 +32,17 @@ const Base: Layout = () => {
         <div class="menu-fullscreen hidden">
           <div class="menu-fs-container">
             <a class="menu-fs-link" href="https://idl.ist/">
-              <span>To Index</span>
+              <span>${t.use('toIndex')}</span>
               <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
             </a>
             <hr class="menu-fs-hr">
-            <a class="menu-fs-link" href="${t.root}">Articles</a>
+            <div class="menu-fs-link-title">${t.use('language')}</div>
+            <a class="menu-fs-link" href="/">简体中文</a>
+            <a class="menu-fs-link" href="/e/">English</a>
+            <a class="menu-fs-link" href="/j/">日本語</a>
+            <hr class="menu-fs-hr">
+            <a class="menu-fs-link" href="${t.root}">${t.use('articles')}</a>
+            <hr class="menu-fs-hr">
           </div>
         </div>
         <header>
@@ -49,9 +55,17 @@ const Base: Layout = () => {
               <div>i'D Blog</div>
             </div>
             <div class="menu-landscape">
-              <a class="menu-link" href="${t.root}">Articles</a>
+              <a class="menu-link" href="${t.root}">${t.use('articles')}</a>
+              <div class="menu-link-dropdown">
+                <div>${t.use('language')}</div>
+                <div class="menu-link-dropdown-content">
+                  <a class="menu-link-dropdown-link" href="/">简体中文</a>
+                  <a class="menu-link-dropdown-link" href="/e/">English</a>
+                  <a class="menu-link-dropdown-link" href="/j/">日本語</a>
+                </div>
+              </div>
               <a class="menu-link" href="https://idl.ist/">
-                <span>To Index</span>
+                <span>${t.use('toIndex')}</span>
                 <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
               </a>
             </div>
