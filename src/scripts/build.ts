@@ -326,7 +326,7 @@ const processPosts = async (post: string) => {
   // Truncate summary
 
   let summary = $.text()
-  if (summary.length > 192) summary = summary.slice(0, 192).trim() + ' ......'
+  if (summary.length > 140) summary = summary.slice(0, 140).trim() + ' ......'
 
   // Extract table of contents from parsed HTML
 
