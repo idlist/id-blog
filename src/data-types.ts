@@ -77,6 +77,7 @@ export type Meta = Partial<PostMeta> & InheritMeta & TCategory
 
 export interface DefaultProps {
   [property: string]: unknown
+  lang?: TLang
   content?: string
 }
 

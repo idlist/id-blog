@@ -10,6 +10,8 @@ import Tags from '../layouts-components/tags.js'
 import Timeline from '../layouts-components/timeline.js'
 import PostList from '../layouts-components/post-list.js'
 
+import LanguageTemplate from '../scripts/i18n-utils.js'
+
 const routes = config.routes
 
 interface CategoryProps {
@@ -20,29 +22,31 @@ interface CategoryProps {
 
 const Category: Layout<CategoryProps> = () => {
   return {
-    layout: (meta, props) => html`
-    ${Container().layout(meta, {
-      content: html`
-      <div class="category-container">
-        <div class="category-sidebar">
-          ${Tags().layout(meta)}
-          ${Timeline().layout(meta)}
-        </div>
-        <div class="category">
-          <h1 class="category-info">
-            <span>${props?.type}</span>
-            <span class="category-name">${props?.category}</span>
-          </h1>
-          <div class="category-stat">
-            ${meta?.postNumber
-            ? html`<div>共有 <b>${meta?.postNumber}</b> 篇文章。</div>`
-            : html`<div>没有文章。</div>`}
+    layout: (meta, props) => {
+      const t = new LanguageTemplate(props?.lang)
+
+      return html`
+      ${Container().layout(meta, {
+        content: html`
+        <div class="category-container">
+          <div class="category-sidebar">
+            ${Tags().layout(meta)}
+            ${Timeline().layout(meta)}
           </div>
-          ${PostList().layout(meta, props)}
+          <div class="category">
+            <h1 class="category-info">
+              <span>${props?.type}</span>
+              <span class="category-name">${props?.category}</span>
+            </h1>
+            <div class="category-stat">
+              <div>${t.use('totalPosts', html`<b>${meta?.postNumber}</b>`)}</div>
+            </div>
+            ${PostList().layout(meta, props)}
+          </div>
         </div>
-      </div>
-    `})}
-    `,
+      `})}
+      `
+    },
     parentLayout: 'base',
     parentMeta: {
       head: html`

@@ -10,6 +10,8 @@ import PostList from '../layouts-components/post-list.js'
 import Tags from '../layouts-components/tags.js'
 import Timeline from '../layouts-components/timeline.js'
 
+import LanguageTemplate from '../scripts/i18n-utils.js'
+
 interface ContactProps {
   icon: string,
   link: string,
@@ -33,42 +35,45 @@ const routes = config.routes
 
 const Homepage: Layout = () => {
   return {
-    layout: (meta) => html`
-    ${Container().layout(meta, {
-      content: html`
-      <div class="homepage-container">
-        <div class="homepage-information">
-          <div class="homepage-me">
-            <div class="homepage-me-icon-container">
-              <img class="homepage-me-icon" src="/${routes.public}/idlist.png" alt="idlist">
+    layout: (meta, props) => {
+      const t = new LanguageTemplate(props?.lang)
+
+      return html`
+      ${Container().layout(meta, {
+        content: html`
+        <div class="homepage-container">
+          <div class="homepage-information">
+            <div class="homepage-me">
+              <div class="homepage-me-icon-container">
+                <img class="homepage-me-icon" src="/${routes.public}/idlist.png" alt="idlist">
+              </div>
+              <div class="homepage-me-name">i'DLisT</div>
             </div>
-            <div class="homepage-me-name">i'DLisT</div>
+            ${Contact().layout(meta, { icon: 'email', text: 'me@idl.ist', link: 'mailto:me@idl.ist' })}
+            ${Contact().layout(meta, { icon: 'home', text: 'idl.ist', link: 'https://idl.ist' })}
+            ${Contact().layout(meta, { icon: 'github', text: 'idlist', link: 'https://github.com/idlist' })}
+            ${Contact().layout(meta, { icon: 'twitter', text: '@i_dlist', link: 'https://twitter.com/i_dlist' })}
+            ${Contact().layout(meta, { icon: 'soundcloud', text: 'i\'DLisT', link: 'https://soundcloud.com/idlist' })}
+            <div class="homepage-stat">
+              ${meta?.postNumber
+              ? html`<div>${t.use('totalPosts', html`<b>${meta?.postNumber}</b>`)}</div>`
+              : html`<div>${t.use('noPosts')}</div>`}
+            </div>
+            <div class="homepage-source">
+              <code>//</code>
+              ${t.use('seeSourceCodeOuter', html`<a class="homepage-source-link" href="https://github.com/idlist/id-blog">${t.use('seeSourceCodeInner')}</a>`)}
+              <code>//</code>
+            </div>
+            ${Tags().layout(meta)}
+            ${Timeline().layout(meta)}
           </div>
-          ${Contact().layout(meta, { icon: 'email', text: 'me@idl.ist', link: 'mailto:me@idl.ist' })}
-          ${Contact().layout(meta, { icon: 'home', text: 'idl.ist', link: 'https://idl.ist' })}
-          ${Contact().layout(meta, { icon: 'github', text: 'idlist', link: 'https://github.com/idlist' })}
-          ${Contact().layout(meta, { icon: 'twitter', text: '@i_dlist', link: 'https://twitter.com/i_dlist' })}
-          ${Contact().layout(meta, { icon: 'soundcloud', text: 'i\'DLisT', link: 'https://soundcloud.com/idlist' })}
-          <div class="homepage-stat">
-            ${meta?.postNumber
-            ? html`<div>共有 <b>${meta?.postNumber}</b> 篇文章。</div>`
-            : html`<div>没有文章。</div>`}
+          <div class="homepage">
+          ${PostList().layout(meta, { route: routes.page })}
           </div>
-          <div class="homepage-source">
-            <code>//</code>
-            <span>看看这个博客的</span>
-            <a class="homepage-source-link" href="https://github.com/idlist/id-blog">源码</a>
-            <code>//</code>
-          </div>
-          ${Tags().layout(meta)}
-          ${Timeline().layout(meta)}
         </div>
-        <div class="homepage">
-        ${PostList().layout(meta, { route: routes.page })}
-        </div>
-      </div>
-    `})}
-    `,
+      `})}
+      `
+    },
     parentLayout: 'base',
     parentMeta: {
       head: html`

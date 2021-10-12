@@ -7,6 +7,9 @@ import config from '../config.js'
 
 import Container from '../layouts-components/container.js'
 
+import i18n from '../i18n.js'
+import { getLang } from '../scripts/i18n-utils.js'
+
 const routes = config.routes
 
 const Article: Layout = meta => {
@@ -42,7 +45,7 @@ const Article: Layout = meta => {
               ? meta.tags.map(tag => html`
                 <a class="article-tags-tagname" href="/${routes.tags}/${tag}">${tag.replace('_', ' ')}</a>
                 `).join('')
-              : html`<div class="article-tags-notag">没有标签</div>`}
+              : html`<div class="article-tags-notag">${i18n.noTags[getLang(props?.lang)]}</div>`}
             </div>
             <div class="article-item">
               <img class="article-item-icon-small" src="/${routes.public}/icon/creative-common.svg" alt="tags">
@@ -56,11 +59,11 @@ const Article: Layout = meta => {
               ? meta.toc.map(h => html`
               <a href="#${h.id}" class="article-toc-l${h.level}">${h.text}</a>
               `).join('')
-              : html`<span class="article-toc-nomenu">暂无目录</span>`}
+              : html`<span class="article-toc-nomenu">${i18n.noTOC[getLang(props?.lang)]}</span>`}
             </div>
             <a class="article-back" href="#top-of-article">
               <img class="article-back-icon" src="/${routes.public}/icon/back-to-top.svg" alt="back to top">
-              <span>回到顶部</span>
+              <span>${i18n.backToTop[getLang(props?.lang)]}</span>
             </a>
           </div>
         </div>

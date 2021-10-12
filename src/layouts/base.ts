@@ -3,11 +3,16 @@ import html from 'outdent'
 import type { Layout } from '../data-types.js'
 import config from '../config.js'
 
+import LanguageTemplate from '../scripts/i18n-utils.js'
+
 const routes = config.routes
 
 const Base: Layout = () => {
   return {
-    layout: (meta, props) => html`
+    layout: (meta, props) => {
+      const t = new LanguageTemplate(props?.lang)
+
+      return html`
       <!DOCTYPE html>
       <html lang="zh-CN">
 
@@ -31,7 +36,7 @@ const Base: Layout = () => {
               <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
             </a>
             <hr class="menu-fs-hr">
-            <a class="menu-fs-link" href="/">Articles</a>
+            <a class="menu-fs-link" href="${t.root}">Articles</a>
           </div>
         </div>
         <header>
@@ -44,7 +49,7 @@ const Base: Layout = () => {
               <div>i'D Blog</div>
             </div>
             <div class="menu-landscape">
-              <a class="menu-link" href="/">Articles</a>
+              <a class="menu-link" href="${t.root}">Articles</a>
               <a class="menu-link" href="https://idl.ist/">
                 <span>To Index</span>
                 <img class="menu-link-external" src="/${routes.public}/buttons/external.svg" alt="external">
@@ -63,7 +68,8 @@ const Base: Layout = () => {
       </body>
 
       </html>
-    `,
+      `
+    },
     unavailable: true
   }
 }

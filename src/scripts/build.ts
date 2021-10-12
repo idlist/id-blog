@@ -524,7 +524,8 @@ const renderLangPages = async (lang: TLang) => {
 
     const renderedHtml = renderPage(meta, {
       ...props,
-      content: postHtml
+      content: postHtml,
+      lang: lang
     })
 
     await mkdir(postRoute)
@@ -575,7 +576,8 @@ const renderLangPages = async (lang: TLang) => {
         i: i,
         length: pageNumber,
         route: `${dir.output}/${LangRoute}/${config.routes.page}`,
-        extraIndex: '..'
+        extraIndex: '..',
+        props: { lang: lang }
       })
     }))
   }
@@ -600,6 +602,7 @@ const renderLangPages = async (lang: TLang) => {
           route: `${dir.output}/${LangRoute}/${config.routes.tags}/${tag}`,
           extraIndex: '.',
           props: {
+            lang: lang,
             type: 'Tags: ',
             category: tag.replace('_', ' '),
             route: `${config.routes.tags}/${tag}`
@@ -634,6 +637,7 @@ const renderLangPages = async (lang: TLang) => {
           route: `${dir.output}/${LangRoute}/${config.routes.timeline}/${year}-${month}`,
           extraIndex: '.',
           props: {
+            lang: lang,
             type: 'Timeline: ',
             category: `${year} / ${month}`,
             route: `${config.routes.timeline}/${year}-${month}`
