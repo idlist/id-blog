@@ -5,13 +5,19 @@ interface RequiredMeta {
   layout: string
 }
 
+export const PostLang = ['c', 'j', 'e'] as const
+
+export type TPostLang = typeof PostLang[number]
+
 export interface RawPostMeta extends RequiredMeta {
   date: Date
+  lastUpdate?: Date
+  lang?:  string
   route?: string
   tags?: string
 }
 
-type ProcessedPostMeta = 'tags' | 'date'
+type ProcessedPostMeta = 'tags' | 'date' | 'lastUpdate'
 
 export interface TOCNode {
   text: string
@@ -19,15 +25,19 @@ export interface TOCNode {
   level: number
 }
 
+interface PostDate {
+  year: number
+  month: number
+  day: number
+}
+
 export interface PostMeta extends Omit<RawPostMeta, ProcessedPostMeta> {
   name: string
   hash: string
+  lang: TPostLang
   route: string
-  date: {
-    year: number
-    month: number
-    day: number
-  }
+  date: PostDate
+  lastUpdate: PostDate
   timestamp: number
   tags: string[]
   toc: TOCNode[]

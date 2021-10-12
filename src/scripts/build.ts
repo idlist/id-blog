@@ -16,7 +16,8 @@ import jsBeautify from 'js-beautify'
 import cheerio from 'cheerio'
 import html from 'outdent'
 
-import type { RawPostMeta, PostMeta, CategoryType, Meta } from '../data-types.js'
+import type { TPostLang, RawPostMeta, PostMeta } from '../data-types.js'
+import type { CategoryType, Meta } from '../data-types.js'
 import type { Layout, TOCNode, DefaultProps } from '../data-types.js'
 
 import config, { TConfig } from '../config.js'
@@ -191,11 +192,11 @@ const processPosts = async (post: string) => {
     if (!Category.allDate[meta.date.year][meta.date.month]) {
       Category.allDate[meta.date.year][meta.date.month] = []
     }
-    Category.allDate[meta.date.year][meta.date.month].push(meta.route)
+    Category.allDate[meta.date.year][meta.date.month].push(meta.name)
 
     for (const tag of meta.tags) {
       if (!Category.allTags[tag]) Category.allTags[tag] = []
-      Category.allTags[tag].push(meta.route)
+      Category.allTags[tag].push(meta.name)
     }
   }
 
@@ -237,13 +238,47 @@ const processPosts = async (post: string) => {
     return
   }
 
-  const missingMeta: (keyof RawPostMeta)[] = []
-  if (!rawMeta.title) missingMeta.push('title')
-  if (!rawMeta.date || !(rawMeta.date instanceof Date)) missingMeta.push('date')
-  if (!rawMeta.layout) missingMeta.push('layout')
-  if (missingMeta.length) {
+  const wrongMeta: (keyof RawPostMeta)[] = []
+
+  if (!rawMeta.title) wrongMeta.push('title')
+  if (!rawMeta.date || !(rawMeta.date instanceof Date)) wrongMeta.push('date')
+  if (!rawMeta.layout) wrongMeta.push('layout')
+  if (wrongMeta.length) {
     console.warn(`${c.yellow('[W]')} Post ${c.green(post)} does not have or has wrong ` +
-      `metadata: ${missingMeta.map(str => c.blue(str)).join(', ')}. skipped.`)
+      `metadata: ${wrongMeta.map(str => c.blue(str)).join(', ')}. skipped.`)
+    return
+  }
+
+  // See if the metadata post is duplicated
+  // (Same route and language)
+
+  let postLang: TPostLang
+  switch (rawMeta.lang?.toLowerCase()) {
+    case 'j':
+    case 'ja':
+    case 'jp':
+    case 'japanese':
+      postLang = 'j'
+      break
+    case 'e':
+    case 'en':
+    case 'english':
+      postLang = 'e'
+      break
+    default:
+      postLang = 'c'
+      break
+  }
+
+  const postRoute = rawMeta.route
+    ? slugify(rawMeta.route, { fixChineseSpacing: true })
+    : slugify(rawMeta.title, { fixChineseSpacing: true })
+
+  if (Object.values(AllMeta).find(existedMeta => {
+    return existedMeta.route == postRoute && existedMeta.lang == postLang
+  })) {
+    console.warn(`${c.yellow('[W]')} Metadata of post ${c.green(post)} ` +
+      'has dupicated route with previous posts, skipped.')
     return
   }
 
@@ -333,25 +368,33 @@ const processPosts = async (post: string) => {
   await writeFile(`${dir.cache}/${postName}.html`, parsedArticle)
   console.log(`${c.blue('[I]')} Cache built for ${c.green(post)}.`)
 
-  // Summarize metadata
+  // Process and summarize metadata
 
   const processTags = (tagString: string): string[] => {
     const tags = tagString.split(' ').map(tag => tag.toLowerCase())
     return [...new Set(tags)].sort()
   }
 
+  const postDate = {
+    year: rawMeta.date.getFullYear(),
+    month: rawMeta.date.getMonth() + 1,
+    day: rawMeta.date.getDate()
+  }
+
+  const lastUpdateDate = rawMeta.lastUpdate ? {
+    year: rawMeta.lastUpdate.getFullYear(),
+    month: rawMeta.lastUpdate.getMonth() + 1,
+    day: rawMeta.lastUpdate.getDate()
+  } : postDate
+
   const meta: PostMeta = {
     ...rawMeta,
     name: postName,
     hash: contentHash,
-    route: rawMeta.route
-      ? slugify(rawMeta.route, { fixChineseSpacing: true })
-      : slugify(rawMeta.title, { fixChineseSpacing: true }),
-    date: {
-      year: rawMeta.date.getFullYear(),
-      month: rawMeta.date.getMonth() + 1,
-      day: rawMeta.date.getDate()
-    },
+    lang: postLang,
+    route: postRoute,
+    date: postDate,
+    lastUpdate: lastUpdateDate,
     timestamp: rawMeta.date.getTime(),
     tags: rawMeta.tags ? processTags(rawMeta.tags) : [],
     toc: toc,
@@ -360,11 +403,6 @@ const processPosts = async (post: string) => {
 
   // Categorize metadata
 
-  if (Object.values(AllMeta).find(existedMeta => existedMeta.route == meta.route)) {
-    console.warn(`${c.yellow('[W]')} Metadata of post ${c.green(post)} ` +
-      'has dupicated route with previous posts, skipped.')
-    return
-  }
   AllMeta[postName] = meta
   categorizeMeta(meta)
 }
@@ -381,7 +419,6 @@ await Promise.all([
   // Copy assets to blog directory
   copyAssets()
 ])
-
 
 // Write metadata cache
 
@@ -506,8 +543,9 @@ const renderHomepage = async () => {
 
 const renderTags = async () => {
   const renderSingleTag = async (tag: string) => {
-    const AllMetaUnderTag = AllMetaArray.filter(meta => meta.tags.includes(tag))
-    const pageNumber = Math.ceil(AllMetaUnderTag.length / config.postPerPage)
+    const postWithTag = Category.allTags[tag]
+    const allMetaWithTag = postWithTag.map(postName => AllMeta[postName])
+    const pageNumber = Math.ceil(allMetaWithTag.length / config.postPerPage)
 
     const pageIndex: number[] = []
     for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
@@ -516,7 +554,7 @@ const renderTags = async () => {
       await renderPagination({
         title: html`Tag: ${tag} | i'D Blog`,
         layout: 'category',
-        allMeta: AllMetaUnderTag
+        allMeta: allMetaWithTag
       }, {
         i: i,
         length: pageNumber,
@@ -539,10 +577,9 @@ const renderTags = async () => {
 
 const renderTimeline = async () => {
   const renderSingleTimeline = async (year: number, month: number) => {
-    const AllMetaUnderTime = AllMetaArray.filter(meta => {
-      return meta.date.year == year && meta.date.month == month
-    })
-    const pageNumber = Math.ceil(AllMetaUnderTime.length / config.postPerPage)
+    const postWithTime = Category.allDate[year][month]
+    const allMetaWithTime = postWithTime.map(postName => AllMeta[postName])
+    const pageNumber = Math.ceil(allMetaWithTime.length / config.postPerPage)
 
     const pageIndex: number[] = []
     for (let i = 1; i <= pageNumber; i++) pageIndex.push(i)
@@ -551,7 +588,7 @@ const renderTimeline = async () => {
       await renderPagination({
         title: html`Timeline: ${year} / ${month} | i'D Blog`,
         layout: 'category',
-        allMeta: AllMetaUnderTime
+        allMeta: allMetaWithTime
       }, {
         i: i,
         length: pageNumber,
