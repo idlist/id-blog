@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+// Utterance comments: https://utteranc.es/
 
 import html from 'outdent'
 
@@ -28,6 +29,15 @@ const Article: Layout = meta => {
             <div id="top-of-article"></div>
             <h1 class="article-title">${meta?.title}</h1>
             ${props?.content}
+            <script
+              src="https://utteranc.es/client.js"
+              repo="idlist/id-blog-comments"
+              issue-term="pathname"
+              label="comments"
+              theme="github-light"
+              crossorigin="anonymous"
+              async>
+            </script>
           </article>
           <div class="article-information">
             <div class="article-me">
