@@ -1,6 +1,6 @@
 import dynamicLayout from './dynamic-layout'
 
-const Information = document.querySelector('.article-information') as HTMLElement
+const Sidebar = document.querySelector('.article-sidebar') as HTMLElement
 const Me = document.querySelector('.article-me') as HTMLElement
 
 const offsetLimit = 16 * 6
@@ -8,22 +8,22 @@ const offsetLimit = 16 * 6
 let state = false
 
 const addSticky = () => {
-  const elWidth = Information.clientWidth
-  const elRight = document.body.offsetWidth - Information.offsetLeft - Information.offsetWidth
+  const elWidth = Sidebar.clientWidth
+  const elRight = document.body.offsetWidth - Sidebar.offsetLeft - Sidebar.offsetWidth
 
   state = true
   Me.classList.add('hidden')
-  Information.classList.add('sticky')
-  Information.style.width = `${elWidth}px`
-  Information.style.right = `${elRight}px`
+  Sidebar.classList.add('sticky')
+  Sidebar.style.width = `${elWidth}px`
+  Sidebar.style.right = `${elRight}px`
 }
 
 const removeSticky = () => {
   state = false
   Me.classList.remove('hidden')
-  Information.classList.remove('sticky')
-  Information.style.width = ''
-  Information.style.right = ''
+  Sidebar.classList.remove('sticky')
+  Sidebar.style.width = ''
+  Sidebar.style.right = ''
 }
 
 const toggleSticky = () => {

@@ -25,10 +25,13 @@ const Article: Layout = meta => {
       ${Container().layout(meta, {
         content: html`
         <div class="article-container">
-          <article>
-            <div id="top-of-article"></div>
-            <h1 class="article-title">${meta?.title}</h1>
-            ${props?.content}
+          <div>
+            <article>
+              <div id="top-of-article"></div>
+              <h1 class="article-title">${meta?.title}</h1>
+              ${props?.content}
+            </article>
+            <div id="end-of-article"></div>
             <script
               src="https://utteranc.es/client.js"
               repo="idlist/id-blog-comments"
@@ -38,15 +41,15 @@ const Article: Layout = meta => {
               crossorigin="anonymous"
               async>
             </script>
-          </article>
-          <div class="article-information">
+          </div>
+          <div class="article-sidebar">
             <div class="article-me">
               <div class="article-me-icon-container">
                 <img class="article-me-icon" src="/${routes.public}/idlist.png" alt="idlist">
               </div>
               <a class="article-me-text" href="mailto:me@idl.ist">me@idl.ist</a>
             </div>
-            <div class="article-sidebar">
+            <div class="article-hover">
               <div class="article-item">
                 <img class="article-item-icon" src="/${routes.public}/icon/time.svg" alt="time">
                 <span>${date.year} / ${date.month} / ${date.day}</span>
