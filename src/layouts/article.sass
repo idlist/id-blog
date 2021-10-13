@@ -1,7 +1,6 @@
 @import ../layouts-components/utils
 @import ../layouts-components/container
 
-// https://github.com/PrismJS/prism-themes/blob/master/themes/prism-vsc-dark-plus.css
 @import ../assets/vscode.css
 
 @mixin padding-fixed-header
@@ -185,17 +184,19 @@
     width: 1.75rem
 
 .article-anchor
-  margin-left: -1.625rem
-  margin-right: 0.5rem
+  display: inline-flex
 
-  width: 1.125rem
-  height: 1.125rem
+  &-icon
+    margin-left: -1.625rem
+    margin-right: 0.5rem
+
+    width: 1.125rem
+    height: 1.125rem
 
 article
   padding-left: 2rem
 
   h1, h2, h3, h4, h5, h6
-    display: flex
     margin: 0.5rem 0
 
     &::before
@@ -221,9 +222,6 @@ article
     font-size: 1.25rem
     font-weight: normal
 
-  p
-    line-height: 1.75
-
   p, ol, ul
     margin: 0.75rem 0
 
@@ -238,6 +236,10 @@ article
 
   li
     margin: 0.75rem 0
+
+  li::marker
+    font-weight: bold
+    color: var(--color-green)
 
   .table-container
     width: 100%
@@ -346,12 +348,13 @@ article
 
   pre code
     background-color: transparent
+    color: #fff
 
   code
     display: inline
     vertical-align: text-bottom
 
-    font-size: 0.875rem
+    font-size: 0.875em
     line-height: 1.5
     padding: 0.125rem 0.25rem
     border-radius: 0.25rem
@@ -364,3 +367,6 @@ article
 
     tab-size: 2
     line-height: 1.25rem
+
+  b, strong
+    color: var(--color-green)

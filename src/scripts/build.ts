@@ -15,6 +15,7 @@ import prismLangs from 'prismjs/components/index.js'
 import jsBeautify from 'js-beautify'
 import cheerio from 'cheerio'
 import html from 'outdent'
+import isFullwidthCodePoint from 'is-fullwidth-code-point'
 
 import { Lang, TLang, DefaultLang } from '../data-types.js'
 import type { RawPostMeta, PostMeta } from '../data-types.js'
@@ -236,8 +237,9 @@ const processPosts = async (post: string) => {
 
   const metaSection = content.indexOf(metaDelimiter, metaDelimiter.length)
   if (metaSection === -1) {
-    console.warn(`${c.yellow('[W]')} Post ${c.green(post)}` +
+    console.warn(`${c.yellow('[W]')} Post ${c.green(post)} ` +
       'does not contain ending delimiter of metadata. skipped.')
+    return
   }
 
   const metaString = content.slice(metaDelimiter.length, metaSection)
@@ -325,8 +327,19 @@ const processPosts = async (post: string) => {
 
   // Truncate summary
 
-  let summary = $.text()
-  if (summary.length > 140) summary = summary.slice(0, 140).trim() + ' ......'
+  const rawSummary = $.text()
+  let summary = ''
+  let summaryLength = 0
+  const summaryLimit = config.summaryLimit * 2.5
+
+  for (let i = 0; i < rawSummary.length; i++) {
+    summary += rawSummary[i]
+    summaryLength += isFullwidthCodePoint(rawSummary.codePointAt(i) ?? 0) ? 2.5 : 1
+    if (summaryLength > summaryLimit) {
+      summary = summary.trim() + ' ......'
+      break
+    }
+  }
 
   // Extract table of contents from parsed HTML
 
@@ -345,11 +358,9 @@ const processPosts = async (post: string) => {
     level.push(node.level)
 
     $(header).html(html`
-    <a href="#${node.id}" aria-hidden="true">
-      <img class="article-anchor" src="/${config.routes.public}/buttons/link.svg">
-    </a>
-    ${$(header).html()}
-    `)
+    <a class="article-anchor" href="#${node.id}" aria-hidden="true">
+      <img class="article-anchor-icon" src="/${config.routes.public}/buttons/link.svg">
+    </a>${$(header).html()}`)
   })
 
   const parsedLevel: number[] = []

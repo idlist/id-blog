@@ -27,6 +27,7 @@ interface TConfig {
     timeline: string
   }
   postPerPage: number
+  summaryLimit: number
 }
 
 const config = (await import(`file://${cwd()}/.blogconfig.js`)).default as TConfig

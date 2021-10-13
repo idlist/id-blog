@@ -24,4 +24,5 @@ export default {
     timeline: 'tl',
   },
   postPerPage: 10,
+  summaryLimit: 100
 }
