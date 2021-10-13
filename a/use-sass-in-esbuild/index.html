@@ -67,24 +67,58 @@
           <body>
             <p><a href="https://esbuild.github.io/">esbuild</a> 是一个非常快的 JavaScript 打包 / 转译器，虽然说覆盖的功能没有 Webpack 等老牌打包器全面，但是它足够用，配置简捷，而且最重要的是它实在是<strong>太快了</strong>。</p>
             <p>而 <a href="https://sass-lang.com/">Sass</a> 是一个常用的 CSS 扩展语言，优点有不用打分号和大括号、支持嵌套选择器和便利的 At-Rules。但是 Sass 并不能直接被浏览器识别，需要转译到 CSS。这篇文章主要分享一下我在 esbuild 配 Sass 的过程中遇到的一些问题。</p>
-            <h2 id="principle"><a href="#principle" aria-hidden="true">
-                <img class="article-anchor" src="/public/buttons/link.svg">
-              </a> 原理</h2>
-            <p>esbuild 自己是有 CSS 打包器的，它会识别 <code>@import</code> 规则和 <code>url()</code> 中的路径，并在 <code>bundle: true</code> （开启打包）的前提下将 CSS 打包成单一文件。</p>
-            <p>Sass 转译器的作用其实只是将 Sass 转译到 CSS，然后再将转译后的 CSS 递给 esbuild，进行后续处理。这一点相当重要，因为后面提到的 <a href="#faq">问题</a> 的根源有很多在此。</p>
-            <h2 id="sass-plugins-of-esbuild"><a href="#sass-plugins-of-esbuild" aria-hidden="true">
-                <img class="article-anchor" src="/public/buttons/link.svg">
-              </a> esbuild 的 Sass 插件</h2>
-            <p>在有轮子的前提下当然是用别人造好的轮子了。支持在 esbuild 中引入 Sass 的、而且能用的社区插件有两个：<a href="https://github.com/koluch/esbuild-plugin-sass/">esbuild-plugin-sass</a> 和 <a href="https://github.com/glromeo/esbuild-sass-plugin/">esbuild-sass-plugin</a>。结论是在只转译 Sass 的前提下，两个插件的转译结果是一致的。速度上，单次构建时 esbuild-plugin-sass 的速度更快，而在热重载环境下（即配置了 <code>watch: true</code> 或者 <code>incremental: true</code> 情况下）esbuild-sass-plugin 的后续构建速度更快。</p>
-            <p>而 esbuild-sass-plugin 提供了更多的功能（如支持 PostCSS 和 <code>lit-css</code> 等），如果有这些需求，就只能选择 esbuild-sass-plugin 了。</p>
-            <h2 id="faq"><a href="#faq" aria-hidden="true">
-                <img class="article-anchor" src="/public/buttons/link.svg">
-              </a> 常见问题</h2>
-            <h6 id="q-weishimeyouxie-sass-depeizhixiangbuqizuoyong">Q: 为什么有些 Sass 的配置项不起作用？</h6>
+            <h2 id="yuanli"><a class="article-anchor" href="#yuanli" aria-hidden="true">
+                <img class="article-anchor-icon" src="/public/buttons/link.svg">
+              </a>原理</h2>
+            <p>esbuild 自己是有 CSS 打包器的，它会识别 <code>@import</code> 规则和 <code>url()</code> 中的路径，并在 <code>bundle: true</code>（开启打包）的前提下将 CSS 打包成单一文件。</p>
+            <p>Sass 转译器的作用其实只是将 Sass 转译到 CSS，然后再将转译后的 CSS 递给 esbuild，进行后续处理。这一点相当重要，因为后面提到的问题的根源有很多在此。</p>
+            <p>最基础的 Sass 插件实现可以参照 <a href="https://github.com/fayismahmood/sassEs">essass</a> 这个插件的 <a href="https://github.com/fayismahmood/sassEs/blob/master/index.js"><code>index.js</code></a>，源码简单粗暴。</p>
+            <h2 id="esbuild-de-sass-chajian"><a class="article-anchor" href="#esbuild-de-sass-chajian" aria-hidden="true">
+                <img class="article-anchor-icon" src="/public/buttons/link.svg">
+              </a>esbuild 的 Sass 插件</h2>
+            <p>除了上面的 essass, 支持在 esbuild 中引入 Sass 的、常用的社区插件有两个：<a href="https://github.com/koluch/esbuild-plugin-sass/">esbuild-plugin-sass</a> 和 <a href="https://github.com/glromeo/esbuild-sass-plugin/">esbuild-sass-plugin</a>。在只转译 Sass 的前提下，两个插件的转译结果是一致的。而在速度上，单次构建时 esbuild-plugin-sass 的速度更快，在热重载环境下（即配置了 <code>watch: true</code> 或者 <code>incremental: true</code> 的情况下）esbuild-sass-plugin 的后续构建速度更快。</p>
+            <p>另一方面，esbuild-sass-plugin 提供了更多的功能（如支持 PostCSS 和 <code>lit-css</code> 等），如果有这些需求，就只能选择 esbuild-sass-plugin 了。</p>
+            <h2 id="changjianwenti"><a class="article-anchor" href="#changjianwenti" aria-hidden="true">
+                <img class="article-anchor-icon" src="/public/buttons/link.svg">
+              </a>常见问题</h2>
+            <h4 id="q-weishimeyouxie-sass-depeizhixiangbuqizuoyong"><a class="article-anchor" href="#q-weishimeyouxie-sass-depeizhixiangbuqizuoyong" aria-hidden="true">
+                <img class="article-anchor-icon" src="/public/buttons/link.svg">
+              </a>Q: 为什么有些 Sass 的配置项不起作用？</h4>
             <p>这里的“有些配置项”是指的 <code>outputStyle</code>, <code>indentType</code>, <code>indentWidth</code> 等用于调整输出格式的配置项。因为 Sass 转译器只是将 Sass 转译成 CSS，接下来 esbuild 会接着处理转译后的 CSS。所以即使在 Sass 中设置了一道输出格式，也会被上游的 esbuild 覆盖。</p>
-            <p>也就是说，真正起作用的是 esbuild 中的 <code>minify</code>。如果想实现 Sass 中 <code>outputStyle: compressed</code> 的效果，那么应该在 esbuild 中设置 <code>minify: true</code>。如果有其他设置输出格式的需求，需要直接对 esbuild 输出的结果进行二次处理。</p>
-            <h6 id="q-ruhechuli-sass-zhongyinyongdejingtaiziyuan">Q: 如何处理 Sass 中引用的静态资源？</h6>
-            <p>其实这个问题等价于“如何处理 CSS 中引用的静态资源”。</p>
+            <p>也就是说，真正起作用的是 esbuild 中的 <code>minify</code>。如果想实现 Sass 中 <code>outputStyle: compressed</code> 的效果，那么应该在 esbuild 中设置 <code>minify: true</code>。如果有其他对于输出格式的需求，则可能需要使用其他的工具，直接对 esbuild 的输出结果进行二次处理。</p>
+            <h4 id="q-ruhechuli-sass-zhongyinyongdejingtaiziyuan"><a class="article-anchor" href="#q-ruhechuli-sass-zhongyinyongdejingtaiziyuan" aria-hidden="true">
+                <img class="article-anchor-icon" src="/public/buttons/link.svg">
+              </a>Q: 如何处理 Sass 中引用的静态资源？</h4>
+            <p>其实这个问题等价于“如何处理 CSS 中引用的静态资源”，然后因为 CSS 是由 esbuild 处理，所以这个问题又转化为“如何处理 esbuild 中引用的静态资源”。</p>
+            <p>首先，一般情况下我们还是想把 CSS 文件打包成单一文件（即 <code>bundle: true</code>）。在打包的前提下，esbuild 中引用静态文件一共有 2 个常用的解决方案。在下面，我们假设这个静态文件为字体 <code>my-font.woff2</code>。</p>
+            <h6 id="1.-shiyong-data-url-loader-huozhe-file-loader"><strong>1.</strong> 使用 Data URL loader 或者 File loader</h6>
+            <p>Data URL loader 会将静态文件通过 base64 编码成字符串，并内嵌进 CSS 中，而 File loader 会将静态文件复制至根目录（配置项 <code>outdir</code>，若没有配置则为最近公共目录）下，并改写 <code>@import</code> 和 <code>url()</code> 的路径以匹配新的文件位置。在 esbuild 中，需要手动对 <code>loader</code> 配置项进行配置以在文件中引用对应后缀名的静态文件，如 <code>loader: { '.woff2': 'dataurl' }</code> 或者 <code>loader: { '.woff2': 'file' }</code>。前者用更大的 CSS 文档换取了更少的请求数，而后者则反过来，具体选择哪种则是萝卜白菜了。</p>
+            <h6 id="2.-shezhilujingwei-external-bingshoudongfuzhijingtaiwenjian"><strong>2.</strong> 设置路径为 <code>external</code> 并手动复制静态文件</h6>
+            <p>如果不满足于 Data URL loader 增加 CSS 的大小或者 File loader 给静态文件的名字中加 hash 的行为（而且还找不到地方关掉），那么可以考虑准备一个 <code>public</code> 文件夹，在最后输出的时候手动复制这个文件夹到输出目录（比如用 Node.js v16.7 最新最酷炫的 <a href="https://nodejs.org/dist/latest-v16.x/docs/api/fs.html#fs_fspromises_cp_src_dest_options"><code>fs.cp</code></a>）。</p>
+            <p>这样做的话，为了让 esbuild 在打包的时候忽略掉这个 <code>public</code> 文件夹，需要设置对应的 <a href="https://esbuild.github.io/api/#external"><code>external</code></a> 配置项。而值得注意的是，<code>external</code> 的路径需要和 <code>@import</code> 与 <code>url()</code> 中的路径严格匹配。比如说，在 <code>@font-face</code> 中这样创建了一个新字体：</p>
+            <div class="code-wrapper">
+              <div class="code-copy-success hidden">Copy Succeeded!</div>
+              <div class="code-copy">
+                <img class="code-copy-icon" alt="copy" src="/public/buttons/copy.svg">
+              </div>
+              <pre><code class="language-sass"><span class="token atrule-line"><span class="token atrule">@font-face</span></span>
+<span class="token property-line">  <span class="token property">font-family</span><span class="token punctuation">:</span> 'My Font'</span>
+<span class="token property-line">  <span class="token property">font-weight</span><span class="token punctuation">:</span> normal</span>
+<span class="token property-line">  <span class="token property">src</span><span class="token punctuation">:</span> url('<span class="token operator">/</span>public<span class="token operator">/</span>fonts<span class="token operator">/</span>my-font.woff2')</span></code></pre>
+            </div>
+            <p>此处的 <code>url()</code> 是字体文件相对输出目录根目录的路径。那么应该配置：</p>
+            <div class="code-wrapper">
+              <div class="code-copy-success hidden">Copy Succeeded!</div>
+              <div class="code-copy">
+                <img class="code-copy-icon" alt="copy" src="/public/buttons/copy.svg">
+              </div>
+              <pre><code class="language-js">esbuild<span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token comment">// ...other configurations</span>
+  external<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'/public/*'</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+            </div>
+            <p>配置 <code>external: ['public/*']</code> 则并不会让 esbuild 忽略 <code>/public/*</code>，因为它们本来就是两个不同的路径。在这个配置下，<code>url('public/...')</code> 才会被忽略。当然，也可以选择直接配置 <code>external: ['/*']</code>，然后所有静态文件的路径全写成相对根目录的路径。我反正是这么做了，不过就不作推荐了，只是说有这么一回事。</p>
+            <p>最后，在不打包的情况下，esbuild 则不会对 <code>@import</code> 和 <code>url()</code> 中的路径进行改动，该怎样就怎样。</p>
           </body>
 
           </html>
@@ -103,7 +137,7 @@
             </div>
             <div class="article-item">
               <img class="article-item-icon" src="/public/icon/update.svg" alt="time">
-              <span>2021 / 10 / 11</span>
+              <span>2021 / 10 / 13</span>
             </div>
             <div class="article-tags">
               <img class="article-tags-icon" src="/public/icon/tags.svg" alt="tags">
@@ -115,7 +149,7 @@
             </div>
             <div class="article-toc">
               <div class="article-toc-title">Table of contents</div>
-              <a href="#principle" class="article-toc-l1">原理</a><a href="#sass-plugins-of-esbuild" class="article-toc-l1">esbuild 的 Sass 插件</a><a href="#faq" class="article-toc-l1">常见问题</a>
+              <a href="#yuanli" class="article-toc-l1">原理</a><a href="#esbuild-de-sass-chajian" class="article-toc-l1">esbuild 的 Sass 插件</a><a href="#changjianwenti" class="article-toc-l1">常见问题</a><a href="#q-weishimeyouxie-sass-depeizhixiangbuqizuoyong" class="article-toc-l2">Q: 为什么有些 Sass 的配置项不起作用？</a><a href="#q-ruhechuli-sass-zhongyinyongdejingtaiziyuan" class="article-toc-l2">Q: 如何处理 Sass 中引用的静态资源？</a>
             </div>
             <a class="article-back" href="#top-of-article">
               <img class="article-back-icon" src="/public/icon/back-to-top.svg" alt="back to top">
