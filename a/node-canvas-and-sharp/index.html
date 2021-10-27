@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>如何共同使用 node-canvas 和 sharp？ | i'D Blog</title>
+  <link rel="shortcut icon" type="image/png" href="/public/favicon.png">
+  <link rel="stylesheet" type="text/css" href="/assets/base.css">
+  <link rel="stylesheet" type="text/css" href="/assets/article.css">
+</head>
+
+<body>
+  <a class="menu-expander">
+    <img class="menu-button" src="/public/buttons/menu.svg" alt="menu_button">
+  </a>
+  <div class="menu-fullscreen hidden">
+    <div class="menu-fs-container">
+      <a class="menu-fs-link" href="https://idl.ist/">
+        <span class="menu-fs-link-text">个人页</span>
+        <img class="menu-fs-link-external" src="/public/buttons/external.svg" alt="external">
+      </a>
+      <hr class="menu-fs-hr">
+      <div class="menu-fs-link-title">语言</div>
+      <a class="menu-fs-link" href="/">简体中文</a>
+      <a class="menu-fs-link" href="/e/">English</a>
+      <a class="menu-fs-link" href="/j/">日本語</a>
+      <hr class="menu-fs-hr">
+      <a class="menu-fs-link" href="/">文章</a>
+      <hr class="menu-fs-hr">
+    </div>
+  </div>
+  <header>
+    <div class="header-container">
+      <div class="header">
+        <img class="header-banner" src="/public/banner.png" alt="banner">
+        <hr class="header-divider">
+        <div>i'D Blog</div>
+      </div>
+      <div class="menu-landscape">
+        <a class="menu-link" href="/">文章</a>
+        <div class="menu-link-dropdown">
+          <div>语言</div>
+          <div class="menu-link-dropdown-content">
+            <a class="menu-link-dropdown-link" href="/">简体中文</a>
+            <a class="menu-link-dropdown-link" href="/e/">English</a>
+            <a class="menu-link-dropdown-link" href="/j/">日本語</a>
+          </div>
+        </div>
+        <a class="menu-link" href="https://idl.ist/">
+          <span>个人页</span>
+          <img class="menu-link-external" src="/public/buttons/external.svg" alt="external">
+        </a>
+      </div>
+    </div>
+  </header>
+  <div class="container-wrapper">
+    <div class="container">
+      <div class="article-container">
+        <div>
+          <article>
+            <div id="top-of-article"></div>
+            <h1 class="article-title">如何共同使用 node-canvas 和 sharp？</h1>
+            <html>
+
+            <head></head>
+
+            <body>
+              <p><a href="https://github.com/Automattic/node-canvas">node-canvas</a> 是目前在 Node.js 中不使用无头浏览器的前提下，生成带文字的图片的几乎唯一选择。而 <a href="https://www.npmjs.com/package/sharp">sharp</a> 则是一个高效的图像处理库。两者的功能侧重不同，前者强于从零生成图像，而后者强于处理图像，所以经常会有开发者希望在同一个项目中同时使用这两个库，然后就遇到了这个问题：</p>
+              <p><code>The specified procedure could not be found.</code></p>
+              <p>然后，如果你因为标题而点开了这篇文章，那么，很遗憾，接下来是“听君一席话，如听一席话”时间：</p>
+              <p>在 <strong>Windows</strong> 下，你现在 <strong>无法</strong> 共同使用 node-canvas 和 sharp</p>
+              <h2 id="weishime"><a class="article-anchor" href="#weishime" aria-hidden="true">
+                  <img class="article-anchor-icon" src="/public/buttons/link.svg">
+                </a>为什么？</h2>
+              <p>在 sharp 的 <a href="https://sharp.pixelplumbing.com/install#known-conflicts">文档</a> 中注明了导致这一冲突的原因：node-canvas 在 Windows 上使用的预编译库使用的是上古版本的 GTK 2，它的上次更新还在 2011 年；而这和 sharp 使用的预编译库相冲突。node-canvas 的 issue <a href="https://github.com/Automattic/node-canvas/issues/930">#930</a> 也追踪了这一点。</p>
+              <h2 id="zenmeban"><a class="article-anchor" href="#zenmeban" aria-hidden="true">
+                  <img class="article-anchor-icon" src="/public/buttons/link.svg">
+                </a>怎么办？</h2>
+              <p>因为这个冲突只出现在 Windows 下，所以如果你的开发机使用的是非 Windows 系统，那么自然就不存在这个问题。但是现阶段，这个问题 <strong>无法解决</strong>，只能静待 node-canvas 的后续更新。</p>
+              <p>当然，也不是所有的人都等得起。比如，<a href="https://github.com/samizdatco/skia-canvas">skia-canvas</a> 就是一个企图替代 node-canvas 的库，仓库建立于 2020 年，使用 <a href="https://skia.org/">Skia</a> 而不是 node-canvas 使用的 <a href="https://www.cairographics.org/">Cairo</a> 进行图像生成与处理，而且它不与 sharp 冲突。当然，另一方面，因为它更加新，所以可能遇到难以预测的问题。</p>
+              <p>不过，在一些新的 issue 中，node-canvas 的开发者也表示有考虑将图形库从 Cairo 换到 Skia，不过只是“考虑”，等到真的实装要到猴年马月去了，而且说不定就摸了。</p>
+            </body>
+
+            </html>
+          </article>
+          <div id="end-of-article"></div>
+          <script src="https://utteranc.es/client.js" repo="idlist/id-blog-comments" issue-term="pathname" label="comments" theme="github-light" crossorigin="anonymous" async>
+          </script>
+        </div>
+        <div class="article-sidebar">
+          <div class="article-me">
+            <div class="article-me-icon-container">
+              <img class="article-me-icon" src="/public/idlist.png" alt="idlist">
+            </div>
+            <a class="article-me-text" href="mailto:me@idl.ist">me@idl.ist</a>
+          </div>
+          <div class="article-hover">
+            <div class="article-item">
+              <img class="article-item-icon" src="/public/icon/time.svg" alt="time">
+              <span>2021 / 10 / 27</span>
+            </div>
+            <div class="article-item">
+              <img class="article-item-icon" src="/public/icon/update.svg" alt="time">
+              <span>2021 / 10 / 27</span>
+            </div>
+            <div class="article-tags">
+              <img class="article-tags-icon" src="/public/icon/tags.svg" alt="tags">
+              <a class="article-tags-tagname" href="/tags/node-canvas">node-canvas</a><a class="article-tags-tagname" href="/tags/nodejs">nodejs</a><a class="article-tags-tagname" href="/tags/sharp">sharp</a>
+            </div>
+            <div class="article-item">
+              <img class="article-item-icon-small" src="/public/icon/creative-common.svg" alt="tags">
+              <a class="article-item-link" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"> CC-BY-NC-SA 4.0 </a>
+            </div>
+            <div class="article-toc">
+              <div class="article-toc-title">Table of contents</div>
+              <a href="#weishime" class="article-toc-l1">为什么？</a><a href="#zenmeban" class="article-toc-l1">怎么办？</a>
+            </div>
+            <a class="article-back" href="#top-of-article">
+              <img class="article-back-icon" src="/public/icon/back-to-top.svg" alt="back to top">
+              <span>回到顶部</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="article-back-mobile" href="#top-of-article">
+    <img class="article-back-mobile-button" src="/public/buttons/back-to-top.svg" alt="menu_button">
+  </a>
+  </div>
+  <div id="bg-tiles"></div>
+  <script type="module" src="/assets/base.js"></script>
+  <script type="module" src="/assets/article.js"></script>
+</body>
+
+</html>
