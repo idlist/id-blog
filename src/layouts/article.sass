@@ -257,13 +257,17 @@ article
   img
     width: 100%
 
-  img.image-small
+  .image-small, .image-middle, .image-large
+    display: flex
+    justify-content: center
+
+  .image-small > img
     width: 200px
 
-  img.image-middle
+  .image-middle > img
     width: 400px
 
-  img.image-large
+  .image-large > img
     width: 600px
 
     @media (max-width: $screen-middle)
