@@ -2,7 +2,7 @@
 title: Photoshop 2020 鼠标指针消失的解决方法
 route: ps-2020-mouse-disappear
 date: 2021-11-05
-tags: photoshop drawing
+tags: drawing photoshop
 layout: article
 ---
 

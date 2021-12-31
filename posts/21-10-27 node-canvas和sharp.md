@@ -2,7 +2,7 @@
 title: 如何共同使用 node-canvas 和 sharp？
 route: node-canvas-and-sharp
 date: 2021-10-27
-tags: nodejs node-canvas sharp
+tags: programming nodejs
 layout: article
 ---
 

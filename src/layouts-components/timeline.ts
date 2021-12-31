@@ -24,7 +24,7 @@ const Timeline: Layout = () => {
             <div class="timeline-year">${year}</div>
             <div class="timeline-content">
             ${Object.entries(monthData)
-              .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
+              .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
               .map(([month, monthRoutes]) => html`
               <a class="timeline-item" href="${t.root}${routes.timeline}/${year}-${month}">
                 <span class="timeline-month">${month}</span>

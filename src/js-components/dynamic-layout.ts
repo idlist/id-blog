@@ -3,7 +3,7 @@ import { throttle } from 'lodash-es'
 const screenMiddle = 768
 
 const dynamicLayout = (setLayout: () => void, clearLayout: () => void): void => {
-  const throttleLayout = throttle(setLayout, 50)
+  const throttleLayout = throttle(setLayout, 20)
 
   if (window.innerWidth > screenMiddle) {
     setLayout()
