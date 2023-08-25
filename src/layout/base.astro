@@ -1,0 +1,82 @@
+---
+import './base.sass'
+import { useLang } from '@/i18n/use'
+
+const { title } = Astro.props
+const t = useLang('zh')
+---
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.png" />
+  <title>{title}</title>
+</head>
+
+<body>
+  <a class="menu-expander">
+    <img
+      class="menu-button"
+      src="/${routes.public}/buttons/menu.svg"
+      alt="menu_button"
+    />
+  </a>
+
+  <div class="menu-fullscreen hidden">
+    <div class="menu-fs-container">
+      <a class="menu-fs-link" href="https://idl.ist/">
+        <span class="menu-fs-link-text">{t('toIndex')}</span>
+        <img
+          class="menu-fs-link-external"
+          src="/${routes.public}/buttons/external.svg"
+          alt="external"
+        />
+      </a>
+      <hr class="menu-fs-hr" />
+      <div class="menu-fs-link-title">{t('language')}</div>
+      <a class="menu-fs-link" href="/">简体中文</a>
+      <a class="menu-fs-link" href="/e/">English</a>
+      <a class="menu-fs-link" href="/j/">日本語</a>
+      <hr class="menu-fs-hr" />
+      <a class="menu-fs-link" href="${t.root}">{t('articles')}</a>
+      <hr class="menu-fs-hr" />
+    </div>
+  </div>
+
+  <header>
+    <div class="header-container">
+      <div class="header">
+        <img
+          class="header-banner"
+          src="/${routes.public}/banner.png"
+          alt="banner"
+        />
+        <hr class="header-divider" />
+        <div>i'D Blog</div>
+      </div>
+      <div class="menu-landscape">
+        <a class="menu-link" href="${t.root}">{t('articles')}</a>
+        <div class="menu-link-dropdown">
+          <div>{t('language')}</div>
+          <div class="menu-link-dropdown-content">
+            <a class="menu-link-dropdown-link" href="/">简体中文</a>
+            <a class="menu-link-dropdown-link" href="/e/">English</a>
+            <a class="menu-link-dropdown-link" href="/j/">日本語</a>
+          </div>
+        </div>
+        <a class="menu-link" href="https://idl.ist/">
+          <span>{t('toIndex')}</span>
+          <img
+            class="menu-link-external"
+            src="/${routes.public}/buttons/external.svg"
+            alt="external"
+          />
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <slot />
+
+  <div id="bg-tiles"></div>
+</body>

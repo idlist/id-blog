@@ -1,0 +1,48 @@
+$screen-small: 640px
+$screen-md: 768px
+$content-width: 1024px
+
+$sans-serif: 'Open Sans', 'Microsoft YaHei UI', sans-serif
+$monospace: 'Cascadia Code', monospace
+
+:root
+  --color-green: #00887d
+  --color-green-light: #01a194
+  --color-green-exlight: #00bdad
+  --color-pink: #fdedf6
+
+@mixin blog-link
+  color: #666
+
+  &:visited
+    color: var(--color-green)
+
+  &:hover
+    color: #999
+
+  &:active
+    color: #ccc
+
+@mixin bottom-button
+  position: fixed
+  right: 1rem
+  z-index: 10
+
+  display: flex
+  justify-content: center
+  align-items: center
+  cursor: pointer
+
+  width: 3.5rem
+  height: 3.5rem
+
+  border-radius: 50%
+  background-color: #333
+
+  user-select: none
+
+  &:active
+    background-color: #666
+
+  @media (min-width: $screen-md)
+    display: none

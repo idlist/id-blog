@@ -1,0 +1,13 @@
+---
+import type { GetStaticPaths } from 'astro'
+import Base from '@/layout/base.astro'
+import { mapRoute } from '@/i18n/use'
+
+export const getStaticPaths = (() => {
+  return [
+    ...mapRoute()
+  ]
+}) satisfies GetStaticPaths
+---
+
+<Base title="i'D Blog">Test</Base>

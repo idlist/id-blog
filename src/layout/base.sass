@@ -1,0 +1,229 @@
+@import normalize.css
+@import ../styles/variables
+
+// Fonts
+
+@font-face
+  font-family: 'Open Sans'
+  font-weight: normal
+  src: url('/fonts/open-sans.woff2')
+
+@font-face
+  font-family: 'Open Sans'
+  font-weight: bold
+  src: url('/fonts/open-sans-bold.woff2')
+
+@font-face
+  font-family: 'Open Sans'
+  font-weight: normal
+  font-style: italic
+  src: url('/fonts/open-sans-italic.woff2')
+
+@font-face
+  font-family: 'Cascadia Code'
+  src: url('/fonts/cascadia-code.woff2')
+
+// Global settings
+
+html
+  font-family: $sans-serif
+
+  color: #333
+  line-height: 1.5
+
+input
+  -webkit-appearance: none
+  border-radius: 0
+
+  &:focus-visible
+    outline: none
+
+// Elements
+
+header
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  z-index: 10
+
+  color: #fff
+  background-color: #333
+
+  display: flex
+  justify-content: center
+  box-shadow: 0 0 8px #333
+
+  user-select: none
+
+.header-container
+  display: flex
+  justify-content: space-between
+
+  width: 100%
+  max-width: $content-width
+
+.header
+  display: flex
+  align-items: center
+
+  &-banner
+    height: 3rem
+
+  &-divider
+    height: 2rem
+
+    margin-right: 0.5rem
+    border: none
+    border-left: 1px solid #fff
+
+.menu
+  &-landscape
+    display: flex
+    align-items: center
+
+    @media (max-width: $screen-md)
+      display: none
+
+  &-link
+    display: flex
+    justify-content: center
+    align-items: center
+
+    height: 100%
+    padding: 0 0.75rem
+
+    color: #fff
+    text-decoration: none
+
+    cursor: pointer
+
+    &:hover
+      background-color: #484848
+
+    &:active
+      background-color: #666
+
+  &-link-external
+    width: 1rem
+    height: 1rem
+
+    margin-left: 0.5rem
+
+  &-link-dropdown
+    @extend .menu-link
+
+    &:hover .menu-link-dropdown-content
+      display: flex
+
+    &-content
+      display: none
+      flex-direction: column
+
+      position: absolute
+      top: 3rem
+
+      background-color: #333
+      box-shadow: 0 0 8px #333
+
+    &-link
+      @extend .menu-link
+
+      padding: 0.5rem 1rem
+
+      border-bottom: 1px solid #fff
+
+      &:last-child
+        border: none
+
+  &-expander
+    @include bottom-button
+    bottom: 1rem
+    z-index: 50
+
+    &:active
+      background-color: #666
+
+    @media (min-width: $screen-md)
+      display: none
+
+  &-button
+    height: 1.5rem
+    width: 1.5rem
+
+  &-fullscreen
+    position: fixed
+    left: 0
+    bottom: 0
+    top: 0
+    right: 0
+    z-index: 20
+
+    display: grid
+    align-items: end
+
+    padding: 1rem
+    background-color: rgba(48, 48, 48, 0.75)
+
+    @media (min-width: $screen-md)
+      display: none
+
+  &-fs-container
+    padding-bottom: 0.5rem
+    padding-right: 4.5rem
+
+  &-fs-link-title
+    display: block
+    text-align: right
+
+    padding: 0.75rem
+
+    color: #ccc
+
+  &-fs-link
+    display: block
+    text-align: right
+
+    padding: 0.75rem
+
+    text-decoration: none
+    color: #fff
+
+    &:active
+      background-color: #666
+
+  &-fs-link-text
+    display: inline
+    vertical-align: middle
+
+  &-fs-link-external
+    @extend .menu-link-external
+
+    display: inline
+    vertical-align: middle
+
+  &-fs-hr
+    margin: 0
+    padding: 0
+
+    display: flex
+    justify-content: center
+
+    border: none
+    border-bottom: 1px solid #fff
+    background-color: rgba(48, 48, 48, 0.9)
+
+#bg-tiles
+  position: fixed
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  z-index: -10
+
+  background-color: #f0f0f0
+
+// Utilities
+
+.hidden
+  display: none
