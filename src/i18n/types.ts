@@ -1,18 +1,6 @@
-export interface Lang {
-  zh: string
-  en: string
-  ja: string
-}
-
-export const lang: Lang = {
-  zh: '简体中文',
-  en: 'English',
-  ja: '日本語',
-}
+export interface Lang {}
 
 export type LangCode = keyof Lang
-
-export const defaultLang: LangCode = 'zh'
 
 export type I18nDict = { [key: string]: I18nNode }
 

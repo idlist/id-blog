@@ -1,9 +1,17 @@
 ---
 import './base.sass'
-import { useLang } from '@/i18n/use'
+import { getLangCode, getRoot, useLang } from '@/i18n'
+
+import banner from '@/assets/banner.png'
+import iconMenu from '@/assets/buttons/menu.svg'
+import iconExternal from '@/assets/buttons/external.svg'
+import iconClose from '@/assets/buttons/close.svg'
 
 const { title } = Astro.props
-const t = useLang('zh')
+
+const code = getLangCode(Astro.url)
+const root = getRoot(code)
+const t = useLang(code)
 ---
 
 <head>
@@ -14,31 +22,23 @@ const t = useLang('zh')
 </head>
 
 <body>
-  <a class="menu-expander">
-    <img
-      class="menu-button"
-      src="/${routes.public}/buttons/menu.svg"
-      alt="menu_button"
-    />
+  <a class="menu-expander" data-icon-menu={iconMenu} data-icon-close={iconClose} >
+    <img class="menu-button" src={iconMenu} alt="menu_button" />
   </a>
 
   <div class="menu-fullscreen hidden">
     <div class="menu-fs-container">
       <a class="menu-fs-link" href="https://idl.ist/">
-        <span class="menu-fs-link-text">{t('toIndex')}</span>
-        <img
-          class="menu-fs-link-external"
-          src="/${routes.public}/buttons/external.svg"
-          alt="external"
-        />
+        <img class="menu-fs-link-external" src={iconExternal} alt="external" />
+        <span class="menu-fs-link-text">{t('ui.to-index')}</span>
       </a>
       <hr class="menu-fs-hr" />
-      <div class="menu-fs-link-title">{t('language')}</div>
+      <div class="menu-fs-link-title">{t('ui.language')}</div>
       <a class="menu-fs-link" href="/">简体中文</a>
-      <a class="menu-fs-link" href="/e/">English</a>
-      <a class="menu-fs-link" href="/j/">日本語</a>
+      <a class="menu-fs-link" href="/en/">English</a>
+      <a class="menu-fs-link" href="/ja/">日本語</a>
       <hr class="menu-fs-hr" />
-      <a class="menu-fs-link" href="${t.root}">{t('articles')}</a>
+      <a class="menu-fs-link" href={root}>{t('ui.articles')}</a>
       <hr class="menu-fs-hr" />
     </div>
   </div>
@@ -46,37 +46,43 @@ const t = useLang('zh')
   <header>
     <div class="header-container">
       <div class="header">
-        <img
-          class="header-banner"
-          src="/${routes.public}/banner.png"
-          alt="banner"
-        />
+        <img class="header-banner" src={banner} alt="banner" />
         <hr class="header-divider" />
         <div>i'D Blog</div>
       </div>
       <div class="menu-landscape">
-        <a class="menu-link" href="${t.root}">{t('articles')}</a>
+        <a class="menu-link" href={root}>{t('ui.articles')}</a>
         <div class="menu-link-dropdown">
-          <div>{t('language')}</div>
+          <div>{t('ui.language')}</div>
           <div class="menu-link-dropdown-content">
             <a class="menu-link-dropdown-link" href="/">简体中文</a>
-            <a class="menu-link-dropdown-link" href="/e/">English</a>
-            <a class="menu-link-dropdown-link" href="/j/">日本語</a>
+            <a class="menu-link-dropdown-link" href="/en/">English</a>
+            <a class="menu-link-dropdown-link" href="/ja/">日本語</a>
           </div>
         </div>
         <a class="menu-link" href="https://idl.ist/">
-          <span>{t('toIndex')}</span>
-          <img
-            class="menu-link-external"
-            src="/${routes.public}/buttons/external.svg"
-            alt="external"
-          />
+          <img class="menu-link-external" src={iconExternal} alt="external" />
+          <span>{t('ui.to-index')}</span>
         </a>
       </div>
     </div>
   </header>
 
-  <slot />
+  <slot></slot>
 
   <div id="bg-tiles"></div>
 </body>
+
+<script>
+  const Menu = document.querySelector('.menu-expander') as HTMLLinkElement
+  const MenuButton = document.querySelector('.menu-button') as HTMLImageElement
+  const MenuDropdown = document.querySelector('.menu-fullscreen') as HTMLElement
+  const iconMenu = Menu.dataset.iconMenu ?? ''
+  const iconClose = Menu.dataset.iconClose ?? ''
+
+  Menu.addEventListener('click', () => {
+    MenuDropdown.classList.toggle('hidden')
+    const state = MenuDropdown.classList.contains('hidden')
+    MenuButton.setAttribute('src', state ? iconMenu : iconClose)
+  })
+</script>

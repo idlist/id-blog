@@ -108,7 +108,7 @@ header
     width: 1rem
     height: 1rem
 
-    margin-left: 0.5rem
+    margin-right: 0.5rem
 
   &-link-dropdown
     @extend .menu-link
@@ -125,13 +125,16 @@ header
 
       background-color: #333
       box-shadow: 0 0 8px #333
+      border: 1px solid #ddd
+      border-radius: 0.5rem
+      overflow: hidden
 
     &-link
       @extend .menu-link
 
       padding: 0.5rem 1rem
 
-      border-bottom: 1px solid #fff
+      border-bottom: 1px solid #ddd
 
       &:last-child
         border: none
