@@ -1,0 +1,37 @@
+@use './variables' as vars
+
+@mixin blog-link
+  color: var(--color-gray)
+
+  &:visited
+    color: var(--color-green)
+
+  &:hover
+    color: var(--color-gray-light)
+
+  &:active
+    color: var(--color-gray-lighter)
+
+@mixin btn-bottom
+  position: fixed
+  right: 1rem
+  z-index: 10
+
+  display: flex
+  justify-content: center
+  align-items: center
+  cursor: pointer
+
+  width: 3.5rem
+  height: 3.5rem
+
+  border-radius: 50%
+  background-color: var(--color-black)
+
+  user-select: none
+
+  &:active
+    background-color: var(--color-gray)
+
+  @media (min-width: vars.$screen-md)
+    display: none

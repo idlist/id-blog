@@ -1,0 +1,39 @@
+@use './variables' as vars
+@import normalize.css
+
+// Fonts
+
+@font-face
+  font-family: 'Open Sans'
+  font-weight: normal
+  src: url('/fonts/open-sans.woff2')
+
+@font-face
+  font-family: 'Open Sans'
+  font-weight: bold
+  src: url('/fonts/open-sans-bold.woff2')
+
+@font-face
+  font-family: 'Open Sans'
+  font-weight: normal
+  font-style: italic
+  src: url('/fonts/open-sans-italic.woff2')
+
+@font-face
+  font-family: 'Cascadia Code'
+  src: url('/fonts/cascadia-code.woff2')
+
+// Global settings
+
+html
+  font-family: vars.$sans-serif
+
+  color: #333
+  line-height: 1.5
+
+input
+  -webkit-appearance: none
+  border-radius: 0
+
+  &:focus-visible
+    outline: 1.5px solid #333

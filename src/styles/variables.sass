@@ -8,41 +8,17 @@ $monospace: 'Cascadia Code', monospace
 :root
   --color-green: #00887d
   --color-green-light: #01a194
-  --color-green-exlight: #00bdad
+  --color-green-lighter: #00bdad
+
   --color-pink: #fdedf6
 
-@mixin blog-link
-  color: #666
+  --color-black: #333
+  --color-gray-dark: #484848
+  --color-gray: #666
+  --color-gray-light: #999
+  --color-gray-lighter: #ccc
+  --color-white: #fff
 
-  &:visited
-    color: var(--color-green)
-
-  &:hover
-    color: #999
-
-  &:active
-    color: #ccc
-
-@mixin bottom-button
-  position: fixed
-  right: 1rem
-  z-index: 10
-
-  display: flex
-  justify-content: center
-  align-items: center
-  cursor: pointer
-
-  width: 3.5rem
-  height: 3.5rem
-
-  border-radius: 50%
-  background-color: #333
-
-  user-select: none
-
-  &:active
-    background-color: #666
-
-  @media (min-width: $screen-md)
-    display: none
+  --screen-sm: 640px
+  --screen-md: 768px
+  --content-width: 1024px

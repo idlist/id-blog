@@ -1,5 +1,6 @@
 ---
-import './base.sass'
+import '@/styles/globals.sass'
+import '@/layout/base.sass'
 import { getLangCode, getRoot, useLang } from '@/i18n'
 
 import banner from '@/assets/banner.png'
@@ -23,45 +24,46 @@ const t = useLang(code)
 
 <body>
   <a class="menu-expander" data-icon-menu={iconMenu} data-icon-close={iconClose} >
-    <img class="menu-button" src={iconMenu} alt="menu_button" />
+    <img class="menu-expander__icon" src={iconMenu} alt="menu toggler" />
   </a>
 
-  <div class="menu-fullscreen hidden">
-    <div class="menu-fs-container">
-      <a class="menu-fs-link" href="https://idl.ist/">
-        <img class="menu-fs-link-external" src={iconExternal} alt="external" />
-        <span class="menu-fs-link-text">{t('ui.to-index')}</span>
+  <div class="menu-fs hidden">
+    <div class="menu-fs__container">
+      <a class="menu-fs__link" href="https://idl.ist/">
+        <img class="menu-fs__link-external" src={iconExternal} alt="external" />
+        <span class="menu-fs__link-text">{t('ui.to-index')}</span>
       </a>
-      <hr class="menu-fs-hr" />
-      <div class="menu-fs-link-title">{t('ui.language')}</div>
-      <a class="menu-fs-link" href="/">简体中文</a>
-      <a class="menu-fs-link" href="/en/">English</a>
-      <a class="menu-fs-link" href="/ja/">日本語</a>
-      <hr class="menu-fs-hr" />
-      <a class="menu-fs-link" href={root}>{t('ui.articles')}</a>
-      <hr class="menu-fs-hr" />
+      <hr class="menu-fs__hr" />
+      <div class="menu-fs__link-title">{t('ui.language')}</div>
+      <a class="menu-fs__link" href="/">简体中文</a>
+      <a class="menu-fs__link" href="/en/">English</a>
+      <a class="menu-fs__link" href="/ja/">日本語</a>
+      <hr class="menu-fs__hr" />
+      <a class="menu-fs__link" href={root}>{t('ui.articles')}</a>
+      <hr class="menu-fs__hr" />
     </div>
   </div>
 
   <header>
     <div class="header-container">
       <div class="header">
-        <img class="header-banner" src={banner} alt="banner" />
-        <hr class="header-divider" />
+        <img class="header__banner" src={banner} alt="banner" />
+        <hr class="header__divider" />
         <div>i'D Blog</div>
       </div>
-      <div class="menu-landscape">
+
+      <div class="menu-header">
         <a class="menu-link" href={root}>{t('ui.articles')}</a>
-        <div class="menu-link-dropdown">
+        <div class="menu-link__dropdown">
           <div>{t('ui.language')}</div>
-          <div class="menu-link-dropdown-content">
-            <a class="menu-link-dropdown-link" href="/">简体中文</a>
-            <a class="menu-link-dropdown-link" href="/en/">English</a>
-            <a class="menu-link-dropdown-link" href="/ja/">日本語</a>
+          <div class="menu-link__dropdown-content">
+            <a class="menu-link__dropdown-link" href="/">简体中文</a>
+            <a class="menu-link__dropdown-link" href="/en/">English</a>
+            <a class="menu-link__dropdown-link" href="/ja/">日本語</a>
           </div>
         </div>
         <a class="menu-link" href="https://idl.ist/">
-          <img class="menu-link-external" src={iconExternal} alt="external" />
+          <img class="menu-link__external" src={iconExternal} alt="external" />
           <span>{t('ui.to-index')}</span>
         </a>
       </div>
@@ -75,14 +77,14 @@ const t = useLang(code)
 
 <script>
   const Menu = document.querySelector('.menu-expander') as HTMLLinkElement
-  const MenuButton = document.querySelector('.menu-button') as HTMLImageElement
-  const MenuDropdown = document.querySelector('.menu-fullscreen') as HTMLElement
+  const MenuIcon = Menu.querySelector('.menu-expander__icon') as HTMLImageElement
+  const MenuDropdown = document.querySelector('.menu-fs') as HTMLElement
   const iconMenu = Menu.dataset.iconMenu ?? ''
   const iconClose = Menu.dataset.iconClose ?? ''
 
   Menu.addEventListener('click', () => {
     MenuDropdown.classList.toggle('hidden')
     const state = MenuDropdown.classList.contains('hidden')
-    MenuButton.setAttribute('src', state ? iconMenu : iconClose)
+    MenuIcon.setAttribute('src', state ? iconMenu : iconClose)
   })
 </script>
