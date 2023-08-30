@@ -1,7 +1,7 @@
-import type { Lang, LangCode, I18nBranch, I18nNode, I18nTree } from './types'
+import type { Lang, LangCode, I18nBranch, I18nNode, I18nLeaf, I18nTree } from './types'
 import { ui } from '@/locales/ui'
 
-export type { I18nBranch } from './types'
+export type { I18nBranch, I18nLeaf } from './types'
 
 declare module '@/i18n/types' {
   interface Lang {
@@ -19,9 +19,9 @@ const lang: Lang = {
 
 const defaultLang: LangCode = 'zh'
 
-const branches: I18nBranch[] = [
+const branches: Record<string, I18nBranch> = {
   ui,
-]
+}
 
 const tree: I18nTree = {
   zh: {},
@@ -30,7 +30,7 @@ const tree: I18nTree = {
 }
 
 const parseNode = (code: LangCode, node: I18nNode, level: string[]) => {
-  if (typeof node === 'string') {
+  if (typeof node === 'string' || typeof node === 'function') {
     const path = level.join('.')
     tree[code][path] = node
   } else {
@@ -40,16 +40,16 @@ const parseNode = (code: LangCode, node: I18nNode, level: string[]) => {
   }
 }
 
-const parseBranch = (branch: I18nBranch) => {
+const parseBranch = (scope: string, branch: I18nBranch) => {
   for (const [code, node] of Object.entries(branch)) {
     if (code in lang) {
-      parseNode(code as LangCode, node, [])
+      parseNode(code as LangCode, node, scope == 'index' ? [] : [scope])
     }
   }
 }
 
-for (const branch of branches) {
-  parseBranch(branch)
+for (const [scope, branch] of Object.entries(branches)) {
+  parseBranch(scope, branch)
 }
 
 export const getLangCode = (url: URL) => {
@@ -75,16 +75,37 @@ export const useLang = ((codeOrUrl: LangCode | URL) => {
   const collection = tree[code]
   const fallback = tree[defaultLang]
 
-  const t = (path: string): string => {
+  const t = (path: string, ...interp: unknown[]): string => {
+    let content: I18nLeaf
+
     if (path in collection) {
-      return collection[path]
+      content = collection[path]
     } else if (path in fallback) {
       console.log(`path doesn't exists in i18n dictionary of language code ${code}: ${path}.`)
-      return fallback[path]
+      content = fallback[path]
     } else {
       console.log(`path doesn't exists in all i18n dictionaries: ${path}.`)
-      return ''
+      content = ''
     }
+
+    let parsed: string
+
+    if (typeof content === 'function') {
+      parsed = content(...interp)
+    } else {
+      parsed = content
+      let find: number = 0
+
+      for (let i = 0; i < interp.length; i++) {
+        find = parsed.search('{}')
+        if (find == -1) {
+          break
+        }
+        parsed = parsed.replace('{}', interp[i] as string)
+      }
+    }
+
+    return parsed
   }
 
   return t
