@@ -8,7 +8,7 @@
   user-select: none
 
   &:active
-    background-color: #666
+    background-color: var(--color-gray)
 
   @media (min-width: vars.$screen-md)
     display: none
@@ -29,7 +29,7 @@
   align-items: end
 
   padding: 1rem
-  background-color: rgba(48, 48, 48, 0.75)
+  background-color: var(--color-overlay)
 
   @media (min-width: vars.$screen-md)
     display: none
@@ -47,7 +47,7 @@
 
     padding: 0.75rem
 
-    color: #ccc
+    color: var(--color-gray-lighter)
 
   &__link
     display: block
@@ -56,10 +56,10 @@
     padding: 0.75rem
 
     text-decoration: none
-    color: #fff
+    color: var(--color-white)
 
     &:active
-      background-color: #666
+      background-color: var(--color-gray)
 
   &__link-text
     display: inline
@@ -79,8 +79,7 @@
     justify-content: center
 
     border: none
-    border-bottom: 1px solid #fff
-    background-color: rgba(48, 48, 48, 0.9)
+    border-bottom: 1px solid var(--color-white)
 
 header
   position: fixed
@@ -188,4 +187,4 @@ header
   right: 0
   z-index: -10
 
-  background-color: #f0f0f0
+  background-color: var(--color-background)

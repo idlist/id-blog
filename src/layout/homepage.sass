@@ -10,10 +10,6 @@
   @media (max-width: vars.$screen-md)
     grid-template-columns: 100%
 
-.homepage__info
-  @media (max-width: vars.$screen-md)
-    margin-top: 2rem
-
 .homepage-me
   display: flex
   align-items: center
@@ -49,26 +45,26 @@
     height: 1.125rem
 
   &-link
-    @include mixins.blog-link
+    @include mixins.link-main
 
 .homepage-stats
   margin: 1rem 0
 
 .homepage-source
-  font-size: 0.875rem
   text-align: center
-
-  padding: 0.125rem
+  padding: 0.25rem 0.5rem
 
   background-color: #eee
   border-radius: 0.25rem
 
   code
     font-family: vars.$monospace
+    font-size: 0.875rem
     color: var(--color-gray)
+    letter-spacing: -0.5px
 
   &__link
-    @include mixins.blog-link
+    @include mixins.link-main
 
 .homepage
   @media (min-width: vars.$screen-md)

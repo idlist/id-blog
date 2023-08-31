@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content'
+import { getLangCode, getRoot, useLang, slug } from '@/i18n'
+
+const code = getLangCode(Astro.url)
+const root = getRoot(code)
+const t = useLang(code)
+
+const posts = await getCollection('posts', (entry) => {
+  return entry.id.startsWith(`${code}/`)
+})
+
+const tags: Record<string, number> = {}
+
+posts.forEach(({ data }) => {
+  data.tags.forEach((tag) => {
+    tags[tag] = tags[tag] ? tags[tag] + 1 : 1
+  })
+})
+
+const hasTags = Object.keys(tags).length
+---
+
+<div class="tags">
+  <div class="tags__title">Tags</div>
+  <div class="tags__list">
+    {
+      hasTags ? (
+        Object.entries(tags)
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([tag, count]) => (
+            <a class="tags__item" href={`${root}tags/${slug(tag)}`}>
+              <span class="tags__name">{tag}</span>
+              <span class="tags__count">{count}</span>
+            </a>
+          ))
+      ) : (
+        <div class="tags__no-tags">{t('ui.no-tags')}</div>
+      )
+    }
+  </div>
+</div>
+
+<style lang="sass" scoped>
+  @use '@/styles/variables' as vars
+  @use '@/styles/mixins' as mixins
+
+  .tags
+    margin: 1rem 0
+
+    &__title
+      margin-bottom: 0.25rem
+
+      font-size: 1.5rem
+      font-weight: bold
+
+    &__list
+      display: flex
+      flex-wrap: wrap
+      row-gap: 0.125rem
+      column-gap: 0.75rem
+
+    &__item
+      display: flex
+      align-items: center
+      column-gap: 0.25rem
+      word-break: break-word
+
+    &__name
+      @include mixins.link-main
+
+    &__count
+      display: flex
+      align-items: center
+      justify-content: center
+
+      font-size: 0.875rem
+      line-height: 1.25rem
+      min-width: 1.25rem
+      text-decoration: none
+
+      color: var(--color-white)
+      background-color: var(--color-gray-dark)
+      border-radius: 0.75rem
+
+      user-select: none
+
+    &__no-tags
+      color: var(--color-gray-light)
+</style>

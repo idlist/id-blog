@@ -14,14 +14,14 @@ export const ui: I18nBranch = {
           return html`共有 <b>${number}</b> 篇文章。`
       }
     }) as I18nLeaf,
-    'see-source-code': () => html`
+    'check-source-code': () => html`
       查看这个博客的
       <a
         class="homepage-source__link"
         href="https://github.com/idlist/id-blog"
         target="_blank"
         rel="noopener noreferer"
-      >源码</a>
+      >GitHub 仓库</a>
     `,
     'no-posts-in-lang': '暂时没有这个语言的文章。',
     'no-tags': '没有标签',
@@ -43,15 +43,14 @@ export const ui: I18nBranch = {
           return html`There are <b>${number}</b> articles in total.`
       }
     }) as I18nLeaf,
-    'see-source-code': () => html`
-      See the
+    'check-source-code': () => html`
+      Check this blog at
       <a
         class="homepage-source__link"
         href="https://github.com/idlist/id-blog"
         target="_blank"
         rel="noopener noreferer"
-      >source code</a>
-      of this blog
+      >GitHub</a>
     `,
     'no-posts-in-lang': 'There are no articles in this language right now.',
     'no-tags': 'No tags',
@@ -71,15 +70,15 @@ export const ui: I18nBranch = {
           return `総計 ${number} 編の記事です。`
       }
     }) as I18nLeaf,
-    'see-source-code': () => html`
-      このブログの
+    'check-source-code': () => html`
+      このブログを
       <a
         class="homepage-source__link"
         href="https://github.com/idlist/id-blog"
         target="_blank"
         rel="noopener noreferer"
-      >ソースコード</a>
-      を見る
+      >GitHub</a>
+      で見る
     `,
     'no-posts-in-lang': 'この言語で書いた記事がまたありません。',
     'no-tags': 'タグがありません',

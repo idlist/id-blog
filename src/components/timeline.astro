@@ -1,0 +1,109 @@
+---
+import { getCollection } from 'astro:content'
+import { getLangCode, getRoot, useLang } from '@/i18n'
+
+const code = getLangCode(Astro.url)
+const root = getRoot(code)
+const t = useLang(code)
+
+const posts = await getCollection('posts', (entry) => {
+  return entry.id.startsWith(`${code}/`)
+})
+
+const dates: Record<number, Record<number, number>> = {}
+
+posts.forEach(({ data }) => {
+  const year = data.date.getFullYear()
+  const month = data.date.getMonth() + 1
+
+  if (!dates[year]) {
+    dates[year] = {}
+  }
+  if (!dates[year][month]) {
+    dates[year][month] = 0
+  }
+  dates[year][month] += 1
+})
+
+const hasDate = Object.keys(dates).length
+---
+
+<div class="timeline">
+  <div class="timeline__title">Timeline</div>
+  {
+    hasDate ? (
+      Object.entries(dates)
+        .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
+        .map(([year, monthData]) => (
+          <>
+            <div class="timeline__year">{year}</div>
+            <div class="timeline__list">
+              {Object.entries(monthData)
+                .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+                .map(([month, count]) => (
+                  <a class="timeline__item" href={`${root}tl/${year}-${month}`}>
+                    <span class="timeline__month">{month}</span>
+                    <span class="timeline__count">{count}</span>
+                  </a>
+                ))}
+            </div>
+          </>
+        ))
+    ) : (
+      <div class="timeline__no-timeline">{t('no-timeline')}</div>
+    )
+  }
+</div>
+
+<style lang="sass">
+  @use '@/styles/variables' as vars
+  @use '@/styles/mixins' as mixins
+
+  .timeline
+    margin: 1rem 0
+
+    &__title
+      font-size: 1.5rem
+      font-weight: bold
+
+    &__year
+      font-size: 1.25rem
+      font-weight: bold
+      margin-bottom: 0.25rem
+
+      color: var(--color-green)
+
+    &__list
+      display: flex
+      flex-wrap: wrap
+      row-gap: 0.125rem
+      column-gap: 0.75rem
+
+    &__item
+      display: flex
+      align-items: center
+      column-gap: 0.25rem
+      word-break: break-word
+
+    &__month
+      @include mixins.link-main
+
+    &__count
+      display: flex
+      align-items: center
+      justify-content: center
+
+      font-size: 0.875rem
+      line-height: 1.25rem
+      min-width: 1.25rem
+      text-decoration: none
+
+      color: var(--color-white)
+      background-color: var(--color-gray-dark)
+      border-radius: 0.75rem
+
+      user-select: none
+
+    &__no-timeline
+      color: var(--color-gray-light)
+</style>

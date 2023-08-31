@@ -1,3 +1,4 @@
+import { slugify } from 'transliteration'
 import type { Lang, LangCode, I18nBranch, I18nNode, I18nLeaf, I18nTree } from './types'
 import { ui } from '@/locales/ui'
 
@@ -128,3 +129,8 @@ export const mapRoute = (
     return { params: { [name]: path, ...params } }
   })
 }
+
+export const slug = (str: string) => slugify(str, {
+  allowedChars: 'a-zA-Z0-9-',
+  fixChineseSpacing: false,
+})
