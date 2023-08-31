@@ -1,6 +1,7 @@
 import type { Lang, LangCode, I18nBranch, I18nNode, I18nLeaf, I18nTree } from './types'
 import { ui } from '@/locales/ui'
 
+export { default as html } from 'dedent'
 export type { I18nBranch, I18nLeaf } from './types'
 
 declare module '@/i18n/types' {
@@ -57,12 +58,19 @@ export const getLangCode = (url: URL) => {
   return segment in lang ? (segment as LangCode) : defaultLang
 }
 
-interface UseLangShape {
-  (code: LangCode): (path: string) => string
-  (url: URL): (path: string) => string
+export const getRoot = (codeOrUrl: LangCode | URL) => {
+  let code: LangCode
+
+  if (codeOrUrl instanceof URL) {
+    code = getLangCode(codeOrUrl)
+  } else {
+    code = codeOrUrl
+  }
+
+  return code == defaultLang ? '/' : `/${code}/`
 }
 
-export const useLang = ((codeOrUrl: LangCode | URL) => {
+export const useLang = (codeOrUrl: LangCode | URL) => {
   let code: LangCode
 
   if (codeOrUrl instanceof URL) {
@@ -109,10 +117,6 @@ export const useLang = ((codeOrUrl: LangCode | URL) => {
   }
 
   return t
-}) as UseLangShape
-
-export const getRoot = (code: LangCode) => {
-  return code == defaultLang ? '/' : `/${code}/`
 }
 
 export const mapRoute = (

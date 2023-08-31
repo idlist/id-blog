@@ -2,11 +2,11 @@ export interface Lang {}
 
 export type LangCode = keyof Lang
 
-export type I18nRenderer = <T extends unknown[]>(...args: T) => string
+export type I18nRender = <T extends unknown[]>(...args: T) => string
 
 export type I18nDict = { [key: string]: I18nNode }
 
-export type I18nLeaf = string | I18nRenderer
+export type I18nLeaf = string | I18nRender
 
 export type I18nNode = I18nLeaf | I18nDict
 

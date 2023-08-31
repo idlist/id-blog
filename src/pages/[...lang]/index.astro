@@ -1,14 +1,11 @@
 ---
 import type { GetStaticPaths } from 'astro'
-import Base from '@/layout/base.astro'
+import Homepage from '@/layout/homepage.astro'
 import { mapRoute } from '@/i18n'
 
 export const getStaticPaths = (() => {
-  return [
-    ...mapRoute(),
-    { params: { lang: 'ts' } },
-  ]
+  return [...mapRoute(), { params: { lang: 'ts' } }]
 }) satisfies GetStaticPaths
 ---
 
-<Base title="i'D Blog">Test</Base>
+<Homepage />

@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content'
+import './homepage.sass'
+import Base from './base.astro'
+import Container from '@/components/container.astro'
+import Contact from '@/components/contact.astro'
+import { getLangCode, useLang } from '@/i18n'
+
+import logo_personal from '@/assets/idlist.png'
+import icon_email from '@/assets/icons/email.svg'
+import icon_home from '@/assets/icons/home.svg'
+import icon_twitter from '@/assets/icons/twitter.svg'
+import icon_soundcloud from '@/assets/icons/soundcloud.svg'
+import icon_github from '@/assets/icons/github.svg'
+
+const code = getLangCode(Astro.url)
+const t = useLang(code)
+
+const posts = await getCollection('posts', (entry) => {
+  return entry.id.startsWith(`${code}/`)
+})
+
+const postNumber = posts.length
+---
+
+<Base title="Reinventing the Wheel | i'D Blog">
+  <Container>
+    <div class="homepage__container">
+      <div class="homepage__info">
+        <div class="homepage-me">
+          <div class="homepage-me__icon-bg">
+            <img class="homepage-me__icon" src={logo_personal.src} alt="idlist" />
+          </div>
+          <div class="homepage-me__name">i'DLisT</div>
+        </div>
+
+        <Contact icon={icon_email.src} text="i@idl.ist" link="mailto:i@idl.ist" />
+        <Contact icon={icon_home.src} text="idl.ist" link="https://idl.ist" />
+        <Contact icon={icon_twitter.src} text="@i_dlist" link="https://twitter.com/i_dlist" />
+        <Contact icon={icon_github.src} text="idlist" link="https://github.cpm/idlist" />
+        <Contact icon={icon_soundcloud.src} text="i'DLisT" link="https://soundcloud.com/idlist" />
+
+        <div class="homepage-stats">
+          <Fragment set:html={t('ui.total-posts', postNumber)} />
+        </div>
+
+        <div class="homepage-source">
+          <code>// <Fragment set:html={t('ui.see-source-code')}/></code>
+        </div>
+        <!--
+        ${Tags().layout(meta, props)}
+        ${Timeline().layout(meta, props)}
+        -->
+      </div>
+
+      <div class="homepage">
+        <!-- ${PostList().layout(meta, props)} -->
+      </div>
+    </div>
+  </Container>
+</Base>

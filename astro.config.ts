@@ -9,6 +9,9 @@ export default defineConfig({
   server: {
     port: 19198,
   },
+  markdown: {
+    smartypants: false,
+  },
   integrations: [
     vue(),
     mdx(),

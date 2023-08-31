@@ -4,9 +4,13 @@ import '@/layout/base.sass'
 import { getLangCode, getRoot, useLang } from '@/i18n'
 
 import banner from '@/assets/banner.png'
-import iconMenu from '@/assets/buttons/menu.svg'
-import iconExternal from '@/assets/buttons/external.svg'
-import iconClose from '@/assets/buttons/close.svg'
+import icon_menu from '@/assets/buttons/menu.svg'
+import icon_external from '@/assets/buttons/external.svg'
+import icon_close from '@/assets/buttons/close.svg'
+
+interface Props {
+  title: string
+}
 
 const { title } = Astro.props
 
@@ -23,14 +27,14 @@ const t = useLang(code)
 </head>
 
 <body>
-  <a class="menu-expander" data-icon-menu={iconMenu} data-icon-close={iconClose} >
-    <img class="menu-expander__icon" src={iconMenu} alt="menu toggler" />
+  <a class="menu-expander" data-icon-menu={icon_menu} data-icon-close={icon_close} >
+    <img class="menu-expander__icon" src={icon_menu.src} alt="menu toggler" />
   </a>
 
   <div class="menu-fs hidden">
     <div class="menu-fs__container">
       <a class="menu-fs__link" href="https://idl.ist/">
-        <img class="menu-fs__link-external" src={iconExternal} alt="external" />
+        <img class="menu-fs__link-external" src={icon_external.src} alt="external" />
         <span class="menu-fs__link-text">{t('ui.to-index')}</span>
       </a>
       <hr class="menu-fs__hr" />
@@ -47,7 +51,7 @@ const t = useLang(code)
   <header>
     <div class="header-container">
       <div class="header">
-        <img class="header__banner" src={banner} alt="banner" />
+        <img class="header__banner" src={banner.src} alt="banner" />
         <hr class="header__divider" />
         <div>i'D Blog</div>
       </div>
@@ -63,7 +67,7 @@ const t = useLang(code)
           </div>
         </div>
         <a class="menu-link" href="https://idl.ist/">
-          <img class="menu-link__external" src={iconExternal} alt="external" />
+          <img class="menu-link__external" src={icon_external.src} alt="external" />
           <span>{t('ui.to-index')}</span>
         </a>
       </div>

@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="container__inner">
+    <slot />
+  </div>
+</div>
+
+<style lang="sass" scoped>
+  @use '@/styles/variables' as vars
+
+  .container
+    display: flex
+    justify-content: center
+
+    margin: 1rem
+    margin-top: 4rem
+
+    @media (max-width: vars.$screen-sm)
+      margin: 0.5rem
+      margin-top: 3.5rem
+
+  .container__inner
+    width: 100%
+    max-width: vars.$content-width
+
+    background-color: #fff
+    box-shadow: 0 0 10px #ccc
+</style>
