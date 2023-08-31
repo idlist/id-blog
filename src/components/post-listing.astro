@@ -1,0 +1,52 @@
+---
+import { getLangCode, getRoot, useLang } from '@/i18n'
+import { slugify, ymdFormat } from '@/utils'
+
+import icon_time from '@/assets/icons/time.svg'
+import icon_tags from '@/assets/icons/tags.svg'
+
+interface Props {
+  title: string
+  slug: string
+  date: Date
+  tags: string[]
+}
+
+const { title, slug, date, tags } = Astro.props
+
+const code = getLangCode(Astro.url)
+const root = getRoot(code)
+const t = useLang(code)
+---
+
+<div class="post">
+  <a class="post-link" href={`${root}posts/${slug}`}>
+    <h2 class="post-title">{title}</h2>
+  </a>
+
+  <div class="post-meta">
+    <div class="post-time">
+      <img class="post-time-icon" src={icon_time.src} alt="time" />
+      <span>{ymdFormat(date)}</span>
+    </div>
+
+    <div class="post-tags">
+      <img class="post-tags-icon" src={icon_tags.src} alt="tags" />
+      {
+        tags.length ? (
+          tags.map((tag) => (
+            <a class="post-tags-item" href={`${root}tags/${slugify(tag)}`}>
+              {tag}
+            </a>
+          ))
+        ) : (
+          <div class="post-tags-notag">${t('ui.no-tags')}</div>
+        )
+      }
+    </div>
+  </div>
+  <!--
+  <hr class="post-hr" />
+  <div class="post-summary">${postMeta.summary}</div>
+  -->
+</div>

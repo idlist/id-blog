@@ -1,4 +1,3 @@
-import { slugify } from 'transliteration'
 import type { Lang, LangCode, I18nBranch, I18nNode, I18nLeaf, I18nTree } from './types'
 import { ui } from '@/locales/ui'
 
@@ -13,13 +12,13 @@ declare module '@/i18n/types' {
   }
 }
 
-const lang: Lang = {
+export const lang: Lang = {
   zh: '简体中文',
   en: 'English',
   ja: '日本語',
 }
 
-const defaultLang: LangCode = 'zh'
+export const defaultLang: LangCode = 'zh'
 
 const branches: Record<string, I18nBranch> = {
   ui,
@@ -57,6 +56,14 @@ for (const [scope, branch] of Object.entries(branches)) {
 export const getLangCode = (url: URL) => {
   const [, segment] = url.pathname.split('/')
   return segment in lang ? (segment as LangCode) : defaultLang
+}
+
+export const undef = <T>(value: T, ifValue: T, elseValue: T | string = value) => {
+  return value === ifValue ? undefined : elseValue
+}
+
+export const langParam = (code: LangCode) => {
+  return code === defaultLang ? undefined : code
 }
 
 export const getRoot = (codeOrUrl: LangCode | URL) => {
@@ -119,18 +126,3 @@ export const useLang = (codeOrUrl: LangCode | URL) => {
 
   return t
 }
-
-export const mapRoute = (
-  name: string = 'lang',
-  params: Record<string, string | undefined> = {},
-) => {
-  return Object.keys(lang).map((code) => {
-    const path = code === defaultLang ? undefined : code
-    return { params: { [name]: path, ...params } }
-  })
-}
-
-export const slug = (str: string) => slugify(str, {
-  allowedChars: 'a-zA-Z0-9-',
-  fixChineseSpacing: false,
-})

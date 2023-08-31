@@ -1,0 +1,66 @@
+---
+import type {
+  GetStaticPaths,
+  InferGetStaticParamsType as InferParams,
+  InferGetStaticPropsType as InferProps,
+} from 'astro'
+import { getCollection } from 'astro:content'
+import Homepage from '@/layout/homepage.astro'
+import { lang, defaultLang, getLangCode, undef } from '@/i18n'
+import { range } from '@/utils'
+
+const code = getLangCode(Astro.url)
+
+const posts = await getCollection('posts', (entry) => {
+  return entry.id.startsWith(`${code}/`)
+})
+
+export const getStaticPaths = (async () => {
+  interface FrontMatter {
+    title: string
+    date: Date
+    lastUpdate?: Date
+    tags: string[]
+  }
+
+  const posts = await Astro.glob<FrontMatter>('../../content/posts/**/*.mdx')
+  const postLangs: Record<string, number> = {}
+
+  Object.keys(lang).map((code) => {
+    postLangs[code] = 0
+  })
+  const pageSize = 10
+
+  posts.map((post) => {
+    const segments = post.file.split('/')
+    const code = segments[segments.length - 2]
+    postLangs[code] = postLangs[code] ? postLangs[code] + 1 : 1
+  })
+
+  const langPages: Record<string, number> = {}
+
+  Object.keys(postLangs).forEach((code) => {
+    const count = postLangs[code]
+    langPages[code] = count === 0 ? 1 : Math.ceil(count / pageSize)
+  })
+
+  return Object.entries(langPages).flatMap(([lang, iter]) => {
+    return range(iter).map((page) => {
+      return {
+        params: {
+          lang: undef(lang, defaultLang),
+          page: undef(page, 1, `posts/${page}`),
+        },
+        props: { page },
+      }
+    })
+  })
+}) satisfies GetStaticPaths
+
+type Params = InferParams<typeof getStaticPaths>
+type Props = InferParams<typeof getStaticPaths>
+
+const { page } = Astro.props
+---
+
+<Homepage posts={posts} />

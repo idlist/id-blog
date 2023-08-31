@@ -18,9 +18,11 @@ import icon_github from '@/assets/icons/github.svg'
 const code = getLangCode(Astro.url)
 const t = useLang(code)
 
-const posts = await getCollection('posts', (entry) => {
-  return entry.id.startsWith(`${code}/`)
-})
+interface Props {
+  posts: Awaited<ReturnType<typeof getCollection>>
+}
+
+const { posts } = Astro.props
 
 const postNumber = posts.length
 ---
@@ -55,7 +57,7 @@ const postNumber = posts.length
       </div>
 
       <div class="homepage">
-        <!-- ${PostList().layout(meta, props)} -->
+
       </div>
     </div>
   </Container>

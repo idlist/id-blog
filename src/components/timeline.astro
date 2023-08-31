@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import { getLangCode, getRoot, useLang } from '@/i18n'
+import { ymd } from '@/utils'
 
 const code = getLangCode(Astro.url)
 const root = getRoot(code)
@@ -13,16 +14,15 @@ const posts = await getCollection('posts', (entry) => {
 const dates: Record<number, Record<number, number>> = {}
 
 posts.forEach(({ data }) => {
-  const year = data.date.getFullYear()
-  const month = data.date.getMonth() + 1
+  const date = ymd(data.date)
 
-  if (!dates[year]) {
-    dates[year] = {}
+  if (!dates[date.year]) {
+    dates[date.year] = {}
   }
-  if (!dates[year][month]) {
-    dates[year][month] = 0
+  if (!dates[date.year][date.month]) {
+    dates[date.year][date.month] = 0
   }
-  dates[year][month] += 1
+  dates[date.year][date.month] += 1
 })
 
 const hasDate = Object.keys(dates).length
@@ -41,7 +41,7 @@ const hasDate = Object.keys(dates).length
               {Object.entries(monthData)
                 .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
                 .map(([month, count]) => (
-                  <a class="timeline__item" href={`${root}tl/${year}-${month}`}>
+                  <a class="timeline__item" href={`${root}timeline/${year}-${month}`}>
                     <span class="timeline__month">{month}</span>
                     <span class="timeline__count">{count}</span>
                   </a>
@@ -50,7 +50,7 @@ const hasDate = Object.keys(dates).length
           </>
         ))
     ) : (
-      <div class="timeline__no-timeline">{t('no-timeline')}</div>
+      <div class="timeline__no-timeline">{t('ui.no-timeline')}</div>
     )
   }
 </div>
@@ -89,20 +89,7 @@ const hasDate = Object.keys(dates).length
       @include mixins.link-main
 
     &__count
-      display: flex
-      align-items: center
-      justify-content: center
-
-      font-size: 0.875rem
-      line-height: 1.25rem
-      min-width: 1.25rem
-      text-decoration: none
-
-      color: var(--color-white)
-      background-color: var(--color-gray-dark)
-      border-radius: 0.75rem
-
-      user-select: none
+      @include mixins.post-count
 
     &__no-timeline
       color: var(--color-gray-light)
