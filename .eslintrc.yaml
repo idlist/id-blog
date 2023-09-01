@@ -1,16 +1,13 @@
 env:
   browser: true
-  commonjs: true
+  node: true
   es2022: true
-
-ignorePatterns:
-  dist
-  .astro
 
 parser: '@typescript-eslint/parser'
 
 parserOptions:
   ecmaVersion: latest
+  extraFileExtensions: [".astro"]
 
 plugins:
   - '@typescript-eslint'
@@ -18,6 +15,7 @@ plugins:
 extends:
   - eslint:recommended
   - plugin:@typescript-eslint/recommended
+  - plugin:astro/recommended
 
 rules:
   # Turn off rules
@@ -38,3 +36,12 @@ rules:
   quotes: [warn, single]
   comma-dangle: [warn, always-multiline]
   arrow-parens: [warn, always]
+
+overrides:
+  - files: ["*.astro"]
+
+    parser: "astro-eslint-parser"
+
+    parserOptions:
+      parser: "@typescript-eslint/parser"
+      extraFileExtensions: [".astro"]

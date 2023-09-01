@@ -1,12 +1,12 @@
 ---
-import { getCollection } from 'astro:content'
 import './homepage.sass'
 import Base from './base.astro'
 import Container from '@/components/container.astro'
 import Contact from '@/components/contact.astro'
 import Tags from '@/components/tags.astro'
 import Timeline from '@/components/timeline.astro'
-import { getLangCode, useLang } from '@/i18n'
+import PostListing from '@/components/post-listing.astro'
+import { useLang, type LangCode } from '@/i18n'
 
 import logo_personal from '@/assets/idlist.png'
 import icon_email from '@/assets/icons/email.svg'
@@ -14,15 +14,19 @@ import icon_home from '@/assets/icons/home.svg'
 import icon_twitter from '@/assets/icons/twitter.svg'
 import icon_soundcloud from '@/assets/icons/soundcloud.svg'
 import icon_github from '@/assets/icons/github.svg'
-
-const code = getLangCode(Astro.url)
-const t = useLang(code)
+import type { CollectionEntry } from 'astro:content'
 
 interface Props {
-  posts: Awaited<ReturnType<typeof getCollection>>
+  code: LangCode
+  posts: CollectionEntry<'posts'>[]
+  total: number
+  page: number
 }
 
-const { posts } = Astro.props
+const { code, posts, page } = Astro.props
+const t = useLang(code)
+
+console.log(posts, page)
 
 const postNumber = posts.length
 ---
@@ -49,7 +53,7 @@ const postNumber = posts.length
         </div>
 
         <div class="homepage-source">
-          <code>// <Fragment set:html={t('ui.check-source-code')}/></code>
+          <code>// <Fragment set:html={t('ui.check-source-code')} /></code>
         </div>
 
         <Tags />
@@ -57,7 +61,11 @@ const postNumber = posts.length
       </div>
 
       <div class="homepage">
-
+        {
+          posts.map((post) => (
+            <PostListing title={post.data.title} slug={post.slug} tags={post.data.tags} date={post.data.date} />
+          ))
+        }
       </div>
     </div>
   </Container>

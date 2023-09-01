@@ -2,7 +2,7 @@ import type { Lang, LangCode, I18nBranch, I18nNode, I18nLeaf, I18nTree } from '.
 import { ui } from '@/locales/ui'
 
 export { default as html } from 'dedent'
-export type { I18nBranch, I18nLeaf } from './types'
+export type { I18nBranch, I18nLeaf, LangCode } from './types'
 
 declare module '@/i18n/types' {
   interface Lang {

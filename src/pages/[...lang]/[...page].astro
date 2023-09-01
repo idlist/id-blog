@@ -1,66 +1,63 @@
 ---
-import type {
-  GetStaticPaths,
-  InferGetStaticParamsType as InferParams,
-  InferGetStaticPropsType as InferProps,
-} from 'astro'
-import { getCollection } from 'astro:content'
+import type { GetStaticPaths, InferGetStaticPropsType as InferProps } from 'astro'
+import { getCollection, type CollectionEntry } from 'astro:content'
 import Homepage from '@/layout/homepage.astro'
-import { lang, defaultLang, getLangCode, undef } from '@/i18n'
+import { lang, defaultLang, undef, type LangCode } from '@/i18n'
 import { range } from '@/utils'
 
-const code = getLangCode(Astro.url)
-
-const posts = await getCollection('posts', (entry) => {
-  return entry.id.startsWith(`${code}/`)
-})
-
 export const getStaticPaths = (async () => {
-  interface FrontMatter {
-    title: string
-    date: Date
-    lastUpdate?: Date
-    tags: string[]
-  }
-
-  const posts = await Astro.glob<FrontMatter>('../../content/posts/**/*.mdx')
-  const postLangs: Record<string, number> = {}
-
-  Object.keys(lang).map((code) => {
-    postLangs[code] = 0
-  })
   const pageSize = 10
 
+  const posts = await getCollection('posts')
+  const postsByLang: Record<string, CollectionEntry<'posts'>[]> = {}
+
+  Object.keys(lang).map((code) => {
+    postsByLang[code] = []
+  })
+
   posts.map((post) => {
-    const segments = post.file.split('/')
-    const code = segments[segments.length - 2]
-    postLangs[code] = postLangs[code] ? postLangs[code] + 1 : 1
+    const code = post.data.lang ?? defaultLang
+    if (!postsByLang[code]) {
+      postsByLang[code] = []
+    }
+    postsByLang[code].push(post)
   })
 
   const langPages: Record<string, number> = {}
 
-  Object.keys(postLangs).forEach((code) => {
-    const count = postLangs[code]
+  Object.keys(postsByLang).forEach((code) => {
+    postsByLang[code].sort((a, b) => {
+      return a.data.date < b.data.date ? 1 : -1
+    })
+    const count = postsByLang[code].length
     langPages[code] = count === 0 ? 1 : Math.ceil(count / pageSize)
   })
 
-  return Object.entries(langPages).flatMap(([lang, iter]) => {
+  const paginate = <T,>(collection: T[], page: number) => {
+    return collection.slice((page - 1) * pageSize, page * pageSize)
+  }
+
+  return Object.entries(langPages).flatMap(([code, iter]) => {
     return range(iter).map((page) => {
       return {
         params: {
-          lang: undef(lang, defaultLang),
+          lang: undef(code, defaultLang),
           page: undef(page, 1, `posts/${page}`),
         },
-        props: { page },
+        props: {
+          code: code as LangCode,
+          posts: paginate(postsByLang[code], page),
+          total: postsByLang[code].length,
+          page,
+        },
       }
     })
   })
 }) satisfies GetStaticPaths
 
-type Params = InferParams<typeof getStaticPaths>
-type Props = InferParams<typeof getStaticPaths>
+type Props = InferProps<typeof getStaticPaths>
 
-const { page } = Astro.props
+const { code, posts, total, page } = Astro.props
 ---
 
-<Homepage posts={posts} />
+<Homepage {code} {posts} {total} {page} />
