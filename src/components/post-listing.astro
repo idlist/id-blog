@@ -20,33 +20,92 @@ const t = useLang(code)
 ---
 
 <div class="post">
-  <a class="post-link" href={`${root}posts/${slug}`}>
-    <h2 class="post-title">{title}</h2>
+  <a class="post__link" href={`${root}posts/${slug}`}>
+    <h2 class="post__title">{title}</h2>
   </a>
 
   <div class="post-meta">
     <div class="post-time">
-      <img class="post-time-icon" src={icon_time.src} alt="time" />
+      <img class="post-time__icon" src={icon_time.src} alt="time" />
       <span>{ymdFormat(date)}</span>
     </div>
 
     <div class="post-tags">
-      <img class="post-tags-icon" src={icon_tags.src} alt="tags" />
+      <img class="post-tags__icon" src={icon_tags.src} alt="tags" />
       {
         tags.length ? (
           tags.map((tag) => (
-            <a class="post-tags-item" href={`${root}tags/${slugify(tag)}`}>
+            <a class="post-tags__item" href={`${root}tags/${slugify(tag)}`}>
               {tag}
             </a>
           ))
         ) : (
-          <div class="post-tags-notag">${t('ui.no-tags')}</div>
+          <div class="post-tags__no-tags">${t('ui.no-tags')}</div>
         )
       }
     </div>
   </div>
-  <!--
-  <hr class="post-hr" />
-  <div class="post-summary">${postMeta.summary}</div>
-  -->
 </div>
+
+<style lang="sass" scoped>
+  @use '@/styles/variables' as vars
+  @use '@/styles/mixins' as mixins
+
+  .post
+    margin: 1.5rem 0
+
+    &:last-child
+      margin-bottom: 0
+
+    &__link
+      text-decoration: none
+
+    &__title
+      font-size: 1.5rem
+      font-weight: normal
+      margin: 0.25rem 0
+
+      color: var(--color-green)
+
+      &:hover
+        color: var(--color-green-light)
+
+      &:active
+        color: var(--color-green-exlight)
+
+  .post-meta
+    display: grid
+    align-items: center
+    grid-template-columns: max-content auto
+    column-gap: 1rem
+
+    @media (max-width: vars.$screen-md)
+      grid-template-columns: 1fr
+
+  .post-time
+    display: flex
+    align-items: center
+    column-gap: 0.25rem
+
+    &__icon
+      width: 1.25rem
+      height: 1.25rem
+
+  .post-tags
+    display: flex
+    align-items: center
+    column-gap: 0.25rem
+    flex-wrap: wrap
+
+    &__icon
+      @extend .post-time__icon
+
+    &__item
+      @include mixins.link-main
+
+      line-height: 1.25
+      word-break: break-word
+
+    &__no-tags
+      color: var(--color-gray)
+</style>
