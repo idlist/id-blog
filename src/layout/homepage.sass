@@ -6,6 +6,7 @@
 
   display: grid
   grid-template-columns: 30% 70%
+  column-gap: 1rem
 
   @media (max-width: vars.$screen-md)
     grid-template-columns: 100%
@@ -15,6 +16,9 @@
   align-items: center
   column-gap: 1rem
   margin-bottom: 0.75rem
+
+  @media (max-width: vars.$screen-md)
+    margin-top: 3rem
 
   &__icon-bg
     display: flex
@@ -54,9 +58,8 @@
     @include mixins.link-main
 
 .homepage
-  @media (min-width: vars.$screen-md)
-    margin-left: 1rem
-
   @media (max-width: vars.$screen-md)
     grid-row-start: 1
 
+.homepage__no-articles
+  color: var(--color-gray-light)

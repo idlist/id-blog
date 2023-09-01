@@ -1,4 +1,5 @@
 ---
+import type { CollectionEntry } from 'astro:content'
 import './homepage.sass'
 import Base from './base.astro'
 import Container from '@/components/container.astro'
@@ -6,7 +7,8 @@ import Contact from '@/components/contact.astro'
 import Tags from '@/components/tags.astro'
 import Timeline from '@/components/timeline.astro'
 import PostListing from '@/components/post-listing.astro'
-import { useLang, type LangCode } from '@/i18n'
+import { useLang } from '@/i18n'
+import type { Paging } from '@/utils'
 
 import logo_personal from '@/assets/idlist.png'
 import icon_email from '@/assets/icons/email.svg'
@@ -14,21 +16,16 @@ import icon_home from '@/assets/icons/home.svg'
 import icon_twitter from '@/assets/icons/twitter.svg'
 import icon_soundcloud from '@/assets/icons/soundcloud.svg'
 import icon_github from '@/assets/icons/github.svg'
-import type { CollectionEntry } from 'astro:content'
+import Pagination from '@/components/pagination.astro'
 
 interface Props {
-  code: LangCode
   posts: CollectionEntry<'posts'>[]
   total: number
-  page: number
+  page: Paging
 }
 
-const { code, posts, page } = Astro.props
-const t = useLang(code)
-
-console.log(posts, page)
-
-const postNumber = posts.length
+const { posts, total, page } = Astro.props
+const t = useLang(Astro.url)
 ---
 
 <Base title="Reinventing the Wheel | i'D Blog">
@@ -49,7 +46,7 @@ const postNumber = posts.length
         <Contact icon={icon_soundcloud.src} text="i'DLisT" link="https://soundcloud.com/idlist" />
 
         <div class="homepage-stats">
-          <Fragment set:html={t('ui.total-posts', postNumber)} />
+          <Fragment set:html={t('ui.total-posts', total)} />
         </div>
 
         <div class="homepage-source">
@@ -62,9 +59,22 @@ const postNumber = posts.length
 
       <div class="homepage">
         {
-          posts.map((post) => (
-            <PostListing title={post.data.title} slug={post.slug} tags={post.data.tags} date={post.data.date} />
-          ))
+          posts.length ? (
+            <>
+              <Pagination page={page}/>
+              {posts.map((post) => (
+                <PostListing
+                  title={post.data.title}
+                  slug={post.slug}
+                  tags={post.data.tags ?? []}
+                  date={post.data.date}
+                />
+              ))}
+              <Pagination page={page} />
+            </>
+          ) : (
+            <div class="homepage__no-articles">{t('ui.no-posts-in-lang')}</div>
+          )
         }
       </div>
     </div>

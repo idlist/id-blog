@@ -25,3 +25,19 @@ export const ymdFormat = (date: Date) => {
 }
 
 export const range = (i: number) => Array.from({ length: i }).map((_, idx) => idx + 1)
+
+export interface Paging {
+  current: number
+  prev: number
+  next: number
+  last: number
+}
+
+export const createPaging = (page: number, count: number): Paging => {
+  return {
+    current: page,
+    prev: page - 1 < 1 ? 1 : page - 1,
+    next: page + 1 > count ? count : page + 1,
+    last: count,
+  }
+}

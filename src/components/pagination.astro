@@ -1,0 +1,87 @@
+---
+import { getRoot } from '@/i18n'
+import type { Paging } from '@/utils'
+
+interface Props {
+  page: Paging
+}
+
+const { page } = Astro.props
+const root = getRoot(Astro.url)
+
+const pageRoute = (page: number) => (page === 1 ? '' : `posts/${page}`)
+---
+
+<div class="pagination">
+  <a class="pagination__button" href={`${root}${pageRoute(page.prev)}`}>&lt;</a>
+  <div class="pagination__current">{page.current}</div>
+  <a class="pagination__button" href={`${root}${pageRoute(page.next)}`}>&gt;</a>
+  <input class="pagination__input" type="text" />
+  <div class="pagination__divider">/</div>
+  <div class="pagination__limit">{page.last}</div>
+  <a class="pagination__go">GO</a>
+</div>
+
+<style lang="sass" scoped>
+  .pagination
+    display: flex
+    align-items: center
+    justify-content: center
+    column-gap: 0.5rem
+
+    width: 100%
+    margin: 0.5rem 0
+    user-select: none
+
+    &__button
+      text-decoration: none
+
+      display: flex
+      align-items: center
+      justify-content: center
+
+      width: 2rem
+      height: 2rem
+
+      color: var(--color-black)
+      border: 1px solid var(--color-black)
+      border-radius: 50%
+
+      cursor: pointer
+      user-select: none
+
+      &:hover
+        color: var(--color-gray-light)
+        border-color: var(--color-gray-light)
+
+      &:active
+        color: var(--color-gray-lighter)
+        border-color: #ccc
+
+    &__go
+      @extend .pagination__button
+
+      font-size: 0.875rem
+
+    &__current
+      display: flex
+      align-items: center
+      justify-content: center
+
+      width: 2rem
+      height: 2rem
+
+      color: var(--color-white)
+      background-color: var(--color-black)
+      border: 1px solid var(--color-black)
+      border-radius: 50%
+
+    &__input
+      border: none
+      border-bottom: 1px solid var(--color-black)
+
+      width: 2rem
+
+      text-align: center
+      line-height: 1.5
+</style>

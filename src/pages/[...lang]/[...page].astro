@@ -3,7 +3,7 @@ import type { GetStaticPaths, InferGetStaticPropsType as InferProps } from 'astr
 import { getCollection, type CollectionEntry } from 'astro:content'
 import Homepage from '@/layout/homepage.astro'
 import { lang, defaultLang, undef, type LangCode } from '@/i18n'
-import { range } from '@/utils'
+import { createPaging, range } from '@/utils'
 
 export const getStaticPaths = (async () => {
   const pageSize = 10
@@ -37,18 +37,17 @@ export const getStaticPaths = (async () => {
     return collection.slice((page - 1) * pageSize, page * pageSize)
   }
 
-  return Object.entries(langPages).flatMap(([code, iter]) => {
-    return range(iter).map((page) => {
+  return Object.entries(langPages).flatMap(([code, count]) => {
+    return range(count).map((page) => {
       return {
         params: {
           lang: undef(code, defaultLang),
           page: undef(page, 1, `posts/${page}`),
         },
         props: {
-          code: code as LangCode,
           posts: paginate(postsByLang[code], page),
           total: postsByLang[code].length,
-          page,
+          page: createPaging(page, count)
         },
       }
     })
@@ -57,7 +56,7 @@ export const getStaticPaths = (async () => {
 
 type Props = InferProps<typeof getStaticPaths>
 
-const { code, posts, total, page } = Astro.props
+const { posts, total, page } = Astro.props
 ---
 
-<Homepage {code} {posts} {total} {page} />
+<Homepage posts={posts} total={total} page={page} />

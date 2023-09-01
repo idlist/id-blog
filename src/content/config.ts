@@ -7,7 +7,7 @@ const postsCollections = defineCollection({
     lang: z.string().optional(),
     date: z.date(),
     lastUpdate: z.date().optional(),
-    tags: z.array(z.string()),
+    tags: z.array(z.string()).optional(),
   }),
 })
 
