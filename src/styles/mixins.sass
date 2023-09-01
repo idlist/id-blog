@@ -36,6 +36,30 @@
   @media (min-width: vars.$screen-md)
     display: none
 
+@mixin btn-pagination
+  display: flex
+  align-items: center
+  justify-content: center
+
+  width: 2rem
+  height: 2rem
+
+  color: var(--color-black)
+  border: 1px solid var(--color-black)
+  border-radius: 50%
+  text-decoration: none
+
+  cursor: pointer
+  user-select: none
+
+  &:hover
+    color: var(--color-gray-light)
+    border-color: var(--color-gray-light)
+
+  &:active
+    color: var(--color-gray-lighter)
+    border-color: var(--color-gray-lighter)
+
 @mixin post-count
   display: flex
   align-items: center

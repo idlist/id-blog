@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import { getLangCode, getRoot, useLang } from '@/i18n'
-import { ymd } from '@/utils'
+import { ymd } from '@/utils/server'
 
 const code = getLangCode(Astro.url)
 const root = getRoot(code)

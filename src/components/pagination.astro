@@ -1,28 +1,29 @@
 ---
-import { getRoot } from '@/i18n'
-import type { Paging } from '@/utils'
+import { getLangCode, getRoot } from '@/i18n'
+import type { Paging } from '@/utils/server'
+import PaginationGo from '@/components/pagination-go.vue'
 
 interface Props {
   page: Paging
 }
 
 const { page } = Astro.props
-const root = getRoot(Astro.url)
+const code = getLangCode(Astro.url)
+const root = getRoot(code)
 
 const pageRoute = (page: number) => (page === 1 ? '' : `posts/${page}`)
 ---
 
-<div class="pagination">
+<div class="pagination" >
   <a class="pagination__button" href={`${root}${pageRoute(page.prev)}`}>&lt;</a>
   <div class="pagination__current">{page.current}</div>
   <a class="pagination__button" href={`${root}${pageRoute(page.next)}`}>&gt;</a>
-  <input class="pagination__input" type="text" />
-  <div class="pagination__divider">/</div>
-  <div class="pagination__limit">{page.last}</div>
-  <a class="pagination__go">GO</a>
+  <PaginationGo client:load view="posts" code={code} last={page.last} />
 </div>
 
 <style lang="sass" scoped>
+  @use '@/styles/mixins' as mixins
+
   .pagination
     display: flex
     align-items: center
@@ -34,34 +35,7 @@ const pageRoute = (page: number) => (page === 1 ? '' : `posts/${page}`)
     user-select: none
 
     &__button
-      text-decoration: none
-
-      display: flex
-      align-items: center
-      justify-content: center
-
-      width: 2rem
-      height: 2rem
-
-      color: var(--color-black)
-      border: 1px solid var(--color-black)
-      border-radius: 50%
-
-      cursor: pointer
-      user-select: none
-
-      &:hover
-        color: var(--color-gray-light)
-        border-color: var(--color-gray-light)
-
-      &:active
-        color: var(--color-gray-lighter)
-        border-color: #ccc
-
-    &__go
-      @extend .pagination__button
-
-      font-size: 0.875rem
+      @include mixins.btn-pagination
 
     &__current
       display: flex
@@ -75,13 +49,4 @@ const pageRoute = (page: number) => (page === 1 ? '' : `posts/${page}`)
       background-color: var(--color-black)
       border: 1px solid var(--color-black)
       border-radius: 50%
-
-    &__input
-      border: none
-      border-bottom: 1px solid var(--color-black)
-
-      width: 2rem
-
-      text-align: center
-      line-height: 1.5
 </style>

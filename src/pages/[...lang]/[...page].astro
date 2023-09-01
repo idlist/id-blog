@@ -3,7 +3,7 @@ import type { GetStaticPaths, InferGetStaticPropsType as InferProps } from 'astr
 import { getCollection, type CollectionEntry } from 'astro:content'
 import Homepage from '@/layout/homepage.astro'
 import { lang, defaultLang, undef, type LangCode } from '@/i18n'
-import { createPaging, range } from '@/utils'
+import { createPaging, range } from '@/utils/server'
 
 export const getStaticPaths = (async () => {
   const pageSize = 10
