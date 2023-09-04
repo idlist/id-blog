@@ -45,12 +45,12 @@ const getTileBig = (): TileTypeBig => ({
 
 const getTileSmall = (): TileTypeSmall => ({
   type: 1,
-  variants: [
+  variants: shuffle([
     Random.pick(Object.keys(weightedTile.rect)),
     Random.pick(Object.keys(weightedTile.triangle)),
     Random.pick(Object.keys(weightedTile.circle)),
     Random.pick(Object.keys(weightedTile.diamond)),
-  ],
+  ]),
   rotates: shuffle(range(4)).map((d) => d * 90),
 })
 
