@@ -10,9 +10,10 @@ interface Props {
   slug: string
   date: Date
   tags: string[]
+  summary?: string
 }
 
-const { title, slug, date, tags } = Astro.props
+const { title, slug, date, tags, summary } = Astro.props
 
 const code = getLangCode(Astro.url)
 const root = getRoot(code)
@@ -20,14 +21,14 @@ const t = useLang(code)
 ---
 
 <div class="post">
-  <a class="post__link" href={`${root}posts/${slug}`}>
+  <a class="post__link" href={`${root}a/${slug}`}>
     <h2 class="post__title">{title}</h2>
   </a>
 
   <div class="post-meta">
     <div class="post-time">
       <img class="post-time__icon" src={icon_time.src} alt="time" />
-      <span>{ymdFormat(date)}</span>
+      <time datetime={date.toISOString()}>{ymdFormat(date)}</time>
     </div>
 
     <div class="post-tags">
@@ -45,6 +46,15 @@ const t = useLang(code)
       }
     </div>
   </div>
+
+  {
+    summary && (
+      <>
+        <hr class="post__divider" />
+        <div class="post__summary">{summary}</div>
+      </>
+    )
+  }
 </div>
 
 <style lang="sass" scoped>
@@ -63,7 +73,8 @@ const t = useLang(code)
     &__title
       font-size: 1.5rem
       font-weight: normal
-      margin: 0.25rem 0
+      margin: 0
+      margin-bottom: 0.125rem
 
       color: var(--color-green)
 
@@ -81,11 +92,12 @@ const t = useLang(code)
 
     @media (max-width: vars.$screen-md)
       grid-template-columns: 1fr
+      row-gap: 0.25rem
 
   .post-time
     display: flex
     align-items: center
-    column-gap: 0.25rem
+    column-gap: 0.5rem
 
     &__icon
       width: 1.25rem
@@ -94,7 +106,7 @@ const t = useLang(code)
   .post-tags
     display: flex
     align-items: center
-    column-gap: 0.25rem
+    column-gap: 0.5rem
     flex-wrap: wrap
 
     &__icon
@@ -108,4 +120,14 @@ const t = useLang(code)
 
     &__no-tags
       color: var(--color-gray-light)
+
+  .post__divider
+    margin: 0.5rem 2rem
+
+    border: none
+    border-top: 1px solid var(--color-gray-lighter)
+
+  .post__summary
+    color: var(--color-gray-light)
+    text-align: right
 </style>

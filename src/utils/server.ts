@@ -24,8 +24,6 @@ export const ymdFormat = (date: Date) => {
   return `${d.year} / ${d.month} / ${d.day}`
 }
 
-export const range = (i: number) => Array.from({ length: i }).map((_, idx) => idx + 1)
-
 export interface Paging {
   current: number
   prev: number

@@ -1,9 +1,10 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType as InferProps } from 'astro'
 import { getCollection, type CollectionEntry } from 'astro:content'
+import { range } from 'lodash-es'
 import Homepage from '@/layout/homepage.astro'
-import { lang, defaultLang, undef, type LangCode } from '@/i18n'
-import { createPaging, range } from '@/utils/server'
+import { lang, defaultLang, undef } from '@/i18n'
+import { createPaging } from '@/utils/server'
 
 export const getStaticPaths = (async () => {
   const pageSize = 10
@@ -23,22 +24,24 @@ export const getStaticPaths = (async () => {
     postsByLang[code].push(post)
   })
 
-  const langPages: Record<string, number> = {}
+  const pagesByLang: Record<string, number> = {}
 
   Object.keys(postsByLang).forEach((code) => {
     postsByLang[code].sort((a, b) => {
       return a.data.date < b.data.date ? 1 : -1
     })
     const count = postsByLang[code].length
-    langPages[code] = count === 0 ? 1 : Math.ceil(count / pageSize)
+    pagesByLang[code] = count === 0 ? 1 : Math.ceil(count / pageSize)
   })
 
   const paginate = <T,>(collection: T[], page: number) => {
     return collection.slice((page - 1) * pageSize, page * pageSize)
   }
 
-  return Object.entries(langPages).flatMap(([code, count]) => {
-    return range(count).map((page) => {
+  return Object.entries(pagesByLang).flatMap(([code, count]) => {
+    return range(count).map((idx) => {
+      const page = idx + 1
+
       return {
         params: {
           lang: undef(code, defaultLang),

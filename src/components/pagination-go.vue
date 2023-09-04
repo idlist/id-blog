@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
+import { clamp } from 'lodash-es'
 import type { LangCode } from '@/i18n'
-import { clamp } from '@/utils/client'
+import { defaultLang } from '@/utils/client'
 
 const props = defineProps<{
   view: string
@@ -19,7 +20,7 @@ const toPage = () => {
   }
 
   let page = clamp(toParsed.value, 1, last)
-  const root = code === 'zh' ? '/' : `/${code}/`
+  const root = code === defaultLang ? '/' : `/${code}/`
 
   let dest: string
   if (view === 'posts') {
@@ -28,18 +29,13 @@ const toPage = () => {
     dest = page === 1 ? view : `${view}/${page}`
   }
 
-  console.log(`${location.origin}${root}${dest}`)
   location.href = `${location.origin}${root}${dest}`
 }
 </script>
 
 <template>
   <div class="pagination-go">
-    <input
-      type="text"
-      class="pagination-go__input"
-      v-model.trim="to"
-      @keyup="to = to.replace(/[^\d]/g, '')" />
+    <input type="text" class="pagination-go__input" v-model="to" @keyup="to = to.replace(/[^\d]/g, '')" />
     <div>/</div>
     <div>{{ last }}</div>
     <a class="pagination-go__text" @click="toPage">GO</a>
