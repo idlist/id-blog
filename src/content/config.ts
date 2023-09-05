@@ -1,4 +1,4 @@
-import { defineCollection, z } from 'astro:content'
+import { defineCollection, z, type CollectionEntry } from 'astro:content'
 
 const postsCollections = defineCollection({
   type: 'content',
@@ -11,6 +11,8 @@ const postsCollections = defineCollection({
     summary: z.string().optional(),
   }),
 })
+
+export type Posts = CollectionEntry<'posts'>[]
 
 export const collections = {
   'posts': postsCollections,

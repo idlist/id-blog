@@ -61,7 +61,7 @@ const t = useLang(Astro.url)
         {
           posts.length ? (
             <>
-              <Pagination page={page}/>
+              <Pagination page={page} />
               {posts.map((post) => (
                 <PostListing
                   title={post.data.title}

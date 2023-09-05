@@ -1,0 +1,70 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType as InferProps } from 'astro'
+import { getCollection } from 'astro:content'
+import { range } from 'lodash-es'
+import Category from '@/layout/category.astro'
+import type { Posts } from '@/content/config'
+import { defaultLang, undef } from '@/i18n'
+import { createPaging, pageSize, paginate, slugify } from '@/utils/server'
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('posts')
+  const postsByTag: Record<string, Record<string, Posts>> = {}
+
+  posts.map((post) => {
+    post.data.tags?.map((tag) => {
+      const code = post.data.lang ?? defaultLang
+      if (!postsByTag[code]) {
+        postsByTag[code] = {}
+      }
+      if (!postsByTag[code][tag]) {
+        postsByTag[code][tag] = []
+      }
+      postsByTag[code][tag].push(post)
+    })
+  })
+
+  const pagesByTag: Record<string, Record<string, number>> = {}
+
+  Object.keys(postsByTag).forEach((code) => {
+    Object.keys(postsByTag[code]).forEach((tag) => {
+      postsByTag[code][tag].sort((a, b) => {
+        return a.data.date < b.data.date ? 1 : -1
+      })
+      const count = postsByTag[code][tag].length
+      if (!pagesByTag[code]) {
+        pagesByTag[code] = {}
+      }
+      pagesByTag[code][tag] = count === 0 ? 1 : Math.ceil(count / pageSize)
+    })
+  })
+
+  return Object.entries(pagesByTag).flatMap(([code, tags]) => {
+    return Object.entries(tags).flatMap(([tag, count]) => {
+      return range(count).map((idx) => {
+        const page = idx + 1
+
+        return {
+          params: {
+            lang: undef(code, defaultLang),
+            page: undef(page, 1),
+            tag: slugify(tag)
+          },
+          props: {
+            tag: tag,
+            posts: paginate(postsByTag[code][tag], page),
+            total: postsByTag[code][tag].length,
+            page: createPaging(page, count),
+          },
+        }
+      })
+    })
+  })
+}) satisfies GetStaticPaths
+
+type Props = InferProps<typeof getStaticPaths>
+
+const { tag, posts, total, page } = Astro.props
+---
+
+<Category type="tag" value={tag} posts={posts} total={total} page={page} />

@@ -1,0 +1,60 @@
+---
+import './category.sass'
+import type { CollectionEntry } from 'astro:content'
+import Base from './base.astro'
+import Container from '@/components/container.astro'
+import Tags from '@/components/tags.astro'
+import Timeline from '@/components/timeline.astro'
+import Pagination from '@/components/pagination.astro'
+import PostListing from '@/components/post-listing.astro'
+import { useLang } from '@/i18n'
+import type { Paging } from '@/utils/server'
+
+interface Props {
+  type: 'tag' | 'timeline'
+  value: string
+  posts: CollectionEntry<'posts'>[]
+  total: number
+  page: Paging
+}
+
+const { type, value, posts, total, page } = Astro.props
+const category = type.charAt(0).toUpperCase() + type.slice(1)
+const t = useLang(Astro.url)
+---
+
+<Base title={`${category}: ${value} | i'D Blog`}>
+  <Container>
+    <div class="category__container">
+      <div class="category__sidebar">
+        <Tags />
+        <Timeline />
+      </div>
+
+      <div class="category">
+        <h1 class="category-info">
+          <span>{category}: </span>
+          <span class="category-info__name">{value}</span>
+        </h1>
+
+        <div class="category-info__stat">
+          <Fragment set:html={t('ui.total-posts', total)} />
+        </div>
+
+        <Pagination page={page} />
+        {
+          posts.map((post) => (
+            <PostListing
+              title={post.data.title}
+              slug={post.slug}
+              tags={post.data.tags ?? []}
+              date={post.data.date}
+              summary={post.data.summary}
+            />
+          ))
+        }
+        <Pagination page={page} />
+      </div>
+    </div>
+  </Container>
+</Base>

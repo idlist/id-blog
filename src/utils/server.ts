@@ -31,6 +31,12 @@ export interface Paging {
   last: number
 }
 
+export const pageSize = 10
+
+export const paginate = <T>(collection: T[], page: number) => {
+  return collection.slice((page - 1) * pageSize, page * pageSize)
+}
+
 export const createPaging = (page: number, count: number): Paging => {
   return {
     current: page,
