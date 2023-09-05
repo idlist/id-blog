@@ -24,23 +24,19 @@ export const getStaticPaths = (async () => {
     })
   })
 
-  const pagesByTag: Record<string, Record<string, number>> = {}
-
-  Object.keys(postsByTag).forEach((code) => {
-    Object.keys(postsByTag[code]).forEach((tag) => {
-      postsByTag[code][tag].sort((a, b) => {
+  Object.values(postsByTag).forEach((tags) => {
+    Object.values(tags).forEach((posts) => {
+      posts.sort((a, b) => {
         return a.data.date < b.data.date ? 1 : -1
       })
-      const count = postsByTag[code][tag].length
-      if (!pagesByTag[code]) {
-        pagesByTag[code] = {}
-      }
-      pagesByTag[code][tag] = count === 0 ? 1 : Math.ceil(count / pageSize)
     })
   })
 
-  return Object.entries(pagesByTag).flatMap(([code, tags]) => {
-    return Object.entries(tags).flatMap(([tag, count]) => {
+  return Object.entries(postsByTag).flatMap(([code, tags]) => {
+    return Object.entries(tags).flatMap(([tag, posts]) => {
+      const total = posts.length
+      const count = Math.ceil(total / pageSize)
+
       return range(count).map((idx) => {
         const page = idx + 1
 
@@ -48,12 +44,12 @@ export const getStaticPaths = (async () => {
           params: {
             lang: undef(code, defaultLang),
             page: undef(page, 1),
-            tag: slugify(tag)
+            tag: slugify(tag),
           },
           props: {
-            tag: tag,
-            posts: paginate(postsByTag[code][tag], page),
-            total: postsByTag[code][tag].length,
+            tag,
+            posts: paginate(posts, page),
+            total,
             page: createPaging(page, count),
           },
         }

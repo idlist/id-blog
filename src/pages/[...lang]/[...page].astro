@@ -23,17 +23,16 @@ export const getStaticPaths = (async () => {
     postsByLang[code].push(post)
   })
 
-  const pagesByLang: Record<string, number> = {}
-
-  Object.keys(postsByLang).forEach((code) => {
-    postsByLang[code].sort((a, b) => {
+  Object.values(postsByLang).forEach((posts) => {
+    posts.sort((a, b) => {
       return a.data.date < b.data.date ? 1 : -1
     })
-    const count = postsByLang[code].length
-    pagesByLang[code] = count === 0 ? 1 : Math.ceil(count / pageSize)
   })
 
-  return Object.entries(pagesByLang).flatMap(([code, count]) => {
+  return Object.entries(postsByLang).flatMap(([code, posts]) => {
+    const total = posts.length
+    const count = total === 0 ? 1 : Math.ceil(total / pageSize)
+
     return range(count).map((idx) => {
       const page = idx + 1
 
@@ -43,9 +42,9 @@ export const getStaticPaths = (async () => {
           page: undef(page, 1, `posts/${page}`),
         },
         props: {
-          posts: paginate(postsByLang[code], page),
-          total: postsByLang[code].length,
-          page: createPaging(page, count)
+          posts: paginate(posts, page),
+          total,
+          page: createPaging(page, count),
         },
       }
     })
