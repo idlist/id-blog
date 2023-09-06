@@ -1,4 +1,5 @@
 import { slugify as slug } from 'transliteration'
+import { padStart as pad } from 'lodash-es'
 
 export const slugify = (str: string) => slug(str, {
   allowedChars: 'a-zA-Z0-9-',
@@ -22,6 +23,10 @@ export const ymd = (date: Date): YearMonthDay => {
 export const ymdFormat = (date: Date) => {
   const d = ymd(date)
   return `${d.year} / ${d.month} / ${d.day}`
+}
+
+export const ymKey = (year: number | string, month: number | string) => {
+  return `${pad(`${year}`, 4, '0')}-${pad(`${month}`, 2, '0')}`
 }
 
 export interface Paging {

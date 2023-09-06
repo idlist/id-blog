@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content'
 import { sum } from 'lodash-es'
 import { getLangCode, getRoot, useLang } from '@/i18n'
-import { ymd } from '@/utils/server'
+import { ymd, ymKey } from '@/utils/server'
 
 const code = getLangCode(Astro.url)
 const root = getRoot(code)
@@ -45,7 +45,7 @@ const hasDate = Object.keys(stats).length
               {Object.entries(months)
                 .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
                 .map(([month, count]) => (
-                  <a class="timeline__item" href={`${root}timeline/${year}-${month}`}>
+                  <a class="timeline__item" href={`${root}timeline/${ymKey(year, month)}`}>
                     <span class="timeline__month">{month}</span>
                     <span class="timeline__count">{count}</span>
                   </a>
@@ -72,7 +72,7 @@ const hasDate = Object.keys(stats).length
 
     &__year
       display: flex
-      column-gap: 0.25rem
+      column-gap: 0.5rem
       align-items: center
       margin-bottom: 0.25rem
 
@@ -83,7 +83,10 @@ const hasDate = Object.keys(stats).length
 
     &__year-count
       @include mixins.post-count
-      background-color: var(--color-green)
+
+      color: var(--color-green)
+      border: 1px solid var(--color-green)
+      background: none
 
     &__list
       display: flex

@@ -10,6 +10,8 @@ import PostListing from '@/components/post-listing.astro'
 import { useLang } from '@/i18n'
 import type { Paging } from '@/utils/server'
 
+import icon_category from '@/assets/icons/category.svg'
+
 interface Props {
   type: 'tag' | 'timeline'
   value: string
@@ -27,13 +29,18 @@ const t = useLang(Astro.url)
   <Container>
     <div class="category__container">
       <div class="category__sidebar">
+        <div class="category-title">
+          <img class="category-title__icon" src={icon_category.src} alt="category" />
+          <span class="category-title__text">i'D Archive</span>
+        </div>
+
         <Tags />
         <Timeline />
       </div>
 
       <div class="category">
         <h1 class="category-info">
-          <span>{category}: </span>
+          <span>{category}:&nbsp;</span>
           <span class="category-info__name">{value}</span>
         </h1>
 
