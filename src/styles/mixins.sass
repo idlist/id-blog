@@ -1,10 +1,16 @@
 @use './variables' as vars
 
 @mixin link-main
-  color: var(--color-gray)
+  color: var(--color-green)
 
-  &:visited
-    color: var(--color-green)
+  &:hover
+    color: var(--color-green-light)
+
+  &:active
+    color: var(--color-green-lighter)
+
+@mixin link-sub
+  color: var(--color-gray)
 
   &:hover
     color: var(--color-gray-light)

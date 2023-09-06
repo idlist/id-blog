@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, shallowRef, triggerRef, watch } from 'vue'
+import { computed, onMounted, ref, shallowRef, triggerRef, watch } from 'vue'
 import { useWindowSize } from '@vueuse/core'
 import Random from 'inaba'
 import { shuffle, range } from 'lodash-es'
@@ -106,30 +106,38 @@ watch([column, row], () => {
 
   triggerRef(tileMap)
 }, { immediate: true })
+
+const loaded = ref(false)
+
+onMounted(() => {
+  loaded.value = true
+})
 </script>
 
 <template>
   <div class="tile-wall">
-    <svg :width="width" :height="height">
-      <template v-for="(row, j) of tileMap" :key="j">
-        <template v-for="(each, i) of row" :key="i">
-          <TileBig
-            v-if="each.type === TileSize.Big"
-            :type="each.variant"
-            :x="size * i + offsetX"
-            :y="size * j + offsetY"
-            :size="size"
-            :rotate="each.rotate" />
-          <TileSmall
-            v-else
-            :types="each.variants"
-            :x="size * i + offsetX"
-            :y="size * j + offsetY"
-            :size="size"
-            :rotates="each.rotates" />
+    <Transition name="fade">
+      <svg :width="width" :height="height" v-show="loaded">
+        <template v-for="(row, j) of tileMap" :key="j">
+          <template v-for="(each, i) of row" :key="i">
+            <TileBig
+              v-if="each.type === TileSize.Big"
+              :type="each.variant"
+              :x="size * i + offsetX"
+              :y="size * j + offsetY"
+              :size="size"
+              :rotate="each.rotate" />
+            <TileSmall
+              v-else
+              :types="each.variants"
+              :x="size * i + offsetX"
+              :y="size * j + offsetY"
+              :size="size"
+              :rotates="each.rotates" />
+          </template>
         </template>
-      </template>
-    </svg>
+      </svg>
+    </Transition>
   </div>
 </template>
 
@@ -143,4 +151,12 @@ watch([column, row], () => {
   z-index: -10
 
   background-color: var(--color-background)
+
+.fade-enter-active,
+.fade-leave-active
+  transition: opacity 0.25s ease
+
+.fade-enter-from,
+.fade-leave-to
+  opacity: 0
 </style>

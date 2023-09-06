@@ -71,18 +71,12 @@ const t = useLang(code)
       text-decoration: none
 
     &__title
+      @include mixins.link-main
+
       font-size: 1.5rem
       font-weight: normal
       margin: 0
       margin-bottom: 0.125rem
-
-      color: var(--color-green)
-
-      &:hover
-        color: var(--color-green-light)
-
-      &:active
-        color: var(--color-green-exlight)
 
   .post-meta
     display: grid
@@ -113,7 +107,7 @@ const t = useLang(code)
       @extend .post-time__icon
 
     &__item
-      @include mixins.link-main
+      @include mixins.link-sub
 
       line-height: 1.25
       word-break: break-word

@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
+import { sum } from 'lodash-es'
 import { getLangCode, getRoot, useLang } from '@/i18n'
 import { ymd } from '@/utils/server'
 
@@ -11,34 +12,37 @@ const posts = await getCollection('posts', (entry) => {
   return entry.id.startsWith(`${code}/`)
 })
 
-const dates: Record<number, Record<number, number>> = {}
+const stats: Record<number, Record<number, number>> = {}
 
 posts.forEach(({ data }) => {
   const date = ymd(data.date)
 
-  if (!dates[date.year]) {
-    dates[date.year] = {}
+  if (!stats[date.year]) {
+    stats[date.year] = {}
   }
-  if (!dates[date.year][date.month]) {
-    dates[date.year][date.month] = 0
+  if (!stats[date.year][date.month]) {
+    stats[date.year][date.month] = 0
   }
-  dates[date.year][date.month] += 1
+  stats[date.year][date.month] += 1
 })
 
-const hasDate = Object.keys(dates).length
+const hasDate = Object.keys(stats).length
 ---
 
 <div class="timeline">
   <div class="timeline__title">Timeline</div>
   {
     hasDate ? (
-      Object.entries(dates)
+      Object.entries(stats)
         .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
-        .map(([year, monthData]) => (
+        .map(([year, months]) => (
           <>
-            <div class="timeline__year">{year}</div>
+            <div class="timeline__year">
+              <span class="timeline__year-name">{year}</span>
+              <span class="timeline__year-count">{sum(Object.values(months))}</span>
+            </div>
             <div class="timeline__list">
-              {Object.entries(monthData)
+              {Object.entries(months)
                 .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
                 .map(([month, count]) => (
                   <a class="timeline__item" href={`${root}timeline/${year}-${month}`}>
@@ -67,11 +71,19 @@ const hasDate = Object.keys(dates).length
       font-weight: bold
 
     &__year
-      font-size: 1.25rem
-      font-weight: bold
+      display: flex
+      column-gap: 0.25rem
+      align-items: center
       margin-bottom: 0.25rem
 
+    &__year-name
+      font-size: 1.25rem
+      font-weight: bold
       color: var(--color-green)
+
+    &__year-count
+      @include mixins.post-count
+      background-color: var(--color-green)
 
     &__list
       display: flex
@@ -86,7 +98,7 @@ const hasDate = Object.keys(dates).length
       word-break: break-word
 
     &__month
-      @include mixins.link-main
+      @include mixins.link-sub
 
     &__count
       @include mixins.post-count
