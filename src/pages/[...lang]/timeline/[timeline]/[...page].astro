@@ -5,38 +5,41 @@ import { range } from 'lodash-es'
 import Category from '@/layout/category.astro'
 import type { Posts } from '@/content/config'
 import { defaultLang, undef } from '@/i18n'
-import { createPaging, pageSize, paginate, slugify } from '@/utils/server'
+import { createPaging, pageSize, paginate, slugify, ymKey, ymd } from '@/utils/server'
 
 export const getStaticPaths = (async () => {
   const posts = await getCollection('posts')
 
   interface GroupBy {
     code: string
-    tag: string
+    year: number
+    month: number
   }
 
-  const postsByTag = new Map<GroupBy, Posts>()
+  const postsByTime = new Map<GroupBy, Posts>()
 
   posts.map((post) => {
-    post.data.tags?.map((tag) => {
-      const code = post.data.lang ?? defaultLang
-      const key = { code, tag }
-      const collection = postsByTag.get(key)
-      if (!collection) {
-        postsByTag.set(key, [post])
-      } else {
-        collection.push(post)
-      }
-    })
+    const code = post.data.lang ?? defaultLang
+    const date = ymd(post.data.date)
+    const year = date.year
+    const month = date.month
+
+    const key = { code, year, month }
+    const collection = postsByTime.get(key)
+    if (!collection) {
+      postsByTime.set(key, [post])
+    } else {
+      collection.push(post)
+    }
   })
 
-  postsByTag.forEach((posts) => {
+  postsByTime.forEach((posts) => {
     posts.sort((a, b) => {
       return a.data.date < b.data.date ? 1 : -1
     })
   })
 
-  return Array.from(postsByTag, ([key, posts]) => {
+  return Array.from(postsByTime, ([key, posts]) => {
     const total = posts.length
     const count = Math.ceil(total / pageSize)
 
@@ -47,10 +50,10 @@ export const getStaticPaths = (async () => {
         params: {
           lang: undef(key.code, defaultLang),
           page: undef(page, 1),
-          tag: slugify(key.tag),
+          timeline: ymKey(key.year, key.month),
         },
         props: {
-          tag: key.tag,
+          timeline: `${key.year} / ${key.month}`,
           posts: paginate(posts, page),
           total,
           page: createPaging(page, count),
@@ -62,7 +65,7 @@ export const getStaticPaths = (async () => {
 
 type Props = InferProps<typeof getStaticPaths>
 
-const { tag, posts, total, page } = Astro.props
+const { timeline, posts, total, page } = Astro.props
 ---
 
-<Category type="tag" value={tag} posts={posts} total={total} page={page} />
+<Category type="timeline" value={timeline} posts={posts} total={total} page={page} />

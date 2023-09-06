@@ -1,10 +1,11 @@
 import { slugify as slug } from 'transliteration'
 import { padStart as pad } from 'lodash-es'
 
-export const slugify = (str: string) => slug(str, {
-  allowedChars: 'a-zA-Z0-9-',
-  fixChineseSpacing: false,
-})
+export const slugify = (str: string) =>
+  slug(str, {
+    allowedChars: 'a-zA-Z0-9-',
+    fixChineseSpacing: false,
+  })
 
 interface YearMonthDay {
   year: number
@@ -25,7 +26,7 @@ export const ymdFormat = (date: Date) => {
   return `${d.year} / ${d.month} / ${d.day}`
 }
 
-export const ymKey = (year: number | string, month: number | string) => {
+export const ymKey = (year: string | number, month: string | number) => {
   return `${pad(`${year}`, 4, '0')}-${pad(`${month}`, 2, '0')}`
 }
 

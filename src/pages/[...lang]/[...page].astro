@@ -9,27 +9,25 @@ import { createPaging, pageSize, paginate } from '@/utils/server'
 
 export const getStaticPaths = (async () => {
   const posts = await getCollection('posts')
-  const postsByLang: Record<string, Posts> = {}
+  const postsByLang = new Map<string, Posts>()
 
   Object.keys(lang).map((code) => {
-    postsByLang[code] = []
+    postsByLang.set(code, [])
   })
 
   posts.map((post) => {
     const code = post.data.lang ?? defaultLang
-    if (!postsByLang[code]) {
-      postsByLang[code] = []
-    }
-    postsByLang[code].push(post)
+    const collection = postsByLang.get(code)
+    collection?.push(post)
   })
 
-  Object.values(postsByLang).forEach((posts) => {
+  postsByLang.forEach((posts) => {
     posts.sort((a, b) => {
       return a.data.date < b.data.date ? 1 : -1
     })
   })
 
-  return Object.entries(postsByLang).flatMap(([code, posts]) => {
+  return Array.from(postsByLang, ([code, posts]) => {
     const total = posts.length
     const count = total === 0 ? 1 : Math.ceil(total / pageSize)
 
@@ -48,7 +46,7 @@ export const getStaticPaths = (async () => {
         },
       }
     })
-  })
+  }).flat()
 }) satisfies GetStaticPaths
 
 type Props = InferProps<typeof getStaticPaths>
