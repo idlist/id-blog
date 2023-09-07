@@ -1,11 +1,10 @@
 import { slugify as slug } from 'transliteration'
 import { padStart as pad } from 'lodash-es'
 
-export const slugify = (str: string) =>
-  slug(str, {
-    allowedChars: 'a-zA-Z0-9-',
-    fixChineseSpacing: false,
-  })
+export const slugify = (str: string) => slug(str, {
+  allowedChars: 'a-zA-Z0-9-',
+  fixChineseSpacing: false,
+})
 
 interface YearMonthDay {
   year: number

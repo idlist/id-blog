@@ -51,7 +51,7 @@ const t = useLang(code)
     summary && (
       <>
         <hr class="post__divider" />
-        <div class="post__summary">{summary}</div>
+        <div class="post__summary">{summary.trim()}</div>
       </>
     )
   }

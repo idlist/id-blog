@@ -5,7 +5,8 @@ import { range } from 'lodash-es'
 import Category from '@/layout/category.astro'
 import type { Posts } from '@/content/config'
 import { defaultLang, undef } from '@/i18n'
-import { createPaging, pageSize, paginate, slugify, ymKey, ymd } from '@/utils/server'
+import { createPaging, pageSize, paginate, ymKey, ymd } from '@/utils/server'
+import SlowMap from '@/utils/slow-map'
 
 export const getStaticPaths = (async () => {
   const posts = await getCollection('posts')
@@ -16,7 +17,7 @@ export const getStaticPaths = (async () => {
     month: number
   }
 
-  const postsByTime = new Map<GroupBy, Posts>()
+  const postsByTime = new SlowMap<GroupBy, Posts>()
 
   posts.map((post) => {
     const code = post.data.lang ?? defaultLang
@@ -25,12 +26,7 @@ export const getStaticPaths = (async () => {
     const month = date.month
 
     const key = { code, year, month }
-    const collection = postsByTime.get(key)
-    if (!collection) {
-      postsByTime.set(key, [post])
-    } else {
-      collection.push(post)
-    }
+    postsByTime.upsert(key, [post], (col) => col.push(post))
   })
 
   postsByTime.forEach((posts) => {
@@ -39,7 +35,7 @@ export const getStaticPaths = (async () => {
     })
   })
 
-  return Array.from(postsByTime, ([key, posts]) => {
+  return postsByTime.entries().flatMap(([key, posts]) => {
     const total = posts.length
     const count = Math.ceil(total / pageSize)
 
@@ -60,7 +56,7 @@ export const getStaticPaths = (async () => {
         },
       }
     })
-  }).flat()
+  })
 }) satisfies GetStaticPaths
 
 type Props = InferProps<typeof getStaticPaths>

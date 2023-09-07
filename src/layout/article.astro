@@ -1,0 +1,96 @@
+---
+import './article.sass'
+import '@/styles/article.sass'
+import type { CollectionEntry } from 'astro:content'
+import Base from './base.astro'
+import Container from '@/components/container.astro'
+import { getLangCode, getRoot, useLang } from '@/i18n'
+import { ymdFormat, slugify } from '@/utils/server'
+
+import icon_time from '@/assets/icons/time.svg'
+import icon_update from '@/assets/icons/update.svg'
+import icon_tags from '@/assets/icons/tags.svg'
+import icon_back_to_top from '@/assets/icons/back-to-top.svg'
+import icon_creative_common from '@/assets/icons/creative-common.svg'
+
+interface Props {
+  entry: CollectionEntry<'posts'>
+}
+
+const { entry } = Astro.props
+const { data, render } = entry
+
+const title = data.title
+const date = ymdFormat(data.date)
+const update = ymdFormat(data.update ?? data.date)
+const tags = data.tags ?? []
+const summary = data.summary
+
+const code = getLangCode(Astro.url)
+const root = getRoot(code)
+const t = useLang(code)
+
+const { Content } = await render()
+---
+
+<Base title={title}>
+  <Container>
+    <div class="article__container">
+      <div>
+        <article>
+          <div id="top-of-article"></div>
+          <h1 class="article__title">{title}</h1>
+          {summary && <p class="article__summary">{summary.trim()}</p>}
+          <hr class="article__divider" />
+
+          <Content />
+        </article>
+      </div>
+
+      <div class="article__aside">
+        <div class="article-item">
+          <img class="article-item__icon" src={icon_time.src} alt="time" />
+          <span>{date}</span>
+        </div>
+        <div class="article-item">
+          <img class="article-item__icon" src={icon_update.src} alt="time" />
+          <span>{update}</span>
+        </div>
+        <div class="article-tags">
+          <img class="article-tags__icon" src={icon_tags.src} alt="tags" />
+          {
+            tags.length ? (
+              tags.map((tag) => (
+                <a class="article-tags__name" href={`${root}tags/${slugify(tag)}`}>
+                  {tag}
+                </a>
+              ))
+            ) : (
+              <div class="article-tags__no-tags">{t('ui.no-tags')}</div>
+            )
+          }
+        </div>
+        <!-- <div class="article-item">
+          <img class="article-item__icon" src={icon_creative_common.src} alt="tags" />
+          <a class="article-item-link" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
+        </div> -->
+        <!-- <div class="article-toc">
+            <div class="article-toc-title">Table of contents</div>
+             ${
+              toc.length
+                ? toc.map((h) => html` <a href="#${h.id}" class="article-toc-l${h.level}">${h.text}</a> `).join('')
+                : html`<span class="article-toc-nomenu">${t.use('noTOC')}</span>`
+            }
+          </div> -->
+        <a class="article-back" href="#top-of-article">
+          <img class="article-back__icon" src={icon_back_to_top.src} alt="back to top" />
+          <span>{t('ui.back-to-top')}</span>
+        </a>
+      </div>
+    </div>
+
+    <a class="article-back-mobile" href="#top-of-article">
+      <img class="article-back-mobile-button" src={icon_back_to_top.src} alt="menu_button" />
+    </a>
+  </Container>
+</Base>

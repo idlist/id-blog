@@ -6,10 +6,11 @@ import Homepage from '@/layout/homepage.astro'
 import type { Posts } from '@/content/config'
 import { lang, defaultLang, undef } from '@/i18n'
 import { createPaging, pageSize, paginate } from '@/utils/server'
+import SlowMap from '@/utils/slow-map'
 
 export const getStaticPaths = (async () => {
   const posts = await getCollection('posts')
-  const postsByLang = new Map<string, Posts>()
+  const postsByLang = new SlowMap<string, Posts>()
 
   Object.keys(lang).map((code) => {
     postsByLang.set(code, [])
@@ -17,8 +18,7 @@ export const getStaticPaths = (async () => {
 
   posts.map((post) => {
     const code = post.data.lang ?? defaultLang
-    const collection = postsByLang.get(code)
-    collection?.push(post)
+    postsByLang.upsert(code, [post], (col) => col.push(post))
   })
 
   postsByLang.forEach((posts) => {
@@ -27,7 +27,7 @@ export const getStaticPaths = (async () => {
     })
   })
 
-  return Array.from(postsByLang, ([code, posts]) => {
+  return postsByLang.entries().flatMap(([code, posts]) => {
     const total = posts.length
     const count = total === 0 ? 1 : Math.ceil(total / pageSize)
 
@@ -46,7 +46,7 @@ export const getStaticPaths = (async () => {
         },
       }
     })
-  }).flat()
+  })
 }) satisfies GetStaticPaths
 
 type Props = InferProps<typeof getStaticPaths>

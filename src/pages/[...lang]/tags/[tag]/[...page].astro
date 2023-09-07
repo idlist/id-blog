@@ -6,6 +6,7 @@ import Category from '@/layout/category.astro'
 import type { Posts } from '@/content/config'
 import { defaultLang, undef } from '@/i18n'
 import { createPaging, pageSize, paginate, slugify } from '@/utils/server'
+import SlowMap from '@/utils/slow-map'
 
 export const getStaticPaths = (async () => {
   const posts = await getCollection('posts')
@@ -15,18 +16,13 @@ export const getStaticPaths = (async () => {
     tag: string
   }
 
-  const postsByTag = new Map<GroupBy, Posts>()
+  const postsByTag = new SlowMap<GroupBy, Posts>()
 
   posts.map((post) => {
     post.data.tags?.map((tag) => {
       const code = post.data.lang ?? defaultLang
       const key = { code, tag }
-      const collection = postsByTag.get(key)
-      if (!collection) {
-        postsByTag.set(key, [post])
-      } else {
-        collection.push(post)
-      }
+      postsByTag.upsert(key, [post], (col) => col.push(post))
     })
   })
 
@@ -36,7 +32,7 @@ export const getStaticPaths = (async () => {
     })
   })
 
-  return Array.from(postsByTag, ([key, posts]) => {
+  return postsByTag.entries().map(([key, posts]) => {
     const total = posts.length
     const count = Math.ceil(total / pageSize)
 
