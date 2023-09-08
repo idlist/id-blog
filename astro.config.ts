@@ -1,8 +1,11 @@
 import { defineConfig } from 'astro/config'
+import { h } from 'hastscript'
 import vue from '@astrojs/vue'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
+import { rehypeHeadingIds, type RehypePlugin } from '@astrojs/markdown-remark'
 import rehypeExternalLinks from 'rehype-external-links'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,8 +16,16 @@ export default defineConfig({
   markdown: {
     smartypants: false,
     rehypePlugins: [
+      rehypeHeadingIds,
       [
-        rehypeExternalLinks as unknown as string, {
+        rehypeAutolinkHeadings as RehypePlugin, {
+          behavior: 'prepend',
+          content: () =>
+            h('img', { class: 'article-anchor', src: '/assets/link.svg', alt: 'link' }),
+        },
+      ],
+      [
+        rehypeExternalLinks as RehypePlugin, {
           target: '_blank',
           rel: ['nofollow', 'noreferer', 'noopener'],
         },
