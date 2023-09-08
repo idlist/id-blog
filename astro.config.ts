@@ -6,6 +6,7 @@ import sitemap from '@astrojs/sitemap'
 import { rehypeHeadingIds, type RehypePlugin } from '@astrojs/markdown-remark'
 import rehypeExternalLinks from 'rehype-external-links'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import rehypeWrapTable from './rehype/wrap-table'
 
 // https://astro.build/config
 export default defineConfig({
@@ -30,6 +31,7 @@ export default defineConfig({
           rel: ['nofollow', 'noreferer', 'noopener'],
         },
       ],
+      rehypeWrapTable as unknown as RehypePlugin,
     ],
   },
   integrations: [

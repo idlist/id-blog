@@ -118,3 +118,16 @@ const { Content, headings } = await render()
     </a>
   </Container>
 </Base>
+
+<script>
+  const btnBackToTop = document.querySelector('.article-back') as HTMLLinkElement
+  const btnBackToTopMobile = document.querySelector('.article-back--mobile') as HTMLLinkElement
+
+  const backToTop = (e: MouseEvent) => {
+    e.preventDefault()
+    scrollTo({ top: 0 })
+  }
+
+  btnBackToTop.addEventListener('click', backToTop)
+  btnBackToTopMobile.addEventListener('click', backToTop)
+</script>
