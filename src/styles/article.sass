@@ -2,7 +2,7 @@
 @use '@/styles/mixins' as mixins
 
 article
-  padding-left: 2rem
+  padding-left: 1.5rem
   margin-bottom: 4rem
 
   h1, h2, h3, h4, h5, h6
@@ -60,19 +60,6 @@ article
     @media (max-width: vars.$screen-sm)
       overflow-x: auto
 
-  @media (max-width: vars.$screen-sm)
-    .table-125
-      width: 125%
-
-    .table-150
-      width: 150%
-
-    .table-170
-      width: 175%
-
-    .table-200
-      width: 200%
-
   table
     border-collapse: collapse
     font-size: 0.875rem
@@ -92,22 +79,6 @@ article
 
   img
     width: 100%
-
-  .image-small, .image-middle, .image-large
-    display: flex
-    justify-content: center
-
-  .image-small > img
-    width: 200px
-
-  .image-middle > img
-    width: 400px
-
-  .image-large > img
-    width: 600px
-
-    @media (max-width: vars.$screen-md)
-      width: 100%
 
   hr
     width: 80%

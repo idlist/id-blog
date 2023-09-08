@@ -31,7 +31,7 @@ export default defineConfig({
           rel: ['nofollow', 'noreferer', 'noopener'],
         },
       ],
-      rehypeWrapTable as unknown as RehypePlugin,
+      rehypeWrapTable,
     ],
   },
   integrations: [
