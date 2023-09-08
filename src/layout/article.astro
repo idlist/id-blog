@@ -5,7 +5,7 @@ import type { CollectionEntry } from 'astro:content'
 import Base from './base.astro'
 import Container from '@/components/container.astro'
 import ArticleLicense from '@/components/article-license.astro'
-import { getLangCode, getRoot, useLang } from '@/i18n'
+import { getLangCode, getRoot, useLang, type LangCode } from '@/i18n'
 import { ymdFormat, slugify } from '@/utils/server'
 
 import icon_time from '@/assets/icons/time.svg'
@@ -32,6 +32,12 @@ const code = getLangCode(Astro.url)
 const root = getRoot(code)
 const t = useLang(code)
 
+const GiscusLangs: Record<LangCode, string> = {
+  zh: 'zh-CN',
+  en: 'en',
+  ja: 'ja',
+}
+
 const { Content, headings } = await render()
 ---
 
@@ -48,6 +54,24 @@ const { Content, headings } = await render()
 
           <Content />
         </article>
+
+        <script
+          src="https://giscus.app/client.js"
+          data-repo="idlist/id-blog-comments"
+          data-repo-id="R_kgDOKQ5wOA"
+          data-category="Comments"
+          data-category-id="DIC_kwDOKQ5wOM4CZK-7"
+          data-mapping="pathname"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="top"
+          data-theme="light"
+          data-lang={GiscusLangs[code]}
+          data-loading="lazy"
+          crossorigin="anonymous"
+          async>
+        </script>
       </div>
 
       <div class="article__aside">

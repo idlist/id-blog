@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config'
 import vue from '@astrojs/vue'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
+import rehypeExternalLinks from 'rehype-external-links'
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,6 +12,14 @@ export default defineConfig({
   },
   markdown: {
     smartypants: false,
+    rehypePlugins: [
+      [
+        rehypeExternalLinks as unknown as string, {
+          target: '_blank',
+          rel: ['nofollow', 'noreferer', 'noopener'],
+        },
+      ],
+    ],
   },
   integrations: [
     vue(),
