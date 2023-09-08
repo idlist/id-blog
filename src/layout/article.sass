@@ -15,12 +15,14 @@
   column-gap: 1rem
 
   @media (max-width: vars.$screen-md)
-    grid-template-columns: 100%
+    grid-template-columns: 1fr
+    row-gap: 1rem
 
   @media (max-width: vars.$screen-sm)
     padding: 0.5rem
 
 .article__title
+  margin: 0.5rem 0
   font-size: 2rem
   font-weight: normal
   color: var(--color-green)
@@ -41,6 +43,17 @@
 .article__aside
   @media (max-width: vars.$screen-md)
     grid-row-start: 1
+
+.article__sticky
+  position: sticky
+  top: 4rem
+
+  height: calc(100vh - 5rem)
+  overflow-y: auto
+
+  @media (max-width: vars.$screen-md)
+    position: inherit
+    height: auto
 
 @mixin article-item
   display: flex
@@ -70,46 +83,6 @@
   &__no-tags
     color: var(--color-gray-light)
 
-.article-toc
-  margin: 0.5rem 0
-  border: 1px solid var(--color-gray-light)
-
-  &-title
-    padding: 0 0.5rem
-    position: sticky
-    top: 0
-
-    min-height: 1rem
-
-    color: var(--color-gray-light)
-    background-color: var(--color-white)
-    font-style: italic
-
-  &-l1, &-l2, &-l3, &-l4, &-l5, &-l6
-    @include mixins.link-main
-
-    display: block
-    padding: 0 0.5rem
-
-  &-l2
-    margin-left: 1rem
-
-  &-l3
-    margin-left: 2rem
-
-  &-l4
-    margin-left: 3rem
-
-  &-l5
-    margin-left: 4rem
-
-  &-l6
-    margin-left: 5rem
-
-  &-nomenu
-    padding: 0 0.5rem
-    color: #666
-
 .article-back
   @include article-item
   @include mixins.link-sub
@@ -125,6 +98,6 @@
   @media (min-width: vars.$screen-md)
     display: none
 
-  &-btn
+  &-icon
     height: 1.75rem
     width: 1.75rem

@@ -1,0 +1,99 @@
+---
+import type { MarkdownHeading } from 'astro'
+import { useLang } from '@/i18n'
+
+interface Props {
+  headings: MarkdownHeading[]
+}
+
+const { headings } = Astro.props
+const t = useLang(Astro.url)
+
+const filtered = headings.filter((h) => h.depth <= 4)
+const depths = filtered.map((h) => h.depth)
+let levels: number[] = []
+
+for (let i = 0; i < depths.length; i++) {
+  if (!levels.length) {
+    levels.push(depths[i])
+  } else if (depths[i] == depths[i - 1]) {
+    levels.push(levels[i - 1])
+  } else if (depths[i] > depths[i - 1]) {
+    levels.push(levels[i - 1] + 1)
+  } else if (depths[i] < depths[i - 1]) {
+    let upmost = 0
+    for (let j = 0; j < i; j++) {
+      if (depths[j] < depths[i] && depths[j] > depths[upmost]) {
+        upmost = j
+      }
+    }
+
+    if (depths[i] > depths[upmost]) {
+      levels.push(depths[upmost] + 1)
+    } else {
+      levels.push(depths[upmost])
+    }
+  }
+}
+
+const highestLevel = Math.min(...levels)
+levels = levels.map((level) => level - highestLevel + 1)
+
+filtered.forEach((heading, i) => {
+  heading.depth = levels[i]
+})
+---
+
+<div class="article-toc">
+  <div class="article-toc__title">Table of Contents</div>
+  {
+    filtered.length ? (
+      filtered.map((h) => (
+        <a href={`#${h.slug}`} class={`article-toc__l${h.depth}`}>
+          {h.text}
+        </a>
+      ))
+    ) : (
+      <span class="article-toc-nomenu">${t('ui.no-toc')}</span>
+    )
+  }
+</div>
+
+<style lang="sass" scoped>
+  @use '@/styles/mixins' as mixins
+
+  .article-toc
+    margin: 0.5rem 0
+    padding: 0.125rem 0
+    border: 1px solid var(--color-gray-light)
+
+    &__title
+      padding: 0.125rem 0.5rem
+      color: var(--color-gray-light)
+      font-style: italic
+
+    &__l1, &__l2, &__l3, &__l4, &__l5, &__l6
+      @include mixins.link-sub
+
+      display: block
+      padding: 0.125rem 0.5rem
+
+    &__l2
+      margin-left: 1rem
+
+    &__l3
+      margin-left: 2rem
+
+    &__l4
+      margin-left: 3rem
+
+    &__l5
+      margin-left: 4rem
+
+    &__l6
+      margin-left: 5rem
+
+    &__no-toc
+      padding: 0 0.5rem
+      color: var(--color-gray)
+</style>

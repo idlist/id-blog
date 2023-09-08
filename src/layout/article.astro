@@ -12,6 +12,8 @@ import icon_time from '@/assets/icons/time.svg'
 import icon_update from '@/assets/icons/update.svg'
 import icon_tags from '@/assets/icons/tags.svg'
 import icon_back_to_top from '@/assets/icons/back-to-top.svg'
+import icon_back_to_top_mobile from '@/assets/icons/back-to-top--mobile.svg'
+import TableOfContents from '@/components/table-of-contents.astro'
 
 interface Props {
   entry: CollectionEntry<'posts'>
@@ -30,7 +32,7 @@ const code = getLangCode(Astro.url)
 const root = getRoot(code)
 const t = useLang(code)
 
-const { Content } = await render()
+const { Content, headings } = await render()
 ---
 
 <Base title={`${title} | i'D Blog`}>
@@ -77,14 +79,7 @@ const { Content } = await render()
 
           <ArticleLicense />
 
-          <!-- <div class="article-toc">
-            <div class="article-toc-title">Table of contents</div>
-             ${
-              toc.length
-                ? toc.map((h) => html` <a href="#${h.id}" class="article-toc-l${h.level}">${h.text}</a> `).join('')
-                : html`<span class="article-toc-nomenu">${t.use('noTOC')}</span>`
-            }
-          </div> -->
+          <TableOfContents headings={headings} />
 
           <a class="article-back" href="#top-of-article">
             <img class="article-back__icon" src={icon_back_to_top.src} alt="back to top" />
@@ -95,7 +90,7 @@ const { Content } = await render()
     </div>
 
     <a class="article-back--mobile" href="#top-of-article">
-      <img class="article-back--mobile-btn" src={icon_back_to_top.src} alt="back to top" />
+      <img class="article-back--mobile-icon" src={icon_back_to_top_mobile.src} alt="back to top" />
     </a>
   </Container>
 </Base>
