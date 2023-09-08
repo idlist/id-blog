@@ -1,0 +1,41 @@
+---
+import icon_creative_commons from '@/assets/icons/creative-commons.svg'
+
+type License = 'CC BY-NC-SA 4.0'
+
+interface Props {
+  name?: License
+}
+
+interface LicenseInfo {
+  icon: string
+  link: string
+}
+
+const license: Record<License, LicenseInfo> = {
+  'CC BY-NC-SA 4.0': {
+    icon: icon_creative_commons.src,
+    link: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+  },
+}
+
+const { name } = Astro.props
+const chosen = name ?? 'CC BY-NC-SA 4.0'
+const info = license[chosen]
+---
+
+<div class="article-license">
+  <img class="article-license__icon" src={info.icon} alt="icon license" />
+  <a class="article-license__link" href={info.link} target="_blank" rel="noopener noreferer">{chosen}</a>
+</div>
+
+<style lang="sass" scoped>
+  @use '@/styles/mixins' as mixins
+  @use '@/layout/article' as article
+
+  .article-license
+    @include article.article-item
+
+    &__link
+      @include mixins.link-sub
+</style>
