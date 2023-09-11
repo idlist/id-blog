@@ -13,6 +13,7 @@ import icon_update from '@/assets/icons/update.svg'
 import icon_tags from '@/assets/icons/tags.svg'
 import icon_back_to_top from '@/assets/icons/back-to-top.svg'
 import icon_back_to_top_mobile from '@/assets/icons/back-to-top--mobile.svg'
+import icon_star from '@/assets/icons/star.svg'
 
 import ImageAdaptive from '@/elements/image-adaptive.astro'
 
@@ -73,6 +74,8 @@ const { Content, headings } = await render()
           crossorigin="anonymous"
           async>
         </script>
+
+        <div class="article__mobile-blank"></div>
       </div>
 
       <div class="article__aside">
@@ -106,6 +109,10 @@ const { Content, headings } = await render()
 
           <TableOfContents headings={headings} />
 
+          <div class="article-star">
+            <img class="article-star__icon" src={icon_star.src} alt="star" />
+          </div>
+
           <a class="article-back" href="#top-of-article">
             <img class="article-back__icon" src={icon_back_to_top.src} alt="back to top" />
             <span>{t('ui.back-to-top')}</span>
@@ -115,7 +122,7 @@ const { Content, headings } = await render()
     </div>
 
     <a class="article-back--mobile" href="#top-of-article">
-      <img class="article-back--mobile-icon" src={icon_back_to_top_mobile.src} alt="back to top" />
+      <img class="article-back--mobile__icon" src={icon_back_to_top_mobile.src} alt="back to top" />
     </a>
   </Container>
 

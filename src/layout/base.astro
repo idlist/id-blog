@@ -7,6 +7,8 @@ import { getLangCode, getRoot, useLang } from '@/i18n'
 import banner from '@/assets/banner.png'
 import icon_menu from '@/assets/buttons/menu.svg'
 import icon_external from '@/assets/buttons/external.svg'
+import icon_locales from '@/assets/buttons/locales.svg'
+import icon_locales_mobile from '@/assets/buttons/locales--mobile.svg'
 import icon_close from '@/assets/buttons/close.svg'
 
 interface Props {
@@ -28,7 +30,7 @@ const t = useLang(code)
 </head>
 
 <body>
-  <a class="menu-expander" data-icon-menu={icon_menu.src} data-icon-close={icon_close.src} >
+  <a class="menu-expander" data-icon-menu={icon_menu.src} data-icon-close={icon_close.src}>
     <img class="menu-expander__icon" src={icon_menu.src} alt="menu toggler" />
   </a>
 
@@ -39,7 +41,10 @@ const t = useLang(code)
         <span class="menu-fs__link-text">{t('ui.to-index')}</span>
       </a>
       <hr class="menu-fs__hr" />
-      <div class="menu-fs__link-title">{t('ui.language')}</div>
+      <div class="menu-fs__lang">
+        <img class="menu-fs__lang-icon" src={icon_locales_mobile.src} alt="locales" />
+        <span>{t('ui.language')}</span>
+      </div>
       <a class="menu-fs__link" href="/">简体中文</a>
       <a class="menu-fs__link" href="/en/">English</a>
       <a class="menu-fs__link" href="/ja/">日本語</a>
@@ -60,7 +65,10 @@ const t = useLang(code)
       <div class="menu-header">
         <a class="menu-link" href={root}>{t('ui.articles')}</a>
         <div class="menu-link__dropdown">
-          <div>{t('ui.language')}</div>
+          <div class="menu-link__lang">
+            <img class="menu-link__lang-icon" src={icon_locales.src} alt="locales" />
+            <span>{t('ui.language')}</span>
+          </div>
           <div class="menu-link__dropdown-content">
             <a class="menu-link__dropdown-link" href="/">简体中文</a>
             <a class="menu-link__dropdown-link" href="/en/">English</a>
@@ -75,7 +83,7 @@ const t = useLang(code)
     </div>
   </header>
 
-  <slot></slot>
+  <slot />
 
   <TileWall client:only="vue" />
 </body>

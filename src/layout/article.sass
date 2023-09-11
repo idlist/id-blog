@@ -16,7 +16,6 @@
 
   @media (max-width: vars.$screen-md)
     grid-template-columns: 1fr
-    row-gap: 1rem
 
   @media (max-width: vars.$screen-sm)
     padding: 0.5rem
@@ -39,6 +38,10 @@
   text-align: right
   color: var(--color-gray)
   background-color: var(--color-background)
+
+.article__mobile-blank
+  @media (max-width: vars.$screen-md)
+    margin-bottom: 8rem
 
 .article__aside
   @media (max-width: vars.$screen-md)
@@ -98,9 +101,23 @@
   @media (min-width: vars.$screen-md)
     display: none
 
-  &-icon
+  &__icon
     height: 1.75rem
     width: 1.75rem
+
+.article-star
+  display: flex
+  align-items: center
+  justify-content: center
+  margin-top: 1rem
+  margin-bottom: 2rem
+
+  @media (min-width: vars.$screen-md)
+    display: none
+
+  &__icon
+    height: 2rem
+    width: 2rem
 
 .article-elements
   display: none
