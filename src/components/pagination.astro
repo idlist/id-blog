@@ -21,7 +21,7 @@ const pageRoute = (page: number) => (page === 1 ? '' : `posts/${page}`)
   <PaginationGo client:load view="posts" code={code} last={page.last} />
 </div>
 
-<style lang="sass" scoped>
+<style lang="sass">
   @use '@/styles/mixins' as mixins
 
   .pagination

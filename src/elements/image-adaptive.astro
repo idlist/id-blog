@@ -1,0 +1,48 @@
+---
+interface Props {
+  class?: string
+  'class:list'?: string[]
+  dw?: string
+  dh?: string
+  mw?: string
+  mh?: string
+  [props: string]: unknown
+}
+
+const {
+  class: className,
+  'class:list': classListRaw,
+  dw: dwRaw,
+  dh: dhRaw,
+  mw: mwRaw,
+  mh: mhRaw,
+  ...attrs
+} = Astro.props
+
+const classList = classListRaw ?? []
+const dw = dwRaw ?? '100%'
+const dh = dhRaw ?? 'auto'
+const mw = mwRaw ?? '100%'
+const mh = mhRaw ?? 'auto'
+---
+
+<p class="image-adaptive__wrapper">
+  <img class:list={['image-adaptive', className, ...classList]} {...attrs} />
+</p>
+
+<style lang="sass" define:vars={{ dw, dh, mw, mh }}>
+  @use '@/styles/variables' as vars
+
+  .image-adaptive__wrapper
+    display: flex
+    justify-content: center
+
+  .image-adaptive
+    width: var(--dw)
+    height: var(--dh)
+    margin: 0
+
+    @media (max-width: vars.$screen-md)
+      width: var(--mw)
+      height: var(--mh)
+</style>

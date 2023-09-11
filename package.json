@@ -21,11 +21,11 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/mdx": "^1.0.2",
+    "@astrojs/mdx": "^1.0.3",
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/vue": "^3.0.0",
     "@vueuse/core": "^10.4.1",
-    "astro": "^3.0.10",
+    "astro": "^3.0.12",
     "dedent": "^1.5.1",
     "hast-util-select": "^6.0.1",
     "hastscript": "^8.0.0",
@@ -47,7 +47,7 @@
     "@types/object-hash": "^3.0.4",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
-    "eslint": "^8.48.0",
+    "eslint": "^8.49.0",
     "eslint-plugin-astro": "^0.29.0",
     "tsm": "^2.3.0"
   }

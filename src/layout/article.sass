@@ -48,7 +48,7 @@
   position: sticky
   top: 3.5rem
 
-  height: calc(100vh - 5rem)
+  max-height: calc(100vh - 5rem)
   overflow-y: auto
 
   @media (max-width: vars.$screen-md)
@@ -102,6 +102,9 @@
     height: 1.75rem
     width: 1.75rem
 
+.article-elements
+  display: none
+
 .article-anchor
   position: absolute
   left: -1.5rem
@@ -141,6 +144,10 @@ article
     font-size: 1rem
     color: var(--color-gray-light)
 
+  a
+    @include mixins.link-main
+    color: var(--color-green)
+
   p, ol, ul
     line-height: 1.75rem
     margin: 0
@@ -150,10 +157,6 @@ article
     padding: none
     padding-left: 2rem
 
-  a
-    @include mixins.link-main
-    color: var(--color-green)
-
   li
     margin: 0.75rem 0
 
@@ -161,9 +164,11 @@ article
     font-weight: bold
     color: var(--color-green)
 
-  table
+  table, img
     margin: 0
     margin-top: 0.75rem
+
+  table
     border-collapse: collapse
     font-size: 0.875rem
 
@@ -181,7 +186,7 @@ article
     background-color: #eee
 
   img
-    width: 100%
+    border-radius: 0.25rem
 
   hr
     width: 80%

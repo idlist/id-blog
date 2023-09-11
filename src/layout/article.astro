@@ -4,6 +4,7 @@ import type { CollectionEntry } from 'astro:content'
 import Base from './base.astro'
 import Container from '@/components/container.astro'
 import ArticleLicense from '@/components/article-license.astro'
+import TableOfContents from '@/components/table-of-contents.astro'
 import { getLangCode, getRoot, useLang, type LangCode } from '@/i18n'
 import { ymdFormat, slugify } from '@/utils/server'
 
@@ -12,7 +13,8 @@ import icon_update from '@/assets/icons/update.svg'
 import icon_tags from '@/assets/icons/tags.svg'
 import icon_back_to_top from '@/assets/icons/back-to-top.svg'
 import icon_back_to_top_mobile from '@/assets/icons/back-to-top--mobile.svg'
-import TableOfContents from '@/components/table-of-contents.astro'
+
+import ImageAdaptive from '@/elements/image-adaptive.astro'
 
 interface Props {
   entry: CollectionEntry<'posts'>
@@ -116,9 +118,16 @@ const { Content, headings } = await render()
       <img class="article-back--mobile-icon" src={icon_back_to_top_mobile.src} alt="back to top" />
     </a>
   </Container>
+
+  <!-- Workaround to have the CSS inside components inserted into the page -->
+  <div class="article-elements">
+    <ImageAdaptive />
+  </div>
 </Base>
 
 <script>
+  // "Back to top" buttons.
+
   const BtnBackToTop = document.querySelector('.article-back') as HTMLLinkElement
   const BtnBackToTopMobile = document.querySelector('.article-back--mobile') as HTMLLinkElement
 
@@ -129,6 +138,8 @@ const { Content, headings } = await render()
 
   BtnBackToTop.addEventListener('click', backToTop)
   BtnBackToTopMobile.addEventListener('click', backToTop)
+
+  // Code copy buttons.
 
   const AllCodeBlocks = document.querySelectorAll('article .code-wrapper')
 
