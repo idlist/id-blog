@@ -1,6 +1,5 @@
 ---
 import './article.sass'
-import '@/styles/article.sass'
 import type { CollectionEntry } from 'astro:content'
 import Base from './base.astro'
 import Container from '@/components/container.astro'
@@ -120,14 +119,30 @@ const { Content, headings } = await render()
 </Base>
 
 <script>
-  const btnBackToTop = document.querySelector('.article-back') as HTMLLinkElement
-  const btnBackToTopMobile = document.querySelector('.article-back--mobile') as HTMLLinkElement
+  const BtnBackToTop = document.querySelector('.article-back') as HTMLLinkElement
+  const BtnBackToTopMobile = document.querySelector('.article-back--mobile') as HTMLLinkElement
 
   const backToTop = (e: MouseEvent) => {
     e.preventDefault()
     scrollTo({ top: 0 })
   }
 
-  btnBackToTop.addEventListener('click', backToTop)
-  btnBackToTopMobile.addEventListener('click', backToTop)
+  BtnBackToTop.addEventListener('click', backToTop)
+  BtnBackToTopMobile.addEventListener('click', backToTop)
+
+  const AllCodeBlocks = document.querySelectorAll('article .code-wrapper')
+
+  for (const CodeBlock of AllCodeBlocks) {
+    const CopyBtn = CodeBlock.querySelector('.code-copy') as HTMLLinkElement
+    const Code = CodeBlock.getElementsByTagName('pre')[0] as HTMLPreElement
+    const Message = CodeBlock.querySelector('.code-copy__success') as HTMLElement
+
+    CopyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(Code.innerText)
+      Message.classList.remove('hidden')
+      setTimeout(() => {
+        Message.classList.add('hidden')
+      }, 1000)
+    })
+  }
 </script>
