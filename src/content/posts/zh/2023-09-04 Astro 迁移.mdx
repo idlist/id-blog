@@ -63,7 +63,7 @@ Astro 的路由策略是**基于文件的路由**，这个策略简化了配置�
 然而，在使用 Astro 的过程中也不可避免地遇到了一些小坑，比如：
 
 - 当前，Astro 的 VSCode 扩展并没有对 `.astro` 组件内的 Sass 样式块进行支持，
-- 仅在内容集合（`src/content`）的 MDX 文章内引用了的组件，其 `style` 和 `script` 块中的内容不会被正确提取至网页。([astro#1197](https://github.com/withastro/astro/issues/7761))
+- 仅在内容集合（`src/content`）的 MDX 文章内引用了的组件，其 `style` 和 `script` 块中的内容不会被正确提取至网页。([astro#7761](https://github.com/withastro/astro/issues/7761))
   - 临时的解决方案是在用到了这些组件的布局中，用一个不可见的 HTML 重复引入这些元素。
 - 由于 `getStaticPaths` 本质是一个独立的代码域，并优先于组件内的其他代码执行，所以在其外部定义的局部变量是无法被它捕获到的。
   - 这一点与其说是坑，不如说是**设计如此**。只是说对于初次接触 Astro 的人而言，这一点确实比较难理解。
