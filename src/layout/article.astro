@@ -9,6 +9,7 @@ import LastUpdate from '@/components/last-update.astro'
 import { getLangCode, getRoot, useLang, type LangCode } from '@/i18n'
 import { ymdFormat, slugify } from '@/utils/server'
 
+import icon_share from '@/assets/icons/share.svg'
 import icon_time from '@/assets/icons/time.svg'
 import icon_update from '@/assets/icons/update.svg'
 import icon_tags from '@/assets/icons/tags.svg'
@@ -28,7 +29,7 @@ const { data, render } = entry
 const title = data.title
 const date = data.date
 const update = data.update ?? data.date
-const tags: string[] = data.tags ?? []
+const tags = data.tags ?? []
 const summary = data.summary
 
 const code = getLangCode(Astro.url)
@@ -40,6 +41,7 @@ const GiscusLangs: Record<LangCode, string> = {
   en: 'en',
   ja: 'ja',
 }
+// Disable Giscus in development environment for better writing experience.
 const shouldLoadGiscus = import.meta.env.PROD
 
 const { Content, headings } = await render()
@@ -89,12 +91,16 @@ const { Content, headings } = await render()
         <div class="last-update--mobile">
           <LastUpdate />
         </div>
-
-        <div class="article__mobile-blank"></div>
       </div>
 
       <div class="article__aside">
         <div class="article__sticky">
+          <a class="article-share" data-title={title}>
+            <img class="article-share__icon" src={icon_share.src} alt="share" />
+            <span>{t('ui.share-article')}</span>
+            <div class="article-share__popup hidden">{t('ui.share-article-succeed')}</div>
+          </a>
+
           <div class="article-item">
             <img class="article-item__icon" src={icon_time.src} alt="date" />
             <time datetime={date.toUTCString()}>{ymdFormat(date)}</time>
@@ -145,6 +151,8 @@ const { Content, headings } = await render()
     </a>
   </Container>
 
+  <div class="article__mobile-blank"></div>
+
   <!-- Workaround to have the CSS inside components inserted into the page -->
   <div class="article-elements">
     <ImageAdaptive />
@@ -152,6 +160,24 @@ const { Content, headings } = await render()
 </Base>
 
 <script>
+  // Share button.
+
+  const ShareButton = document.querySelector('.article-share') as HTMLLinkElement
+  const title = ShareButton.dataset.title
+  const SharePopup = ShareButton.querySelector('.article-share__popup') as HTMLDivElement
+
+  ShareButton.addEventListener('click', (e) => {
+    e.preventDefault()
+
+    const url = location.origin + location.pathname
+    navigator.clipboard.writeText(`${title} | i'D Blog - ${url}`)
+
+    SharePopup.classList.remove('hidden')
+    setTimeout(() => {
+      SharePopup.classList.add('hidden')
+    }, 1000);
+  })
+
   // "Back to top" buttons.
 
   const BtnBackToTop = document.querySelector('.article-back') as HTMLLinkElement
@@ -166,7 +192,7 @@ const { Content, headings } = await render()
   BtnBackToTop.addEventListener('click', backToTop)
   BtnBackToTopMobile.addEventListener('click', backToTop)
 
-  // Code copy buttons.
+  // Copy code buttons.
 
   const AllCodeBlocks = document.querySelectorAll('article .code-wrapper')
 
@@ -177,6 +203,7 @@ const { Content, headings } = await render()
 
     CopyBtn.addEventListener('click', () => {
       navigator.clipboard.writeText(Code.innerText)
+
       Message.classList.remove('hidden')
       setTimeout(() => {
         Message.classList.add('hidden')

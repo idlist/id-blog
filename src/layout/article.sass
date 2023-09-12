@@ -86,6 +86,27 @@
   &__no-tags
     color: var(--color-gray-light)
 
+.article-share
+  @include article-item
+  @include mixins.link-sub
+
+  position: relative
+  text-decoration: underline
+  cursor: pointer
+
+  &__popup
+    position: absolute
+    left: 2rem
+    padding: 0.25rem 0.5rem
+
+    color: var(--color-black)
+    background-color: var(--color-white)
+    border: 1px solid var(--color-black)
+    border-radius: 0.25rem
+
+    &.hidden
+      display: none
+
 .article-back
   @include article-item
   @include mixins.link-sub
@@ -135,7 +156,7 @@
     display: none
 
 .last-update--mobile
-  margin-top: 0.5rem
+  margin-top: 1rem
 
   @media (min-width: vars.$screen-md)
     display: none
@@ -160,11 +181,10 @@ article
     color: var(--color-green)
 
   h3
-    font-size: 1.5rem
-    color: var(--color-green)
+    font-size: 1.25rem
 
   h4
-    font-size: 1.25rem
+    font-size: 1.125rem
 
   h5
     font-size: 1rem
