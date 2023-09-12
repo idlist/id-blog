@@ -28,7 +28,7 @@ const { data, render } = entry
 const title = data.title
 const date = data.date
 const update = data.update ?? data.date
-const tags = data.tags ?? []
+const tags: string[] = data.tags ?? []
 const summary = data.summary
 
 const code = getLangCode(Astro.url)
@@ -40,6 +40,7 @@ const GiscusLangs: Record<LangCode, string> = {
   en: 'en',
   ja: 'ja',
 }
+const shouldLoadGiscus = import.meta.env.PROD
 
 const { Content, headings } = await render()
 ---
@@ -58,23 +59,32 @@ const { Content, headings } = await render()
           <Content />
         </article>
 
-        <script
-          src="https://giscus.app/client.js"
-          data-repo="idlist/id-blog-comments"
-          data-repo-id="R_kgDOKQ5wOA"
-          data-category="Comments"
-          data-category-id="DIC_kwDOKQ5wOM4CZK-7"
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="top"
-          data-theme="light"
-          data-lang={GiscusLangs[code]}
-          data-loading="lazy"
-          crossorigin="anonymous"
-          async>
-        </script>
+        {
+          shouldLoadGiscus && (
+            <>
+              <div class="giscus-blank"></div>
+
+              <!-- prettier-ignore -->
+              <script
+                src="https://giscus.app/client.js"
+                data-repo="idlist/id-blog-comments"
+                data-repo-id="R_kgDOKQ5wOA"
+                data-category="Comments"
+                data-category-id="DIC_kwDOKQ5wOM4CZK-7"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="light"
+                data-lang={GiscusLangs[code]}
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async>
+              </script>
+            </>
+          )
+        }
 
         <div class="last-update--mobile">
           <LastUpdate />
@@ -150,6 +160,7 @@ const { Content, headings } = await render()
   const backToTop = (e: MouseEvent) => {
     e.preventDefault()
     scrollTo({ top: 0 })
+    history.pushState(null, '', location.origin + location.pathname)
   }
 
   BtnBackToTop.addEventListener('click', backToTop)
