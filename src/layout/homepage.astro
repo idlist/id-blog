@@ -67,7 +67,7 @@ const t = useLang(Astro.url)
               {posts.map((post) => (
                 <PostListing
                   title={post.data.title}
-                  slug={post.slug}
+                  route={post.data.route}
                   tags={post.data.tags ?? []}
                   date={post.data.date}
                   summary={post.data.summary}

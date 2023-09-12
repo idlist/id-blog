@@ -7,13 +7,13 @@ import icon_tags from '@/assets/icons/tags.svg'
 
 interface Props {
   title: string
-  slug: string
+  route: string
   date: Date
   tags: string[]
   summary?: string
 }
 
-const { title, slug, date, tags, summary } = Astro.props
+const { title, route, date, tags, summary } = Astro.props
 
 const code = getLangCode(Astro.url)
 const root = getRoot(code)
@@ -21,7 +21,7 @@ const t = useLang(code)
 ---
 
 <div class="post">
-  <a class="post__link" href={`${root}a/${slug}`}>
+  <a class="post__link" href={`${root}a/${route}`}>
     <h2 class="post__title">{title}</h2>
   </a>
 
