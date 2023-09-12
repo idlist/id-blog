@@ -7,7 +7,7 @@ const update = ymdFormat(date)
 const year = date.getFullYear()
 
 const content = dedent`
-  export const content = '${update}'
+  export const update = '${update}'
   export const year = ${year}
   `
 

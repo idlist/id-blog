@@ -28,6 +28,7 @@ export const ui: I18nBranch = {
     'no-timeline': '没有时间线',
     'no-toc': '没有目录',
     'back-to-top': '回到顶部',
+    'last-update': '最近更新：',
   },
   en: {
     'articles': 'Articles',
@@ -57,6 +58,7 @@ export const ui: I18nBranch = {
     'no-timeline': 'No timeline',
     'no-toc': 'No table of contents',
     'back-to-top': 'Back To Top',
+    'last-update': 'Last Update: ',
   },
   ja: {
     'articles': '記事',
@@ -85,5 +87,6 @@ export const ui: I18nBranch = {
     'no-timeline': 'タイムラインがありません',
     'no-toc': '目次がありません',
     'back-to-top': 'トップに戻る',
+    'last-update': '最近のアップデート：',
   },
 }

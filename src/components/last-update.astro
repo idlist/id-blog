@@ -1,0 +1,27 @@
+---
+import { update, year } from '@/constants'
+import { useLang } from '@/i18n'
+
+const t = useLang(Astro.url)
+---
+
+<div class="last-update">
+  <span>i'DLisT © 2021 - {year}</span>
+  <span>{t('ui.last-update')}{update}</span>
+</div>
+
+<style lang="sass">
+  @use '@/styles/variables' as vars
+
+  .last-update
+    display: grid
+    align-items: middle
+    justify-content: center
+    padding: 0.25rem
+    border-radius: 0.25rem
+
+    text-align: center
+    font-size: 0.875rem
+    background-color: var(--color-background)
+    color: var(--color-gray)
+</style>

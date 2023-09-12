@@ -78,7 +78,14 @@ export const getRoot = (codeOrUrl: LangCode | URL) => {
   return code == defaultLang ? '/' : `/${code}/`
 }
 
-export const useLang = (codeOrUrl: LangCode | URL) => {
+type UseTemplate = (path: string, ...interp: unknown[]) => string
+
+interface UseLangShape {
+  (code: LangCode): UseTemplate
+  (url: URL): UseTemplate
+}
+
+export const useLang: UseLangShape = (codeOrUrl: LangCode | URL) => {
   let code: LangCode
 
   if (codeOrUrl instanceof URL) {
@@ -91,7 +98,7 @@ export const useLang = (codeOrUrl: LangCode | URL) => {
   const collection = tree[code]
   const fallback = tree[defaultLang]
 
-  const t = (path: string, ...interp: unknown[]): string => {
+  const t: UseTemplate = (path, ...interp) => {
     let content: I18nLeaf
 
     if (path in collection) {

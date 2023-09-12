@@ -5,6 +5,7 @@ import Base from './base.astro'
 import Container from '@/components/container.astro'
 import ArticleLicense from '@/components/article-license.astro'
 import TableOfContents from '@/components/table-of-contents.astro'
+import LastUpdate from '@/components/last-update.astro'
 import { getLangCode, getRoot, useLang, type LangCode } from '@/i18n'
 import { ymdFormat, slugify } from '@/utils/server'
 
@@ -75,6 +76,10 @@ const { Content, headings } = await render()
           async>
         </script>
 
+        <div class="last-update--mobile">
+          <LastUpdate />
+        </div>
+
         <div class="article__mobile-blank"></div>
       </div>
 
@@ -109,14 +114,18 @@ const { Content, headings } = await render()
 
           <TableOfContents headings={headings} />
 
-          <div class="article-star">
-            <img class="article-star__icon" src={icon_star.src} alt="star" />
-          </div>
-
           <a class="article-back" href="#top-of-article">
             <img class="article-back__icon" src={icon_back_to_top.src} alt="back to top" />
             <span>{t('ui.back-to-top')}</span>
           </a>
+
+          <div class="last-update--desktop">
+            <LastUpdate />
+          </div>
+
+          <div class="article-star">
+            <img class="article-star__icon" src={icon_star.src} alt="star" />
+          </div>
         </div>
       </div>
     </div>
