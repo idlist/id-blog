@@ -116,7 +116,7 @@ onMounted(() => {
 
 <template>
   <div class="tile-wall">
-    <Transition name="fade">
+    <Transition name="tile-wall">
       <svg :width="width" :height="height" v-show="loaded">
         <template v-for="(row, j) of tileMap" :key="j">
           <template v-for="(each, i) of row" :key="i">
@@ -152,11 +152,11 @@ onMounted(() => {
 
   background-color: var(--color-background)
 
-.fade-enter-active,
-.fade-leave-active
+.tile-wall-enter-active,
+.tile-wall-leave-active
   transition: opacity 0.25s ease
 
-.fade-enter-from,
-.fade-leave-to
+.tile-wall-enter-from,
+.tile-wall-leave-to
   opacity: 0
 </style>
