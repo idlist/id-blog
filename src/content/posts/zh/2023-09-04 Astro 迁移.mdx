@@ -5,6 +5,7 @@ date: 2023-09-12
 tags: ['Code', 'Astro']
 summary: '重复造轮。'
 ---
+import Sign from '@/elements/sign.astro'
 
 花了两周多的时间，把博客完整地迁移到了 [Astro](https://astro.build/) 上。作为新博客的第一篇文章，就简单地小记一下这次迁移吧。
 
@@ -34,7 +35,7 @@ summary: '重复造轮。'
 
 其实这一点也是我当初自己手写静态生成的最大原因，因为我发现，想用市面上存在的静态网页生成工具同时实现多语言和分页（甚至再加上分类），其实是相当繁琐的。
 
-那 Astro 在这方面做得怎么样呢？说老实话，其实也一般。文档里的 [这篇指南](https://docs.astro.build/en/recipes/i18n/) 中提供了一个实现多语言的思路，同时推荐了一些社区插件，但因为 Astro 自身对于页面渲染的一些限制，不管哪个插件对于多语言的支持手段都是比较“脏”的。这也使得我最后还是选择基于指南的内容，自己重造一套多语言相关的工具。
+那 Astro 在这方面做得怎么样呢？说老实话，一般。文档里的 [这篇指南](https://docs.astro.build/en/recipes/i18n/) 中提供了一个实现多语言的思路，同时推荐了一些社区插件，但因为 Astro 自身对于页面渲染的一些限制，不管哪个插件对于多语言的支持手段都是比较“脏”的。这也使得我最后还是选择基于指南的内容，自己重造一套多语言相关的工具。
 
 Astro 的路由策略是**基于文件的路由**，这个策略简化了配置，但是增加了对于路由生成的理解成本。这个博客就是将页面布局（`layout`）和路由（`pages`）完全分开了，`layout` 只处理布局，而 `pages` 只处理由 `getStaticPaths` 生成路由及准备数据的过程。
 
@@ -49,11 +50,36 @@ Astro 的路由策略是**基于文件的路由**，这个策略简化了配置�
 不过最后，这些功能都还是基本通过其他的手段实现了：
 
 - **分体式目录**：原本用 cheerio 检索标题（`h1, h2, ..., h6`）后将标题内容汇总，再喂给相关组件，Astro 在通过 `entry.render()` 渲染 Markdown 内容后会自动生成 `headings` 标题列表，可以用同样的逻辑处理并渲染。
-- **标题链接**：原本也是用 cheerio 检索标题，然后直接将原有 HTML 块用自定义字符串包了一层，并在标题前加上图片。Astro 中使用了 [`rehype-autolink-headings`](https://github.com/rehypejs/rehype-autolink-headings) 这个 `rehype` 插件实现
+- **标题链接**：原本也是用 cheerio 检索标题，然后直接将原有 HTML 块用自定义字符串包了一层，并在标题前加上图片。Astro 中使用了 [`rehype-autolink-headings`](https://github.com/rehypejs/rehype-autolink-headings) 这个 [rehype](https://github.com/rehypejs/rehype) 插件实现
 - **图片 / 表格样式**：原本用 `markdown-it-attrs` 往渲染后的元素上挂 CSS class 实现。现在换用了 MDX，可以直接引用自制 Astro 组件解决这个问题。
-- **代码块高亮**：原本用 `Prism` 渲染。Astro 会在零配置下，自动对代码块使用 `Shiki` 进行高亮渲染，然后就没有然后了。
-- **代码块复制**：原本用 cheerio 检索 `pre code` 选择器，然后外包含有复制按钮的 HTML 代码。对于这样的功能， `rehype` 没有直接可用的插件，所以手写了一个不可复用的简易 `rehype` 插件对渲染后的 HTML 抽象树（即 `hast`）进行了类似的操作。
+- **代码块高亮**：原本用 Prism 渲染。Astro 会在零配置下，自动对代码块使用 Shiki 进行高亮渲染，然后就没有然后了。
+- **代码块复制**：原本用 cheerio 检索 `pre code` 选择器，然后外包含有复制按钮的 HTML 代码。对于这样的功能， rehype 生态圈没有（也不会有）直接可用的插件，所以手写了一个一次性简易 rehype 插件对渲染后的 HTML 抽象树（即 hast）进行了类似的操作。
+- **文章评论**：之前使用了 [Utterances](https://github.com/utterance/utterances) 作为简易的评论功能，但由于其似乎不再维护，因而转到了 Giscus。
 
 ## 不是小结
 
 作为迁移完博客的感想，总体而言，Astro 的设计还是不错的，不然我也不会费那么大力重启博客，并迁移至 Astro 了。
+
+然而，在使用 Astro 的过程中也不可避免地遇到了一些小坑，比如：
+
+- 当前，Astro 的 VSCode 扩展并没有对 `.astro` 组件内的 Sass 样式块进行支持，
+- 仅在内容集合（`src/content`）的 MDX 文章内引用了的组件，其 `style` 和 `script` 块中的内容不会被正确提取至网页。([astro#1197](https://github.com/withastro/astro/issues/7761))
+  - 临时的解决方案是在用到了这些组件的布局中，用一个不可见的 HTML 重复引入这些元素。
+- 由于 `getStaticPaths` 本质是一个独立的代码域，并优先于组件内的其他代码执行，所以在其外部定义的局部变量是无法被它捕获到的。
+  - 这一点与其说是坑，不如说是**设计如此**。只是说对于初次接触 Astro 的人而言，这一点确实比较难理解。
+  - 不过，由于 `import` 是静态分析，通过 `import` 引入的内容（例如常用的 `getCollection`）可以正常使用。
+- Astro 的 `RehypePlugin` 类型和 [unified](https://github.com/unifiedjs/unified)（即 rehype 全家桶）提供的 `Plugin` 类型是冲突的。
+  - 在使用了 `astro.config.ts` 的情况下，如果使用的 rehype 插件为 JS 编写，还可以 `as RehypePlugin` 解决；但如果是 TS 编写，并使用了 `Plugin` 接口，就只能使用丑陋的 `as unknown as RehypePlugin` 了。
+  - 不过，鉴于 unified 自身也是 JS + `d.ts` 形式提供的类型，估计这个问题也并没有那样的解决方法，可能最后还是该用 `as` 就用 `as` 吧。
+
+在这里也稍微列一下这些点，说不定能帮到一些并不存在的路人。
+
+## 以后？
+
+其实，重启博客的原因一方面是遇到了心仪的轮子，而另一方面更是出于**最后还是能够在互联网上留下点什么**的念想。不过说老实话，我也是个典型懒人，精力被工作偷掉之后也就不剩多少给兴趣爱好，更别提写小文章了。所以念想大概率也只是个念想。
+
+想记的其实很多，从代码经到一些创作感想再到手搓小游戏开发日记之类的东西都想记一记，这样，日后别人问起我做过些什么，还可以潇洒地甩个链接过去。倒是说，以前还挂记着可能博客放在网上会有人看一眼，现在也没有那样的执念了，只能说深刻地认识到自己自我品牌打造（Self Branding）能力的孱弱。
+
+话虽如词，既然好不容易重写了博客，随意塞点东西也是好的。俗话说得好，独乐乐不如众乐乐嘛。
+
+<Sign>——来自 日地浮莲</Sign>

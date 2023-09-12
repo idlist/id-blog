@@ -18,6 +18,7 @@ import icon_back_to_top_mobile from '@/assets/icons/back-to-top--mobile.svg'
 import icon_star from '@/assets/icons/star.svg'
 
 import ImageAdaptive from '@/elements/image-adaptive.astro'
+import Sign from '@/elements/sign.astro'
 
 interface Props {
   entry: CollectionEntry<'posts'>
@@ -156,6 +157,7 @@ const { Content, headings } = await render()
   <!-- Workaround to have the CSS inside components inserted into the page -->
   <div class="article-elements">
     <ImageAdaptive />
+    <Sign />
   </div>
 </Base>
 
