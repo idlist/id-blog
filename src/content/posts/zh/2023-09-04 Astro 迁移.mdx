@@ -54,7 +54,7 @@ Astro 的路由策略是**基于文件的路由**，这个策略简化了配置�
 - **图片 / 表格样式**：原本用 `markdown-it-attrs` 往渲染后的元素上挂 CSS class 实现。现在换用了 MDX，可以直接引用自制 Astro 组件解决这个问题。
 - **代码块高亮**：原本用 Prism 渲染。Astro 会在零配置下，自动对代码块使用 Shiki 进行高亮渲染，然后就没有然后了。
 - **代码块复制**：原本用 cheerio 检索 `pre code` 选择器，然后外包含有复制按钮的 HTML 代码。对于这样的功能， rehype 生态圈没有（也不会有）直接可用的插件，所以手写了一个一次性简易 rehype 插件对渲染后的 HTML 抽象树（即 hast）进行了类似的操作。
-- **文章评论**：之前使用了 [Utterances](https://github.com/utterance/utterances) 作为简易的评论功能，但由于其似乎不再维护，因而转到了 Giscus。
+- **文章评论**：之前使用了 [Utterances](https://github.com/utterance/utterances) 作为简易的评论功能，但由于其似乎不再维护，因而转到了 [Giscus](https://github.com/giscus/giscus)。
 
 ## 不是小结
 

@@ -26,7 +26,7 @@ export const getStaticPaths = (async () => {
     const month = date.month
 
     const key = { code, year, month }
-    postsByTime.upsert(key, [post], (col) => col.push(post))
+    postsByTime.emplace(key, [post], (col) => col.push(post))
   })
 
   postsByTime.forEach((posts) => {

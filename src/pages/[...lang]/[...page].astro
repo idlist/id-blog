@@ -18,7 +18,7 @@ export const getStaticPaths = (async () => {
 
   posts.map((post) => {
     const code = post.data.lang ?? defaultLang
-    postsByLang.upsert(code, [post], (col) => col.push(post))
+    postsByLang.emplace(code, [post], (col) => col.push(post))
   })
 
   postsByLang.forEach((posts) => {

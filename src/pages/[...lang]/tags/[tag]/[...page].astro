@@ -22,7 +22,7 @@ export const getStaticPaths = (async () => {
     post.data.tags?.map((tag) => {
       const code = post.data.lang ?? defaultLang
       const key = { code, tag }
-      postsByTag.upsert(key, [post], (col) => col.push(post))
+      postsByTag.emplace(key, [post], (col) => col.push(post))
     })
   })
 

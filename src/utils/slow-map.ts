@@ -24,7 +24,7 @@ class SlowMap<K, V> {
     return this.map.get(hashed)
   }
 
-  upsert(key: K, init: V, update: (value: V) => void) {
+  emplace(key: K, init: V, update: (value: V) => void) {
     const hashed = this._hash(key)
     const value = this.map.get(hashed)
     if (value) {
