@@ -29,6 +29,7 @@ export const ui: I18nBranch = {
     'no-toc': '没有目录',
     'share-article': '分享这篇文章',
     'share-article-succeed': '链接已复制至剪贴板。',
+    'word-count': '约 {} 字',
     'back-to-top': '回到顶部',
     'last-update': '最近更新：',
   },
@@ -61,6 +62,16 @@ export const ui: I18nBranch = {
     'no-toc': 'No table of contents',
     'share-article': 'Share this article',
     'share-article-succeed': 'Link copied to the clipboard.',
+    'word-count': ((number: number) => {
+      switch (number) {
+        case 0:
+          return 'No words'
+        case 1:
+          return 'Approx. 1 word'
+        case 2:
+          return `Approx. ${number} words`
+      }
+    }) as I18nLeaf,
     'back-to-top': 'Back To Top',
     'last-update': 'Last Update: ',
   },
@@ -92,6 +103,7 @@ export const ui: I18nBranch = {
     'no-toc': '目次がありません',
     'share-article': 'この記事をシェアします',
     'share-article-succeed': 'リンクがコピーされました。',
+    'word-count': '约 {} 字',
     'back-to-top': 'トップに戻る',
     'last-update': '最近のアップデート：',
   },

@@ -8,8 +8,10 @@ import TableOfContents from '@/components/table-of-contents.astro'
 import LastUpdate from '@/components/last-update.astro'
 import { getLangCode, getRoot, useLang, type LangCode } from '@/i18n'
 import { ymdFormat, slugify } from '@/utils/server'
+import countWord from '@/utils/word-count'
 
 import icon_share from '@/assets/icons/share.svg'
+import icon_text from '@/assets/icons/text.svg'
 import icon_time from '@/assets/icons/time.svg'
 import icon_update from '@/assets/icons/update.svg'
 import icon_tags from '@/assets/icons/tags.svg'
@@ -25,9 +27,10 @@ interface Props {
 }
 
 const { entry } = Astro.props
-const { data, render } = entry
+const { data, body, render } = entry
 
 const title = data.title
+const words = countWord(body)
 const date = data.date
 const update = data.update ?? data.date
 const tags = data.tags ?? []
@@ -101,6 +104,11 @@ const { Content, headings } = await render()
             <span>{t('ui.share-article')}</span>
             <div class="article-share__popup hidden">{t('ui.share-article-succeed')}</div>
           </a>
+
+          <div class="article-item">
+            <img class="article-item__icon" src={icon_text.src} alt="word count" />
+            <span>{t('ui.word-count', words)}</span>
+          </div>
 
           <div class="article-item">
             <img class="article-item__icon" src={icon_time.src} alt="date" />
