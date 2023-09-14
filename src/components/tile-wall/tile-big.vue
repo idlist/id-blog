@@ -21,7 +21,7 @@ const image = ref<SVGImageElement | null>(null)
 onMounted(() => {
   image.value?.addEventListener('load', () => {
     emit('load')
-  })
+  }, { once: true })
 })
 </script>
 

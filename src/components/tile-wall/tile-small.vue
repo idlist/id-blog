@@ -29,10 +29,10 @@ watch(loaded, (next, prev) => {
 })
 
 onMounted(() => {
-  for (const [i, image] of images.value!.entries()) {
+  for (const image of images.value!) {
     image.addEventListener('load', () => {
       loaded.value += 1
-    })
+    }, { once: true })
   }
 })
 </script>
