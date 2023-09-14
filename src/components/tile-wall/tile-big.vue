@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { tiles } from './tiles'
 
 const props = defineProps<{
@@ -10,13 +10,25 @@ const props = defineProps<{
   rotate: number
 }>()
 
+const emit = defineEmits<{
+  load: []
+}>()
+
 const r = computed(() => props.size / 2)
+
+const image = ref<SVGImageElement | null>(null)
+
+onMounted(() => {
+  image.value?.addEventListener('load', () => {
+    emit('load')
+  })
+})
 </script>
 
 <template>
   <svg :x="x" :y="y" :width="size" :height="size">
     <g :transform="`rotate(${rotate}, ${r}, ${r})`">
-      <image :href="tiles[type].src" :width="size" :height="size" />
+      <image ref="image" :href="tiles[type].src" :width="size" :height="size" />
     </g>
   </svg>
 </template>

@@ -36,6 +36,9 @@ interface TileTypeSmall {
 type TileType = TileTypeBig | TileTypeSmall
 
 const tileMap = shallowRef<TileType[][]>([])
+const tileNumber = computed(() => {
+  return tileMap.value.length * (tileMap.value?.[0]?.length ?? 0)
+})
 
 const getTileBig = (): TileTypeBig => ({
   type: 0,
@@ -108,9 +111,12 @@ watch([column, row], () => {
 }, { immediate: true })
 
 const loaded = ref(false)
+const tilesLoaded = ref(0)
 
-onMounted(() => {
-  loaded.value = true
+watch(tilesLoaded, (next, prev) => {
+  if (next != prev && next == tileNumber.value) {
+    loaded.value = true
+  }
 })
 </script>
 
@@ -126,14 +132,16 @@ onMounted(() => {
               :x="size * i + offsetX"
               :y="size * j + offsetY"
               :size="size"
-              :rotate="each.rotate" />
+              :rotate="each.rotate"
+              @load.once="tilesLoaded += 1" />
             <TileSmall
               v-else
               :types="each.variants"
               :x="size * i + offsetX"
               :y="size * j + offsetY"
               :size="size"
-              :rotates="each.rotates" />
+              :rotates="each.rotates"
+              @load.once="tilesLoaded += 1" />
           </template>
         </template>
       </svg>
