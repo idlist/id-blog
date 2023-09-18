@@ -1,6 +1,6 @@
 ---
 import { getLangCode, getRoot, useLang } from '@/i18n'
-import { slugify, ymdFormat } from '@/utils/server'
+import { tagify, ymdFormat } from '@/utils/server'
 
 import icon_time from '@/assets/icons/time.svg'
 import icon_tags from '@/assets/icons/tags.svg'
@@ -36,7 +36,7 @@ const t = useLang(code)
       {
         tags.length ? (
           tags.map((tag) => (
-            <a class="post-tags__item" href={`${root}tags/${slugify(tag)}`}>
+            <a class="post-tags__item" href={`${root}tags/${tagify(tag)}`}>
               {tag}
             </a>
           ))
@@ -119,7 +119,7 @@ const t = useLang(code)
     margin: 0.5rem 2rem
 
     border: none
-    border-top: 1px solid var(--color-gray-lighter)
+    border-top: 1px solid var(--color-gray-light-2)
 
   .post__summary
     color: var(--color-gray-light)

@@ -1,5 +1,6 @@
 import type { Lang, LangCode, I18nBranch, I18nNode, I18nLeaf, I18nTree } from './types'
 import { ui } from '@/locales/ui'
+import { article } from '@/locales/article'
 
 export { default as html } from 'dedent'
 export type { I18nBranch, I18nLeaf, LangCode } from './types'
@@ -22,6 +23,7 @@ export const defaultLang: LangCode = 'zh'
 
 const branches: Record<string, I18nBranch> = {
   ui,
+  a: article,
 }
 
 const tree: I18nTree = {

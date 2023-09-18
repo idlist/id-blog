@@ -158,7 +158,7 @@ watch(tilesLoaded, (next, prev) => {
   right: 0
   z-index: -10
 
-  background-color: var(--color-background)
+  background-color: var(--color-card)
 
 .tile-wall-enter-active,
 .tile-wall-leave-active

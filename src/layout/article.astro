@@ -7,7 +7,7 @@ import ArticleLicense from '@/components/article-license.astro'
 import TableOfContents from '@/components/table-of-contents.astro'
 import LastUpdate from '@/components/last-update.astro'
 import { getLangCode, getRoot, useLang, type LangCode } from '@/i18n'
-import { ymdFormat, slugify } from '@/utils/server'
+import { ymdFormat, tagify } from '@/utils/server'
 import countWord from '@/utils/word-count'
 
 import icon_share from '@/assets/icons/share.svg'
@@ -21,6 +21,7 @@ import icon_star from '@/assets/icons/star.svg'
 
 import ImageAdaptive from '@/elements/image-adaptive.astro'
 import Sign from '@/elements/sign.astro'
+import Warning from '@/elements/warning.astro'
 
 interface Props {
   entry: CollectionEntry<'posts'>
@@ -125,7 +126,7 @@ const { Content, headings } = await render()
             {
               tags.length ? (
                 tags.map((tag) => (
-                  <a class="article-tags__name" href={`${root}tags/${slugify(tag)}`}>
+                  <a class="article-tags__name" href={`${root}tags/${tagify(tag)}`}>
                     {tag}
                   </a>
                 ))
@@ -166,6 +167,7 @@ const { Content, headings } = await render()
   <div class="article-elements">
     <ImageAdaptive />
     <Sign />
+    <Warning />
   </div>
 </Base>
 

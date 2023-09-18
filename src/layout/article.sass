@@ -20,6 +20,9 @@
   @media (max-width: vars.$screen-sm)
     padding: 0.5rem
 
+  & > div
+    min-width: 0
+
 .article__title
   margin: 0.5rem 0
   font-size: 2rem
@@ -29,7 +32,7 @@
 .article__divider
   margin: 0.75rem 2rem
   border: none
-  border-top: 1px solid var(--color-gray-lighter)
+  border-top: 1px solid var(--color-gray-light-2)
 
 .article__summary
   margin: 0.5rem 0
@@ -37,7 +40,7 @@
   border-radius: 0.25rem
   text-align: right
   color: var(--color-gray)
-  background-color: var(--color-background)
+  background-color: var(--color-card)
 
 .article__mobile-blank
   @media (max-width: vars.$screen-md)
@@ -232,7 +235,7 @@ article
     background-color: var(--color-pink)
 
   tr:nth-child(even)
-    background-color: #eee
+    background-color: var(--color-gray-light-2)
 
   img
     border-radius: 0.25rem
@@ -242,7 +245,7 @@ article
 
     margin: 0 auto
     border: none
-    border-bottom: 1px solid #999
+    border-bottom: 1px solid var(--color-gray-light)
 
   .code-wrapper
     position: relative
@@ -258,19 +261,20 @@ article
     width: 2rem
     height: 2rem
 
-    background-color: #fff
+    background-color: var(--color-white)
     border-radius: 0.25rem
 
     cursor: pointer
     user-select: none
 
     &:hover
-      background-color: #eee
+      background-color: var(--color-gray-light-4)
 
     &:active
-      background-color: #ddd
+      background-color: var(--color-gray-light-3)
 
     &__icon
+      margin: 0
       width: 1.25rem
       height: 1.25rem
 
@@ -281,9 +285,9 @@ article
       padding: 0.25rem
 
       font-size: 0.875rem
-      background-color: #fff
+      background-color: var(--color-white)
       border-radius: 0.25rem
-      border: 1px solid #333
+      border: 1px solid var(--color-black)
 
       &.hidden
         display: none
@@ -314,7 +318,7 @@ article
     border-radius: 0.25rem
 
     font-family: vars.$monospace
-    background-color: #eee
+    background-color: var(--color-gray-4)
 
   b, strong
     color: var(--color-green)

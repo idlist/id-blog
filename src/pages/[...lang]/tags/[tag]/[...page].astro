@@ -5,7 +5,7 @@ import { range } from 'lodash-es'
 import Category from '@/layout/category.astro'
 import type { Posts } from '@/content/config'
 import { defaultLang, undef } from '@/i18n'
-import { createPaging, pageSize, paginate, slugify } from '@/utils/server'
+import { createPaging, pageSize, paginate, tagify } from '@/utils/server'
 import SlowMap from '@/utils/slow-map'
 
 export const getStaticPaths = (async () => {
@@ -43,7 +43,7 @@ export const getStaticPaths = (async () => {
         params: {
           lang: undef(key.code, defaultLang),
           page: undef(page, 1),
-          tag: slugify(key.tag),
+          tag: tagify(key.tag),
         },
         props: {
           tag: key.tag,

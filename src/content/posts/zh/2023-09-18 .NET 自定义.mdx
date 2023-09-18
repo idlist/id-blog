@@ -1,0 +1,62 @@
+---
+title: '不使用 VS，在 .NET C# 自定义 bin / obj 文件夹的方法'
+route: 'customize-csharp-obj-bin'
+date: 2023-09-18
+tags: ['Code', 'C#', '.NET']
+summary: '论历史的堆积。'
+---
+
+import Warning from '@/elements/warning.astro'
+
+<Warning>
+  当你看到这篇文章的时候，由于 .NET 不时的变动，里面的内容可能已经过时了。
+</Warning>
+
+## 场景
+
+.NET 在开发和构建的过程中默认将中间文件生成到 `bin` 和 `obj` 两个文件夹中。像我这种人就会想着能不能把它们都挪到同一个文件夹下，最好是以 `.` 开头的，这样至少在开发过程中眼不见心不烦。
+
+但其实就是这么一个看似很简单的需求，却并不是那么简单能做到的事。有的人可能会先找到 [按文件夹自定义生成](https://learn.microsoft.com/zh-cn/visualstudio/msbuild/customize-by-directory?view=vs-2019) 这个文档，但也不知道这些项是干什么的，又要放到什么文件里，而且就这么设置了可能还会弹别的警告，结果最后还是会有些生成文件被漏在外面。
+
+然后就会看到一堆回答说让人用 Visual Studio，但是就是不想用嘛，谁让 VS 又丑、又笨重、又难自定义。秉承着坚持用 VSCode 写一切的原则，我还是找到了方法。
+
+## 方法
+
+比如我用 VSCode 写 C#，想把所有的 .NET 生成内容移动到 `.output` 文件夹中：
+
+1. 在工程文件根目录（即与 `.csproj` 文件同一文件夹内）新建文件 `Directory.Builds.props`
+
+2. 在这个文件里加入下列内容，可以根据自己的需求进行自定义：
+
+```xml
+<Project>
+  <PropertyGroup>
+    <!-- 输出目录（即 bin 文件夹） -->
+    <!-- 如果这两项不为同一个文件夹，容易出问题 -->
+    <OutDir>.output\bin</OutDir>
+    <OutputPath>.output\bin</OutputPath>
+
+    <!-- 中途生成文件（即 obj 文件夹） -->
+    <!-- 如果这四项不为同一个文件夹，容易出问题 -->
+    <IntermediateOutputPath>.output\obj</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>.output\obj</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>.output\obj</MSBuildProjectExtensionsPath>
+    <RestoreOutputPath>.output\obj</RestoreOutputPath>
+
+    <!-- 文档生成目录，可选 -->
+    <DocumentationFile>.output\doc</DocumentationFile>
+  </PropertyGroup>
+</Project>
+```
+
+此外，不需要在 `.csproj` 项目文件里再次重复配置这些项。
+
+这个方法修改于 [msbuild#1603 中的这个评论](https://github.com/dotnet/msbuild/issues/1603#issuecomment-460756513)，出于简便没有使用 `SolutionDir` 项，实际使用中也暂时没遇到问题，如果发现还是需要它的话可以参考原回答重新修改。
+
+## 历史
+
+其实 [msbuild#1603](https://github.com/dotnet/msbuild/issues/1603) 这个 issue 本身就已经一定程度地描述了这个问题的历史，简而言之就是微软的代码山堆太高，以前搞了一堆这样那样（其实作用基本一致的）配置项，现在还不好删。于是就变成了现在这个“你以为只用设置一项，但其实得同时设置好几项”的情况。
+
+从这个 issue 中也可以看出来，这个需求其实也不算是个小众需求，尤其是对于那些依赖 .NET 的二级框架而言。可以看见有好几十个其他的 issue 最后指向了这个 issue，还不乏一些今年新开的，可见大家都苦于这么个小问题，抱怨的人也不止 [一个](https://github.com/dotnet/msbuild/issues/1603#issuecomment-373460968) [两个](https://github.com/dotnet/msbuild/issues/1603#issuecomment-554833748)。
+
+只能说，希望 .NET 尽早扫清历史尘埃，合理简化这些配置项了。虽然我觉得这对于微软有点难。

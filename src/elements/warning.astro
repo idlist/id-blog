@@ -1,0 +1,36 @@
+---
+import { useLang } from '@/i18n'
+import icon_warning from '@/assets/icons/warning.svg'
+
+const t = useLang(Astro.url)
+---
+
+<div class="article-warning">
+  <div class="article-warning__title">
+    <img class="article-warning__title-icon" src={icon_warning.src} alt="warning icon" />
+    <div class="article-warning__title-text">{t('a.warning')}</div>
+  </div>
+  <slot />
+</div>
+
+<style lang="sass">
+  .article-warning
+    padding: 0.75rem 1rem
+    color: var(--color-yellow)
+    background-color: var(--color-yellow-light-2)
+    border-radius: 0.25rem
+    border-left: 4px solid var(--color-yellow-light)
+
+    &__title
+      display: flex
+      align-items: center
+      column-gap: 0.5rem
+
+    &__title-icon
+      margin: 0
+      width: 1rem
+      height: 1rem
+
+    &__title-text
+      font-weight: bold
+</style>

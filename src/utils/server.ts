@@ -1,10 +1,19 @@
-import { slugify as slug } from 'transliteration'
+import { slugify } from 'transliteration'
 import { padStart as pad } from 'lodash-es'
+import TagMap from './tag-map'
 
-export const slugify = (str: string) => slug(str, {
-  allowedChars: 'a-zA-Z0-9-',
-  fixChineseSpacing: false,
-})
+export const tagify = (str: string) => {
+  const lower = str.toLowerCase()
+  const slug = TagMap[lower]
+  if (slug) {
+    return slug
+  }
+
+  return slugify(lower, {
+    allowedChars: 'a-zA-Z0-9-',
+    fixChineseSpacing: false,
+  })
+}
 
 interface YearMonthDay {
   year: number
