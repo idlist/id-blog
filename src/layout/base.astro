@@ -26,7 +26,9 @@ const t = useLang(code)
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-EYWN5DJ2YP"></script>
   <script is:inline>
     window.dataLayer = window.dataLayer || []
-    const gtag = (...args) => void dataLayer.push(...args)
+    function gtag() {
+      dataLayer.push(arguments)
+    }
     gtag('js', new Date())
     gtag('config', 'G-EYWN5DJ2YP')
   </script>
