@@ -6,6 +6,7 @@ import sitemap from '@astrojs/sitemap'
 import { rehypeHeadingIds, type RehypePlugin } from '@astrojs/markdown-remark'
 import rehypeExternalLinks from 'rehype-external-links'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import addsToHead from 'astro-adds-to-head'
 import rehypeCodeCopy from './rehype/code-copy'
 
 // https://astro.build/config
@@ -38,5 +39,8 @@ export default defineConfig({
     vue(),
     mdx(),
     sitemap(),
+    // https://github.com/lilnasy/gratelets/tree/main/packages/adds-to-head
+    // Fix https://github.com/withastro/astro/issues/7761.
+    addsToHead(),
   ],
 })

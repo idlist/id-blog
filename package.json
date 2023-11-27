@@ -28,6 +28,7 @@
     "@astrojs/vue": "^3.0.0",
     "@vueuse/core": "^10.4.1",
     "astro": "^3.0.12",
+    "astro-adds-to-head": "^1.0.0",
     "dedent": "^1.5.1",
     "hast-util-select": "^6.0.1",
     "hastscript": "^8.0.0",

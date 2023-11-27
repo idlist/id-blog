@@ -10,7 +10,7 @@ const copyCode: RehypePlugin = () => {
 
     visit(tree, codeBlocks, (node, i, parent) => {
       const wrapper = h('div', { class: 'code-wrapper' }, [
-        h('div', { class: 'code-copy__success hidden' }, 'Copy Succeeded!'),
+        h('div', { class: 'code-copy__success hidden' }, 'Copied!'),
         h('div', { class: 'code-copy' }, [
           h('img', { class: 'code-copy__icon', src: '/assets/copy.svg', alt: 'copy' }),
         ]),

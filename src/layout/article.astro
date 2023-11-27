@@ -19,10 +19,6 @@ import icon_back_to_top from '@/assets/icons/back-to-top.svg'
 import icon_back_to_top_mobile from '@/assets/icons/back-to-top--mobile.svg'
 import icon_star from '@/assets/icons/star.svg'
 
-import ImageAdaptive from '@/elements/image-adaptive.astro'
-import Sign from '@/elements/sign.astro'
-import Warning from '@/elements/warning.astro'
-
 interface Props {
   entry: CollectionEntry<'posts'>
 }
@@ -50,6 +46,7 @@ const GiscusLangs: Record<LangCode, string> = {
 const shouldLoadGiscus = import.meta.env.PROD
 
 const { Content, headings } = await render()
+export const addsToHead = true
 ---
 
 <Base title={`${title} | i'D Blog`}>
@@ -162,13 +159,6 @@ const { Content, headings } = await render()
   </Container>
 
   <div class="article__mobile-blank"></div>
-
-  <!-- Workaround to have the CSS inside components inserted into the page -->
-  <div class="article-elements">
-    <ImageAdaptive />
-    <Sign />
-    <Warning />
-  </div>
 </Base>
 
 <script>
