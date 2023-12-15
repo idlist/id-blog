@@ -3,11 +3,10 @@ import { h } from 'hastscript'
 import vue from '@astrojs/vue'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
-import { rehypeHeadingIds, type RehypePlugin } from '@astrojs/markdown-remark'
+import { rehypeHeadingIds } from '@astrojs/markdown-remark'
 import rehypeExternalLinks from 'rehype-external-links'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import addsToHead from 'astro-adds-to-head'
-import rehypeCodeCopy from './rehype/code-copy'
+import adds2head from 'astro-adds-to-head'
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,19 +19,18 @@ export default defineConfig({
     rehypePlugins: [
       rehypeHeadingIds,
       [
-        rehypeAutolinkHeadings as RehypePlugin, {
+        rehypeAutolinkHeadings, {
           behavior: 'prepend',
           content: () =>
             h('img', { class: 'article-anchor', src: '/assets/link.svg', alt: 'link' }),
         },
       ],
       [
-        rehypeExternalLinks as RehypePlugin, {
+        rehypeExternalLinks, {
           target: '_blank',
           rel: ['nofollow', 'noreferer', 'noopener'],
         },
       ],
-      rehypeCodeCopy,
     ],
   },
   integrations: [
@@ -41,6 +39,6 @@ export default defineConfig({
     sitemap(),
     // https://github.com/lilnasy/gratelets/tree/main/packages/adds-to-head
     // Fix https://github.com/withastro/astro/issues/7761.
-    addsToHead(),
+    adds2head(),
   ],
 })

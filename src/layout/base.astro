@@ -2,7 +2,7 @@
 import '@/styles/globals.sass'
 import '@/layout/base.sass'
 import TileWall from '@/components/tile-wall/tile-wall.vue'
-import { getLangCode, getRoot, useLang } from '@/i18n'
+import { getLangCode, getRoot, useLang, langTags } from '@/i18n'
 
 import banner from '@/assets/banner.png'
 import icon_menu from '@/assets/buttons/menu.svg'
@@ -22,80 +22,82 @@ const root = getRoot(code)
 const t = useLang(code)
 ---
 
-<head>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EYWN5DJ2YP"></script>
-  <script is:inline>
-    window.dataLayer = window.dataLayer || []
-    function gtag() {
-      dataLayer.push(arguments)
-    }
-    gtag('js', new Date())
-    gtag('config', 'G-EYWN5DJ2YP')
-  </script>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="shortcut icon" type="image/png" href="/favicon.png" />
-  <title>{title}</title>
-</head>
+<html lang={langTags[code]}>
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EYWN5DJ2YP"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+      gtag('config', 'G-EYWN5DJ2YP')
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" type="image/png" href="/favicon.png" />
+    <title>{title}</title>
+  </head>
 
-<body>
-  <a class="menu-expander" data-icon-menu={icon_menu.src} data-icon-close={icon_close.src}>
-    <img class="menu-expander__icon" src={icon_menu.src} alt="menu toggler" />
-  </a>
+  <body>
+    <a class="menu-expander" data-icon-menu={icon_menu.src} data-icon-close={icon_close.src}>
+      <img class="menu-expander__icon" src={icon_menu.src} alt="menu toggler" />
+    </a>
 
-  <div class="menu-fs hidden">
-    <div class="menu-fs__container">
-      <a class="menu-fs__link" href="https://idl.ist/" target="_blank">
-        <img class="menu-fs__link-external" src={icon_external.src} alt="external" />
-        <span class="menu-fs__link-text">{t('ui.to-index')}</span>
-      </a>
-      <hr class="menu-fs__hr" />
-      <div class="menu-fs__lang">
-        <img class="menu-fs__lang-icon" src={icon_locales_mobile.src} alt="locales" />
-        <span>{t('ui.language')}</span>
-      </div>
-      <a class="menu-fs__link" href="/">简体中文</a>
-      <a class="menu-fs__link" href="/en/">English</a>
-      <a class="menu-fs__link" href="/ja/">日本語</a>
-      <hr class="menu-fs__hr" />
-      <a class="menu-fs__link" href={root}>{t('ui.articles')}</a>
-      <hr class="menu-fs__hr" />
-    </div>
-  </div>
-
-  <header>
-    <div class="header-container">
-      <div class="header">
-        <img class="header__banner" src={banner.src} alt="banner" />
-        <hr class="header__divider" />
-        <div>i'D Blog</div>
-      </div>
-
-      <div class="menu-header">
-        <a class="menu-link" href={root}>{t('ui.articles')}</a>
-        <div class="menu-link__dropdown">
-          <div class="menu-link__lang">
-            <img class="menu-link__lang-icon" src={icon_locales.src} alt="locales" />
-            <span>{t('ui.language')}</span>
-          </div>
-          <div class="menu-link__dropdown-content">
-            <a class="menu-link__dropdown-link" href="/">简体中文</a>
-            <a class="menu-link__dropdown-link" href="/en/">English</a>
-            <a class="menu-link__dropdown-link" href="/ja/">日本語</a>
-          </div>
-        </div>
-        <a class="menu-link" href="https://idl.ist/" target="_blank">
-          <img class="menu-link__external" src={icon_external.src} alt="external" />
-          <span>{t('ui.to-index')}</span>
+    <div class="menu-fs hidden">
+      <div class="menu-fs__container">
+        <a class="menu-fs__link" href="https://idl.ist/" target="_blank">
+          <img class="menu-fs__link-external" src={icon_external.src} alt="external" />
+          <span class="menu-fs__link-text">{t('ui.to-index')}</span>
         </a>
+        <hr class="menu-fs__hr" />
+        <div class="menu-fs__lang">
+          <img class="menu-fs__lang-icon" src={icon_locales_mobile.src} alt="locales" />
+          <span>{t('ui.language')}</span>
+        </div>
+        <a class="menu-fs__link" href="/">简体中文</a>
+        <a class="menu-fs__link" href="/en/">English</a>
+        <a class="menu-fs__link" href="/ja/">日本語</a>
+        <hr class="menu-fs__hr" />
+        <a class="menu-fs__link" href={root}>{t('ui.articles')}</a>
+        <hr class="menu-fs__hr" />
       </div>
     </div>
-  </header>
 
-  <slot />
+    <header>
+      <div class="header-container">
+        <div class="header">
+          <img class="header__banner" src={banner.src} alt="banner" />
+          <hr class="header__divider" />
+          <div>i'D Blog</div>
+        </div>
 
-  <TileWall client:only="vue" />
-</body>
+        <div class="menu-header">
+          <a class="menu-link" href={root}>{t('ui.articles')}</a>
+          <div class="menu-link__dropdown">
+            <div class="menu-link__lang">
+              <img class="menu-link__lang-icon" src={icon_locales.src} alt="locales" />
+              <span>{t('ui.language')}</span>
+            </div>
+            <div class="menu-link__dropdown-content">
+              <a class="menu-link__dropdown-link" href="/">简体中文</a>
+              <a class="menu-link__dropdown-link" href="/en/">English</a>
+              <a class="menu-link__dropdown-link" href="/ja/">日本語</a>
+            </div>
+          </div>
+          <a class="menu-link" href="https://idl.ist/" target="_blank">
+            <img class="menu-link__external" src={icon_external.src} alt="external" />
+            <span>{t('ui.to-index')}</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <slot></slot>
+
+    <TileWall client:only="vue" />
+  </body>
+</html>
 
 <script>
   const Menu = document.querySelector('.menu-expander') as HTMLLinkElement

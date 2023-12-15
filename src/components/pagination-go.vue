@@ -14,7 +14,9 @@ const { view, code, last } = props
 const to = ref<string>('')
 const toParsed = computed(() => parseInt(to.value))
 
-const toPage = () => {
+const toPage = (e: MouseEvent) => {
+  e.preventDefault()
+
   if (to.value === '') {
     return
   }
@@ -38,7 +40,7 @@ const toPage = () => {
     <input type="text" class="pagination-go__input" v-model="to" @keyup="to = to.replace(/[^\d]/g, '')" />
     <div>/</div>
     <div>{{ last }}</div>
-    <a class="pagination-go__text" @click="toPage">GO</a>
+    <a class="pagination-go__text" @click="toPage" href="/">GO</a>
   </div>
 </template>
 

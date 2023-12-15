@@ -19,6 +19,12 @@ export const lang: Lang = {
   ja: '日本語',
 }
 
+export const langTags: Record<LangCode, string> = {
+  zh: 'zh-CN',
+  en: 'en',
+  ja: 'ja',
+}
+
 export const defaultLang: LangCode = 'zh'
 
 const branches: Record<string, I18nBranch> = {

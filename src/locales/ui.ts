@@ -30,6 +30,7 @@ export const ui: I18nBranch = {
     'share-article': '分享这篇文章',
     'share-article-succeed': '链接已复制至剪贴板。',
     'word-count': '约 {} 字',
+    'code-copied': '已复制！',
     'back-to-top': '回到顶部',
     'last-update': '最近更新：',
   },
@@ -72,6 +73,7 @@ export const ui: I18nBranch = {
           return `Approx. ${number} words`
       }
     }) as I18nLeaf,
+    'code-copied': 'Copied!',
     'back-to-top': 'Back To Top',
     'last-update': 'Last Update: ',
   },
@@ -104,6 +106,7 @@ export const ui: I18nBranch = {
     'share-article': 'この記事をシェアします',
     'share-article-succeed': 'リンクがコピーされました。',
     'word-count': '约 {} 字',
+    'code-copied': 'コピーしました！',
     'back-to-top': 'トップに戻る',
     'last-update': '最近のアップデート：',
   },
