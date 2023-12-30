@@ -59,15 +59,14 @@ export const addsToHead = true
           {summary && <p class="article__summary">{summary.trim()}</p>}
           <hr class="article__divider" />
 
-          <Content components={{ pre: CodeCopiable }}/>
+          <Content components={{ pre: CodeCopiable }} />
         </article>
 
         {
           shouldLoadGiscus && (
             <>
-              <div class="giscus-blank"></div>
+              <div class="giscus-blank" />
 
-              <!-- prettier-ignore -->
               <script
                 src="https://giscus.app/client.js"
                 data-repo="idlist/id-blog-comments"
@@ -83,8 +82,8 @@ export const addsToHead = true
                 data-lang={langTags[code]}
                 data-loading="lazy"
                 crossorigin="anonymous"
-                async>
-              </script>
+                async
+              />
             </>
           )
         }
@@ -112,10 +111,14 @@ export const addsToHead = true
             <time datetime={date.toUTCString()}>{ymdFormat(date)}</time>
           </div>
 
-          <div class="article-item">
-            <img class="article-item__icon" src={icon_update.src} alt="update" />
-            <time datetime={update.toUTCString()}>{ymdFormat(update)}</time>
-          </div>
+          {
+            data.update && (
+              <div class="article-item">
+                <img class="article-item__icon" src={icon_update.src} alt="update" />
+                <time datetime={update.toUTCString()}>{ymdFormat(update)}</time>
+              </div>
+            )
+          }
 
           <div class="article-tags">
             <img class="article-tags__icon" src={icon_tags.src} alt="tags" />
@@ -176,7 +179,7 @@ export const addsToHead = true
     SharePopup.classList.remove('hidden')
     setTimeout(() => {
       SharePopup.classList.add('hidden')
-    }, 1000);
+    }, 1000)
   })
 
   // "Back to top" buttons.

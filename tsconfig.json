@@ -7,5 +7,5 @@
       "@/*": ["src/*"],
     }
   },
-  "include": ["astro.config.ts", "src", "rehype", "scripts"]
+  "include": ["astro.config.ts", "src", "scripts"]
 }
