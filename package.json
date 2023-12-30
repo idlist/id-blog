@@ -20,7 +20,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "prepare": "husky install",
-    "generate": "tsm scripts/generate.ts && git add src/constants.ts"
+    "generate": "tsm scripts/generate.ts && git add src/generated.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^2.0.1",
