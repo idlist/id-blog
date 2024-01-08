@@ -1,0 +1,118 @@
+---
+title: '一次排查 nvm4w exit status 1 的离奇经历'
+route: 'nvm4v-exit-status-1'
+date: 2024-01-08
+tags: ['Code', 'JavaScript', 'Node.js']
+summary: '一环扣一环。'
+---
+
+import Warning from '@/elements/warning.astro'
+
+<Warning title='时效性'>
+  由于 nvm4w 的下一代（即 Runtime）可能已经推出，这篇文章的内容可能不再有用。
+</Warning>
+
+## 流水账版
+
+### 起因
+
+用 Node.js 的同学都知道，Node.js 的主版本号是按年份更新的（也就是所谓的 Calver），而且对于新用户而言无脑推荐 LTS 版本。不过，不论是公司还是合作项目，都免不了面临和他人的 Node.js 版本不一致的问题，于是用于管理 Node.js 版本的工具应运而生，而在 Windows 系统下则是唯一指定 [NVM for Windows](https://github.com/coreybutler/nvm-windows)（简称 nvm4w）。
+
+然而，就在前几天，我的 nvm4w 出了点问题。通过它运行其他功能都没有问题，但是在运行最关键的 `nvm use` 的时候，报了下面的错误：
+
+```
+exit status 1:
+exit status 1:
+```
+
+连续两个 `exit status 1`，而且没有任何附加的错误信息。
+
+于是漫长的排错之旅开始了。一开始我以为是 nvm4w 自身出了问题，于是使用祖传艺能卸载重装，但问题依然存在；然后看到说试试指定 Node.js 的 symlink 位置为不需要提权的文件夹，而我之前确实将 symlink 设置在了 `C:\Program Files` 下，于是遂试之，但并没有解决这个问题，不过报错变少了一行：
+
+```
+exit status 1:
+```
+
+不过，这行报错仍旧没有任何错误信息。
+
+其实这个问题最核心也是最奇怪的地方就是没有任何报错信息。搜索 nvm4w 的 issue 和讨论也能搜到一些关于 `exit status 1` 的情况，但是，如果是用户权限引起的问题，这条报错理应附带 `Access Denied` 或者其他由于系统不是英文而导致的一些乱码，而不应该是什么信息都没有。再加上我已经用了 nvm4w 很长一段时间，之前就算 symlink 在需要提权的文件夹下，也能正常弹出提权通知，并不会像现在这样一言不发。
+
+所以，最后我判断我的问题和用户权限应该是没有关系的。然而这就带来了一个新的问题，除了 [dicussion#996](https://github.com/coreybutler/nvm-windows/discussions/996) 以外，其他的讨论似乎都与用户权限相关，而与我的情况无关；这个讨论似乎也并没有得到解答。于是我打开 nvm4w 的安装目录，试图在里面发现点蛛丝马迹。
+
+### 转折
+
+结合工具官网的 [手动安装](https://github.com/coreybutler/nvm-windows/wiki#manual-installation) 指南，可以看到 nvm4w 的核心只有 3 个文件：
+
+```
+nvm.exe
+elevate.vbs
+elevate.cmd
+```
+
+从名字来看，两个 `elevate` 应该就是用于提权的脚本，而之前从报错两行减少到一行大概就是因为不再需要提权，所以少执行一次。我平时使用的都是 PowerShell，看到 `.cmd` 后缀就想着这个大概得用命令提示符（CMD）来执行，于是久违地从 Windows Terminal 里打开 CMD……
+
+问题来了，打不开，提示错误：
+
+```
+[已退出进程，代码为 1]
+```
+
+竟然是 CMD 挂掉了，而依托 CMD 的 mklink 实现的 `nvm use` 也自然因为 CMD 不可用而无法运行。这也解释了为什么 `exit status 1:` 的后面没有任何错误信息，因为 CMD 在输出任何错误信息之前就先挂掉了。而我迟迟没发现这个问题，则是因为我平时都是用的 PowerShell。
+
+接下来就是试图修复 CMD 了。我搜了一下“修复 CMD”之类的内容，然后喜闻乐见地，不论是 SFC 还是 DISM 都并没有用。最后我从 [这个问题](https://answers.microsoft.com/en-us/windows/forum/all/windows-11-cmd-error-process-exited-with-code-1/1bcea9d7-2ca5-46f8-8b5c-13e0e6b72879) 重定向到了 [这个 StackOverflow 回答](https://stackoverflow.com/questions/66335300/cmd-crashes-with-exit-code-1-after-uninstalling-anaconda)，一看，好家伙，原来前几天卸载掉的 **Anaconda** （虽然我用的是 **Miniconda**）才是罪魁祸首。
+
+### 真凶
+
+简而言之，Anaconda 会在安装的时候往注册表
+
+```
+HKCU\Software\Microsoft\Command Processor
+```
+
+里插入键 `AutoRun` ，这个键的作用应该是让 CMD 在每次打开时都先加载 Anaconda 环境。然而，Anaconda 在安装过程中做了这些注入工作，但是在卸载过程中**并没有**清除掉这些注入，于是导致 CMD 无法正常启动。
+
+实际上，PowerShell 这边也有类似的问题，相关的注入在
+
+```
+%UserProfile%\Documents\WindowsPowerShell\profile.ps1
+```
+
+中，但是这个问题并不会导致 PowerShell 完全无法使用，只会在打开的时候显示一行类似于“要运行的脚本不存在”的错误。
+
+既然知道了问题的真正原因，那解决起来就很方便了：删掉这个 `AutoRun` 键即可。StackOverflow 的回答中提供了一个 One-liner 用于删掉这个键：
+
+```powershell
+C:\Windows\System32\reg.exe DELETE "HKCU\Software\Microsoft\Command Processor" /v AutoRun /f
+```
+
+将这行命令复制粘贴到隔壁 PowerShell 中然后按下回车即可。
+
+命令本身很直白：
+
+- `C:\Windows\System32\reg.exe`: 注册表编辑器；
+- `DELETE`: 删除操作；
+- `"HKCU\Software\Microsoft\Command Processor"`: 要进行删除操作的项；
+- `/v AutoRun`: 要删除的键名；
+- `/f`: 跳过该操作的确认步骤。
+
+如果还是不放心的话，直接打开注册表编辑器，然后手动删除该项下的对应键也是一样的。
+
+至此，花了一个晚上的时间，这个问题终于被解决了。整个过程中最难想到的地方还是问题来源其实并不是 nvm4w 自身，而是它所需求的 CMD 环境，不过到头来还是归功于 PowerShell 的推广做得太好了，如果是那种日常还在用 CMD 的用户的话，可能更容易第一眼发现这个问题，毕竟日常依赖的命令行都用不了了。
+
+## 太长不看版
+
+对于 **NVM for Windows** 的
+
+```
+exit status 1:
+```
+
+且后面无任何错误信息的情况，应当首先排查命令提示符（CMD）是否能正常使用，因为 nvm4w 的功能依赖于 CMD。
+
+而导致 CMD 不工作的原因之一，可能是用户之前安装并**卸载**过 **Anaconda**（或者 **Miniconda**）。这个工具会在安装时往注册表插入用于打开 CMD 时自启动的键，但是在卸载时**不会**清除它们，从而造成这个问题。打开注册表编辑器，然后删除
+
+```
+HKCU\Software\Microsoft\Command Processor
+```
+
+下的 `AutoRun` 键即可解决这个问题。

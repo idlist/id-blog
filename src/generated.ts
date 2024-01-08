@@ -1,2 +1,2 @@
-export const update = '2023 / 12 / 31'
-export const year = 2023
+export const update = '2024 / 1 / 8'
+export const year = 2024

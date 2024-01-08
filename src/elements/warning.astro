@@ -2,13 +2,19 @@
 import { useLang } from '@/i18n'
 import icon_warning from '@/assets/icons/warning.svg'
 
+interface Props {
+  title?: string
+}
+
 const t = useLang(Astro.url)
+
+const title = Astro.props.title ?? t('a.warning')
 ---
 
 <div class="article-warning">
   <div class="article-warning__title">
     <img class="article-warning__title-icon" src={icon_warning.src} alt="warning icon" />
-    <div class="article-warning__title-text">{t('a.warning')}</div>
+    <div class="article-warning__title-text">{title}</div>
   </div>
   <slot></slot>
 </div>
