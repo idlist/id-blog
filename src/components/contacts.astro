@@ -8,15 +8,15 @@ interface Props {
 const { icon, link, text } = Astro.props
 ---
 
-<div class="contact">
-  <img class="contact__icon" src={icon} alt={`icon ${text}`} />
-  <a class="contact__link" href={link} target="_blank" rel="noopener noreferer">{text}</a>
+<div class="contacts">
+  <img class="contacts__icon" src={icon} alt={`icon ${text}`} />
+  <a class="contacts__link" href={link} target="_blank" rel="noopener noreferer">{text}</a>
 </div>
 
 <style lang="scss">
   @use '@/styles/mixin' as mixin;
 
-  .contact {
+  .contacts {
     display: flex;
     align-items: center;
     column-gap: 0.5rem;

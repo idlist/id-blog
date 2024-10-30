@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content'
 import './homepage.scss'
 import Base from './base.astro'
 import Container from '@/components/container.astro'
-import Contact from '@/components/contact.astro'
+import Contacts from '@/components/contacts.astro'
 import Tags from '@/components/tags.astro'
 import Timeline from '@/components/timeline.astro'
 import PostListing from '@/components/post-listing.astro'
@@ -40,11 +40,11 @@ const t = useLang(Astro.url)
           <div class="homepage-me__name">i'DLisT</div>
         </div>
 
-        <Contact icon={icon_email.src} text="i@idl.ist" link="mailto:i@idl.ist" />
-        <Contact icon={icon_home.src} text="idl.ist" link="https://idl.ist" />
-        <Contact icon={icon_twitter.src} text="@i_dlist" link="https://twitter.com/i_dlist" />
-        <Contact icon={icon_github.src} text="idlist" link="https://github.cpm/idlist" />
-        <Contact icon={icon_soundcloud.src} text="i'DLisT" link="https://soundcloud.com/idlist" />
+        <Contacts icon={icon_email.src} text="i@idl.ist" link="mailto:i@idl.ist" />
+        <Contacts icon={icon_home.src} text="idl.ist" link="https://idl.ist" />
+        <Contacts icon={icon_twitter.src} text="@i_dlist" link="https://x.com/i_dlist" />
+        <Contacts icon={icon_github.src} text="idlist" link="https://github.com/idlist" />
+        <Contacts icon={icon_soundcloud.src} text="i'DLisT" link="https://soundcloud.com/idlist" />
 
         <div class="homepage-stats">
           <Fragment set:html={t('ui.total-posts', total)} />
