@@ -8,8 +8,8 @@ import icon_destination from '@/assets/icons/destination.svg'
   <div class="container">
     <div class="four-o-four">
       <img class="four-o-four__image" src={image_404.src} alt="404" />
-      <div class="four-o-four__prompt">You came to an unknown place...</div>
-      <img class="four-o-four__dest" src={icon_destination.src} alt="destination">
+      <div class="four-o-four__prompt">You come to an unknown place...</div>
+      <img class="four-o-four__dest" src={icon_destination.src} alt="destination" />
       <div class="back-to-main">
         <a class="back-to-main__link" href="/">回到首页</a>
         <a class="back-to-main__link" href="/en/">Back to the Main Page</a>
@@ -19,65 +19,72 @@ import icon_destination from '@/assets/icons/destination.svg'
   </div>
 </Base>
 
-<style lang="sass">
-  @use '@/styles/vars' as vars
-  @use '@/styles/mixin' as mixin
+<style lang="scss">
+  @use '@/styles/vars' as *;
+  @use '@/styles/utils' as *;
+  @use '@/styles/mixin' as mixin;
 
-  .container
-    position: fixed
-    top: 3rem
-    bottom: 0
-    left: 0
-    right: 0
+  .container {
+    position: fixed;
+    top: 3rem;
+    bottom: 0;
+    left: 0;
+    right: 0;
 
-    display: flex
-    align-items: center
-    justify-content: center
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    padding: 1rem
+    padding: 1rem;
 
-    @media (max-width: vars.$screen-sm)
-      padding: 0.5rem
+    @media (max-width: $screen-sm) {
+      padding: 0.5rem;
+    }
+  }
+  .four-o-four {
+    width: 100%;
+    max-width: $content-width;
 
-  .four-o-four
-    width: 100%
-    max-width: vars.$content-width
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-    display: flex
-    flex-direction: column
-    align-items: center
+    padding: 1.5rem 1rem;
+    background-color: #fff;
+    box-shadow: 0 0 10px #ccc;
 
-    padding: 1.5rem 1rem
-    background-color: #fff
-    box-shadow: 0 0 10px #ccc
+    @media (max-width: $screen-sm) {
+      padding: 1.5rem 0.5rem;
+    }
 
-    @media (max-width: vars.$screen-sm)
-      padding: 1.5rem 0.5rem
+    &__image {
+      width: 256px;
+      margin-top: 0.5rem;
+    }
+    &__prompt {
+      font-style: italic;
+      color: var(--color-gray);
+      margin-top: 2rem;
+    }
+    &__dest {
+      width: 1rem;
+      height: 1rem;
+      margin-top: 1rem;
+    }
+  }
+  .back-to-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1rem;
 
-    &__image
-      width: 256px
-      margin-top: 0.5rem
+    &__link {
+      @include mixin.link-main;
 
-    &__prompt
-      font-style: italic
-      color: var(--color-gray)
-      margin-top: 2rem
-
-    &__dest
-      width: 1rem
-      height: 1rem
-      margin-top: 1rem
-
-  .back-to-main
-    display: flex
-    flex-direction: column
-    align-items: center
-    margin-top: 1rem
-
-    &__link
-      @include mixin.link-main
-
-      @override
-        padding: 0.25rem
-        text-decoration: none
+      @include override {
+        padding: 0.25rem;
+        text-decoration: none;
+      }
+    }
+  }
 </style>

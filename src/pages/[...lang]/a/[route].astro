@@ -11,7 +11,7 @@ export const getStaticPaths = (async () => {
     return {
       params: {
         lang: undef(post.data.lang ?? defaultLang, defaultLang),
-        route: post.data.route
+        route: post.data.route,
       },
       props: {
         entry: post,

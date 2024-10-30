@@ -32,28 +32,31 @@ export const getStaticPaths = (async () => {
     })
   })
 
-  return postsByTag.entries().map(([key, posts]) => {
-    const total = posts.length
-    const count = Math.ceil(total / pageSize)
+  return postsByTag
+    .entries()
+    .map(([key, posts]) => {
+      const total = posts.length
+      const count = Math.ceil(total / pageSize)
 
-    return range(count).map((idx) => {
-      const page = idx + 1
+      return range(count).map((idx) => {
+        const page = idx + 1
 
-      return {
-        params: {
-          lang: undef(key.code, defaultLang),
-          page: undef(page, 1),
-          tag: tagify(key.tag),
-        },
-        props: {
-          tag: key.tag,
-          posts: paginate(posts, page),
-          total,
-          page: createPaging(page, count),
-        },
-      }
+        return {
+          params: {
+            lang: undef(key.code, defaultLang),
+            page: undef(page, 1),
+            tag: tagify(key.tag),
+          },
+          props: {
+            tag: key.tag,
+            posts: paginate(posts, page),
+            total,
+            page: createPaging(page, count),
+          },
+        }
+      })
     })
-  }).flat()
+    .flat()
 }) satisfies GetStaticPaths
 
 type Props = InferProps<typeof getStaticPaths>
