@@ -1,5 +1,5 @@
 ---
-import './article.sass'
+import './article.scss'
 import type { CollectionEntry } from 'astro:content'
 import Base from './base.astro'
 import { getLangCode, getRoot, useLang, langTags } from '@/i18n'
@@ -43,9 +43,6 @@ const t = useLang(code)
 const shouldLoadGiscus = import.meta.env.PROD
 
 const { Content, headings } = await render()
-
-// Fix https://github.com/withastro/astro/issues/7761.
-export const addsToHead = true
 ---
 
 <Base title={`${title} | i'D Blog`}>

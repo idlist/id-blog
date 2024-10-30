@@ -16,27 +16,31 @@ const title = Astro.props.title ?? t('a.warning')
     <img class="article-warning__title-icon" src={icon_warning.src} alt="warning icon" />
     <div class="article-warning__title-text">{title}</div>
   </div>
-  <slot></slot>
+  <slot />
 </div>
 
-<style lang="sass">
-  .article-warning
-    padding: 0.75rem 1rem
-    color: var(--color-yellow)
-    background-color: var(--color-yellow-light-2)
-    border-radius: 0.25rem
-    border-left: 4px solid var(--color-yellow-light)
+<style lang="scss">
+  .article-warning {
+    padding: 0.75rem 1rem;
+    color: var(--color-yellow);
+    background-color: var(--color-yellow-light-2);
+    border-radius: 0.25rem;
+    border-left: 4px solid var(--color-yellow-light);
 
-    &__title
-      display: flex
-      align-items: center
-      column-gap: 0.5rem
+    &__title {
+      display: flex;
+      align-items: center;
+      column-gap: 0.5rem;
+    }
 
-    &__title-icon
-      margin: 0
-      width: 1rem
-      height: 1rem
+    &__title-icon {
+      margin: 0;
+      width: 1rem;
+      height: 1rem;
+    }
 
-    &__title-text
-      font-weight: bold
+    &__title-text {
+      font-weight: bold;
+    }
+  }
 </style>

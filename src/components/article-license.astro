@@ -29,13 +29,15 @@ const info = license[chosen]
   <a class="article-license__link" href={info.link} target="_blank" rel="noopener noreferer">{chosen}</a>
 </div>
 
-<style lang="sass">
-  @use '@/styles/mixins' as mixins
-  @use '@/layout/article' as article
+<style lang="scss">
+  @use '@/styles/mixin' as mixin;
+  @use '@/layout/article' as article;
 
-  .article-license
-    @include article.article-item
+  .article-license {
+    @include article.article-item;
 
-    &__link
-      @include mixins.link-sub
+    &__link {
+      @include mixin.link-sub;
+    }
+  }
 </style>

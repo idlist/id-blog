@@ -10,18 +10,17 @@ const t = useLang(Astro.url)
   <span>{t('ui.last-update')}{update}</span>
 </div>
 
-<style lang="sass">
-  @use '@/styles/variables' as vars
+<style lang="scss">
+  .last-update {
+    display: grid;
+    align-items: middle;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
 
-  .last-update
-    display: grid
-    align-items: middle
-    justify-content: center
-    padding: 0.25rem
-    border-radius: 0.25rem
-
-    text-align: center
-    font-size: 0.875rem
-    background-color: var(--color-card)
-    color: var(--color-gray)
+    text-align: center;
+    font-size: 0.875rem;
+    background-color: var(--color-card);
+    color: var(--color-gray);
+  }
 </style>

@@ -1,0 +1,11 @@
+@mixin override {
+  & {
+    @content;
+  }
+}
+
+@mixin nestable {
+  & {
+    @content;
+  }
+}

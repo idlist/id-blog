@@ -59,42 +59,59 @@ filtered.forEach((heading, i) => {
   }
 </div>
 
-<style lang="sass">
-  @use '@/styles/mixins' as mixins
+<style lang="scss">
+  @use '@/styles/utils' as *;
+  @use '@/styles/mixin' as mixin;
 
-  .article-toc
-    margin: 0.5rem 0
-    padding: 0.125rem 0
-    border: 1px solid var(--color-gray-light)
-    border-radius: 0.25rem
+  .article-toc {
+    margin: 0.5rem 0;
+    padding: 0.125rem 0;
+    border: 1px solid var(--color-gray-light);
+    border-radius: 0.25rem;
 
-    &__title
-      padding: 0.125rem 0.5rem
-      color: var(--color-gray-light)
-      font-style: italic
+    &__title {
+      padding: 0.125rem 0.5rem;
+      color: var(--color-gray-light);
+      font-style: italic;
+    }
 
-    &__l1, &__l2, &__l3, &__l4, &__l5, &__l6
-      @include mixins.link-sub
+    &__l1,
+    &__l2,
+    &__l3,
+    &__l4,
+    &__l5,
+    &__l6 {
+      @include mixin.link-sub;
 
-      display: block
-      padding: 0.125rem 0.5rem
+      @include override {
+        display: block;
+        padding: 0.125rem 0.5rem;
+      }
+    }
 
-    &__l2
-      margin-left: 1rem
+    &__l2 {
+      margin-left: 1rem;
+    }
 
-    &__l3
-      margin-left: 2rem
+    &__l3 {
+      margin-left: 2rem;
+    }
 
-    &__l4
-      margin-left: 3rem
+    &__l4 {
+      margin-left: 3rem;
+    }
 
-    &__l5
-      margin-left: 4rem
+    &__l5 {
+      margin-left: 4rem;
+    }
 
-    &__l6
-      margin-left: 5rem
+    &__l6 {
+      margin-left: 5rem;
+    }
 
-    &__no-toc
-      padding: 0 0.5rem
-      color: var(--color-gray)
+    &__no-toc {
+      padding: 0 0.5rem;
+      color: var(--color-gray);
+    }
+  }
 </style>

@@ -1,6 +1,6 @@
 ---
-import '@/styles/globals.sass'
-import '@/layout/base.sass'
+import '@/styles/globals.scss'
+import '@/layout/base.scss'
 import TileWall from '@/components/tile-wall/tile-wall.vue'
 import { getLangCode, getRoot, useLang, langTags } from '@/i18n'
 
@@ -24,7 +24,7 @@ const t = useLang(code)
 
 <html lang={langTags[code]}>
   <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EYWN5DJ2YP"></script>
+    <script is:inline src="https://www.googletagmanager.com/gtag/js?id=G-EYWN5DJ2YP"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || []
       function gtag(...rest) {

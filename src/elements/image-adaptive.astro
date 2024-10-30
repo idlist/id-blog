@@ -9,14 +9,7 @@ interface Props {
   [props: string]: unknown
 }
 
-const {
-  class: className,
-  dw: dwRaw,
-  dh: dhRaw,
-  mw: mwRaw,
-  mh: mhRaw,
-  ...attrs
-} = Astro.props
+const { class: className, dw: dwRaw, dh: dhRaw, mw: mwRaw, mh: mhRaw, ...attrs } = Astro.props
 
 const dw = dwRaw ?? '100%'
 const dh = dhRaw ?? 'auto'
@@ -28,19 +21,20 @@ const mh = mhRaw ?? 'auto'
   <img class:list={['image-adaptive', className]} {...attrs} />
 </p>
 
-<style lang="sass" define:vars={{ dw, dh, mw, mh }}>
-  @use '@/styles/variables' as vars
+<style lang="scss" define:vars={{ dw, dh, mw, mh }}>
+  .image-adaptive__wrapper {
+    display: flex;
+    justify-content: center;
+  }
 
-  .image-adaptive__wrapper
-    display: flex
-    justify-content: center
+  .image-adaptive {
+    width: var(--dw);
+    height: var(--dh);
+    margin: 0;
 
-  .image-adaptive
-    width: var(--dw)
-    height: var(--dh)
-    margin: 0
-
-    @media (max-width: vars.$screen-md)
-      width: var(--mw)
-      height: var(--mh)
+    @media (max-width: $screen-md) {
+      width: var(--mw);
+      height: var(--mh);
+    }
+  }
 </style>

@@ -20,8 +20,8 @@ import icon_destination from '@/assets/icons/destination.svg'
 </Base>
 
 <style lang="sass">
-  @use '@/styles/variables' as vars
-  @use '@/styles/mixins' as mixins
+  @use '@/styles/vars' as vars
+  @use '@/styles/mixin' as mixin
 
   .container
     position: fixed
@@ -75,7 +75,9 @@ import icon_destination from '@/assets/icons/destination.svg'
     margin-top: 1rem
 
     &__link
-      @include mixins.link-main
-      padding: 0.25rem
-      text-decoration: none
+      @include mixin.link-main
+
+      @override
+        padding: 0.25rem
+        text-decoration: none
 </style>

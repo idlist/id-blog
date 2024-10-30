@@ -42,37 +42,44 @@ const hasTags = Object.keys(tags).length
   </div>
 </div>
 
-<style lang="sass">
-  @use '@/styles/variables' as vars
-  @use '@/styles/mixins' as mixins
+<style lang="scss">
+  @use '@/styles/utils' as *;
+  @use '@/styles/mixin' as mixin;
 
-  .tags
-    margin: 1rem 0
+  .tags {
+    margin: 1rem 0;
 
-    &__title
-      margin-bottom: 0.25rem
+    &__title {
+      margin-bottom: 0.25rem;
 
-      font-size: 1.5rem
-      font-weight: bold
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
 
-    &__list
-      display: flex
-      flex-wrap: wrap
-      row-gap: 0.125rem
-      column-gap: 0.75rem
+    &__list {
+      display: flex;
+      flex-wrap: wrap;
+      row-gap: 0.125rem;
+      column-gap: 0.75rem;
+    }
 
-    &__item
-      display: flex
-      align-items: center
-      column-gap: 0.25rem
-      word-break: break-word
+    &__item {
+      @include mixin.link-sub;
 
-    &__name
-      @include mixins.link-sub
+      @include override {
+        display: flex;
+        align-items: center;
+        column-gap: 0.25rem;
+        word-break: break-word;
+      }
+    }
 
-    &__count
-      @include mixins.post-count
+    &__count {
+      @include mixin.post-count;
+    }
 
-    &__no-tags
-      color: var(--color-gray-light)
+    &__no-tags {
+      color: var(--color-gray-light);
+    }
+  }
 </style>

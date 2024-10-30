@@ -4,9 +4,9 @@ import vue from '@astrojs/vue'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
+import autoprefixer from 'autoprefixer'
 import rehypeExternalLinks from 'rehype-external-links'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import adds2head from 'astro-adds-to-head'
 
 // https://astro.build/config
 export default defineConfig({
@@ -33,12 +33,26 @@ export default defineConfig({
       ],
     ],
   },
+  vite: {
+    css: {
+      postcss: {
+        plugins: [
+          autoprefixer,
+        ],
+      },
+      preprocessorOptions: {
+        sass: {
+          api: 'modern-compiler',
+        },
+        scss: {
+          api: 'modern-compiler',
+        },
+      },
+    },
+  },
   integrations: [
     vue(),
     mdx(),
     sitemap(),
-    // https://github.com/lilnasy/gratelets/tree/main/packages/adds-to-head
-    // Fix https://github.com/withastro/astro/issues/7761.
-    adds2head(),
   ],
 })

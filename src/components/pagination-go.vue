@@ -44,27 +44,33 @@ const toPage = (e: MouseEvent) => {
   </div>
 </template>
 
-<style lang="sass" scoped>
-@use '@/styles/mixins' as mixins
+<style lang="scss" scoped>
+@use '@/styles/utils' as *;
+@use '@/styles/mixin' as mixin;
 
-.pagination-go
-  display: flex
-  align-items: center
-  justify-content: center
-  column-gap: 0.5rem
-  user-select: none
+.pagination-go {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.5rem;
+  user-select: none;
+}
 
-.pagination-go__input
-  border: none
-  border-bottom: 1px solid var(--color-black)
+.pagination-go__input {
+  border: none;
+  border-bottom: 1px solid var(--color-black);
 
-  width: 2rem
+  width: 2rem;
 
-  text-align: center
-  line-height: 1.5
+  text-align: center;
+  line-height: 1.5;
+}
 
-.pagination-go__text
-  @include mixins.btn-pagination
+.pagination-go__text {
+  @include mixin.btn-pagination;
 
-  font-size: 0.875rem
+  @include override {
+    font-size: 0.875rem;
+  }
+}
 </style>
