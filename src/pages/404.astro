@@ -5,7 +5,7 @@ import icon_destination from '@/assets/icons/destination.svg'
 ---
 
 <Base title="404 | i'D Blog">
-  <div class="container">
+  <div class="four-o-four__container">
     <div class="four-o-four">
       <img class="four-o-four__image" src={image_404.src} alt="404" />
       <div class="four-o-four__prompt">You come to an unknown place...</div>
@@ -20,11 +20,9 @@ import icon_destination from '@/assets/icons/destination.svg'
 </Base>
 
 <style lang="scss">
-  @use '@/styles/vars' as *;
-  @use '@/styles/utils' as *;
-  @use '@/styles/mixin' as mixin;
+  @use '@/styles/scss' as *;
 
-  .container {
+  .four-o-four__container {
     position: fixed;
     top: 3rem;
     bottom: 0;
@@ -41,6 +39,7 @@ import icon_destination from '@/assets/icons/destination.svg'
       padding: 0.5rem;
     }
   }
+
   .four-o-four {
     width: 100%;
     max-width: $content-width;
@@ -72,6 +71,7 @@ import icon_destination from '@/assets/icons/destination.svg'
       margin-top: 1rem;
     }
   }
+
   .back-to-main {
     display: flex;
     flex-direction: column;
@@ -79,12 +79,8 @@ import icon_destination from '@/assets/icons/destination.svg'
     margin-top: 1rem;
 
     &__link {
-      @include mixin.link-main;
-
-      @include override {
-        padding: 0.25rem;
-        text-decoration: none;
-      }
+      padding: 0.25rem;
+      text-decoration: none;
     }
   }
 </style>

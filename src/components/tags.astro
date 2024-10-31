@@ -30,9 +30,9 @@ const hasTags = Object.keys(tags).length
         Object.entries(tags)
           .sort((a, b) => a[0].localeCompare(b[0]))
           .map(([tag, count]) => (
-            <a class="tags__item" href={`${root}tags/${tagify(tag)}`}>
+            <a class="link-sub tags__item" href={`${root}tags/${tagify(tag)}`}>
               <span class="tags__name">{tag}</span>
-              <span class="tags__count">{count}</span>
+              <span class="post-count">{count}</span>
             </a>
           ))
       ) : (
@@ -43,9 +43,6 @@ const hasTags = Object.keys(tags).length
 </div>
 
 <style lang="scss">
-  @use '@/styles/utils' as *;
-  @use '@/styles/mixin' as mixin;
-
   .tags {
     margin: 1rem 0;
 
@@ -64,18 +61,10 @@ const hasTags = Object.keys(tags).length
     }
 
     &__item {
-      @include mixin.link-sub;
-
-      @include override {
-        display: flex;
-        align-items: center;
-        column-gap: 0.25rem;
-        word-break: break-word;
-      }
-    }
-
-    &__count {
-      @include mixin.post-count;
+      display: flex;
+      align-items: center;
+      column-gap: 0.25rem;
+      word-break: break-word;
     }
 
     &__no-tags {

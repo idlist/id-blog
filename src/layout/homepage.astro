@@ -2,7 +2,7 @@
 import type { CollectionEntry } from 'astro:content'
 import './homepage.scss'
 import Base from './base.astro'
-import Container from '@/components/container.astro'
+import PageContainer from '@/components/page-container.astro'
 import Contacts from '@/components/contacts.astro'
 import Tags from '@/components/tags.astro'
 import Timeline from '@/components/timeline.astro'
@@ -30,7 +30,7 @@ const t = useLang(Astro.url)
 ---
 
 <Base title="Reinventing the Wheel | i'D Blog">
-  <Container>
+  <PageContainer>
     <div class="homepage__container">
       <div class="homepage__info">
         <div class="homepage-me">
@@ -81,5 +81,5 @@ const t = useLang(Astro.url)
         }
       </div>
     </div>
-  </Container>
+  </PageContainer>
 </Base>

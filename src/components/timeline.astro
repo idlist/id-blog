@@ -39,15 +39,15 @@ const hasDate = Object.keys(stats).length
           <>
             <div class="timeline__year">
               <span class="timeline__year-name">{year}</span>
-              <span class="timeline__year-count">{sum(Object.values(months))}</span>
+              <span class="post-count timeline__year-count">{sum(Object.values(months))}</span>
             </div>
             <div class="timeline__list">
               {Object.entries(months)
                 .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
                 .map(([month, count]) => (
-                  <a class="timeline__item" href={`${root}timeline/${ymKey(year, month)}`}>
+                  <a class="link-sub timeline__item" href={`${root}timeline/${ymKey(year, month)}`}>
                     <span class="timeline__month">{month}</span>
-                    <span class="timeline__count">{count}</span>
+                    <span class="post-count">{count}</span>
                   </a>
                 ))}
             </div>
@@ -60,9 +60,6 @@ const hasDate = Object.keys(stats).length
 </div>
 
 <style lang="scss">
-  @use '@/styles/utils' as *;
-  @use '@/styles/mixin' as mixin;
-
   .timeline {
     margin: 1rem 0;
 
@@ -86,13 +83,9 @@ const hasDate = Object.keys(stats).length
     }
 
     &__year-count {
-      @include mixin.post-count;
-
-      @include override {
-        color: var(--color-green);
-        border: 1px solid var(--color-green);
-        background: none;
-      }
+      color: var(--color-green);
+      border: 1px solid var(--color-green);
+      background: none;
     }
 
     &__list {
@@ -103,18 +96,10 @@ const hasDate = Object.keys(stats).length
     }
 
     &__item {
-      @include mixin.link-sub;
-
-      @include override {
-        display: flex;
-        align-items: center;
-        column-gap: 0.25rem;
-        word-break: break-word;
-      }
-    }
-
-    &__count {
-      @include mixin.post-count;
+      display: flex;
+      align-items: center;
+      column-gap: 0.25rem;
+      word-break: break-word;
     }
 
     &__no-timeline {

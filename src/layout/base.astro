@@ -40,58 +40,58 @@ const t = useLang(code)
   </head>
 
   <body>
-    <a class="menu-expander" data-icon-menu={icon_menu.src} data-icon-close={icon_close.src}>
-      <img class="menu-expander__icon" src={icon_menu.src} alt="menu toggler" />
+    <a class="btn-corner nav-fs-expander" data-icon-menu={icon_menu.src} data-icon-close={icon_close.src}>
+      <img class="icon-md nav-fs-expander__icon" src={icon_menu.src} alt="menu toggler" />
     </a>
 
-    <div class="menu-fs hidden">
-      <div class="menu-fs__container">
-        <a class="menu-fs__link" href="https://idl.ist/" target="_blank">
-          <img class="menu-fs__link-external" src={icon_external.src} alt="external" />
-          <span class="menu-fs__link-text">{t('ui.to-index')}</span>
+    <div class="nav-fs hidden">
+      <div class="nav-fs__container">
+        <a class="nav-item nav-link" href="https://idl.ist/" target="_blank">
+          <img class="icon-link" src={icon_external.src} alt="external" />
+          <span>{t('ui.to-index')}</span>
         </a>
-        <hr class="menu-fs__hr" />
-        <div class="menu-fs__lang">
-          <img class="menu-fs__lang-icon" src={icon_locales_mobile.src} alt="locales" />
+        <hr class="nav-hr" />
+        <div class="nav-item nav-subtitle">
+          <img class="icon-link" src={icon_locales_mobile.src} alt="locales" />
           <span>{t('ui.language')}</span>
         </div>
-        <a class="menu-fs__link" href="/">简体中文</a>
-        <a class="menu-fs__link" href="/en/">English</a>
-        <a class="menu-fs__link" href="/ja/">日本語</a>
-        <hr class="menu-fs__hr" />
-        <a class="menu-fs__link" href={root}>{t('ui.articles')}</a>
-        <hr class="menu-fs__hr" />
+        <a class="nav-item nav-link" href="/">简体中文</a>
+        <a class="nav-item nav-link" href="/en/">English</a>
+        <a class="nav-item nav-link" href="/ja/">日本語</a>
+        <hr class="nav-hr" />
+        <a class="nav-item nav-link" href={root}>{t('ui.articles')}</a>
+        <hr class="nav-hr" />
       </div>
     </div>
 
-    <header>
-      <div class="header-container">
-        <div class="header">
-          <img class="header__banner" src={banner.src} alt="banner" />
-          <hr class="header__divider" />
+    <nav class="nav">
+      <div class="nav__container">
+        <div class="nav-header">
+          <img class="banner" src={banner.src} alt="banner" />
+          <hr class="divider" />
           <div>i'D Blog</div>
         </div>
 
-        <div class="menu-header">
-          <a class="menu-link" href={root}>{t('ui.articles')}</a>
-          <div class="menu-link__dropdown">
-            <div class="menu-link__lang">
-              <img class="menu-link__lang-icon" src={icon_locales.src} alt="locales" />
+        <div class="nav-menu">
+          <a class="nav-link" href={root}>{t('ui.articles')}</a>
+          <div class="nav-link dropdown">
+            <div class="lang">
+              <img class="icon-link" src={icon_locales.src} alt="locales" />
               <span>{t('ui.language')}</span>
             </div>
-            <div class="menu-link__dropdown-content">
-              <a class="menu-link__dropdown-link" href="/">简体中文</a>
-              <a class="menu-link__dropdown-link" href="/en/">English</a>
-              <a class="menu-link__dropdown-link" href="/ja/">日本語</a>
+            <div class="dropdown-list">
+              <a class="nav-link dropdown-link" href="/">简体中文</a>
+              <a class="nav-link dropdown-link" href="/en/">English</a>
+              <a class="nav-link dropdown-link" href="/ja/">日本語</a>
             </div>
           </div>
-          <a class="menu-link" href="https://idl.ist/" target="_blank">
-            <img class="menu-link__external" src={icon_external.src} alt="external" />
+          <a class="nav-link" href="https://idl.ist/" target="_blank">
+            <img class="icon-link" src={icon_external.src} alt="external" />
             <span>{t('ui.to-index')}</span>
           </a>
         </div>
       </div>
-    </header>
+    </nav>
 
     <slot />
 
@@ -100,9 +100,9 @@ const t = useLang(code)
 </html>
 
 <script>
-  const Menu = document.querySelector('.menu-expander') as HTMLLinkElement
-  const MenuIcon = Menu.querySelector('.menu-expander__icon') as HTMLImageElement
-  const MenuDropdown = document.querySelector('.menu-fs') as HTMLElement
+  const Menu = document.querySelector('.nav-fs-expander') as HTMLLinkElement
+  const MenuIcon = Menu.querySelector('.nav-fs-expander__icon') as HTMLImageElement
+  const MenuDropdown = document.querySelector('.nav-fs') as HTMLElement
   const iconMenu = Menu.dataset.iconMenu ?? ''
   const iconClose = Menu.dataset.iconClose ?? ''
 

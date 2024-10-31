@@ -15,15 +15,13 @@ const pageRoute = (page: number) => (page === 1 ? '' : `posts/${page}`)
 ---
 
 <div class="pagination">
-  <a class="pagination__button" href={`${root}${pageRoute(page.prev)}`}>&lt;</a>
-  <div class="pagination__current">{page.current}</div>
-  <a class="pagination__button" href={`${root}${pageRoute(page.next)}`}>&gt;</a>
+  <a class="btn-pagination" href={`${root}${pageRoute(page.prev)}`}>&lt;</a>
+  <div class="icon-lg pagination__current">{page.current}</div>
+  <a class="btn-pagination" href={`${root}${pageRoute(page.next)}`}>&gt;</a>
   <PaginationGo client:load view="posts" code={code} last={page.last} />
 </div>
 
 <style lang="scss">
-  @use '@/styles/mixin' as mixin;
-
   .pagination {
     display: flex;
     align-items: center;
@@ -33,23 +31,16 @@ const pageRoute = (page: number) => (page === 1 ? '' : `posts/${page}`)
     width: 100%;
     margin: 0.5rem 0;
     user-select: none;
+  }
 
-    &__button {
-      @include mixin.btn-pagination;
-    }
+  .pagination__current {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    &__current {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      width: 2rem;
-      height: 2rem;
-
-      color: var(--color-white);
-      background-color: var(--color-black);
-      border: 1px solid var(--color-black);
-      border-radius: 50%;
-    }
+    color: var(--color-white);
+    background-color: var(--color-black);
+    border: 1px solid var(--color-black);
+    border-radius: 50%;
   }
 </style>

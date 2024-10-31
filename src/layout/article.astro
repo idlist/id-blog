@@ -6,7 +6,7 @@ import { getLangCode, getRoot, useLang, langTags } from '@/i18n'
 import { ymdFormat, tagify } from '@/utils/server'
 import countWord from '@/utils/word-count'
 
-import Container from '@/components/container.astro'
+import PageContainer from '@/components/page-container.astro'
 import ArticleLicense from '@/components/article-license.astro'
 import TableOfContents from '@/components/table-of-contents.astro'
 import LastUpdate from '@/components/last-update.astro'
@@ -48,7 +48,7 @@ const { Content, headings } = await render(entry)
 <Base title={`${title} | i'D Blog`}>
   <div id="top-of-article"></div>
 
-  <Container>
+  <PageContainer>
     <div class="article__container">
       <div>
         <article>
@@ -65,6 +65,7 @@ const { Content, headings } = await render(entry)
               <div class="giscus-blank" />
 
               <script
+                is:inline
                 src="https://giscus.app/client.js"
                 data-repo="idlist/id-blog-comments"
                 data-repo-id="R_kgDOKQ5wOA"
@@ -92,37 +93,37 @@ const { Content, headings } = await render(entry)
 
       <div class="article__aside">
         <div class="article__sticky">
-          <a class="article-share" data-title={title}>
-            <img class="article-share__icon" src={icon_share.src} alt="share" />
+          <a class="article-info link-sub article-share" data-title={title}>
+            <img class="icon-md article-share__icon" src={icon_share.src} alt="share" />
             <span>{t('ui.share-article')}</span>
             <div class="article-share__popup hidden">{t('ui.share-article-succeed')}</div>
           </a>
 
-          <div class="article-item">
-            <img class="article-item__icon" src={icon_text.src} alt="word count" />
+          <div class="article-info">
+            <img class="icon-md" src={icon_text.src} alt="word count" />
             <span>{t('ui.word-count', words)}</span>
           </div>
 
-          <div class="article-item">
-            <img class="article-item__icon" src={icon_time.src} alt="date" />
+          <div class="article-info">
+            <img class="icon-md" src={icon_time.src} alt="date" />
             <time datetime={date.toUTCString()}>{ymdFormat(date)}</time>
           </div>
 
           {
             data.update && (
-              <div class="article-item">
-                <img class="article-item__icon" src={icon_update.src} alt="update" />
+              <div class="article-info">
+                <img class="icon-md" src={icon_update.src} alt="update" />
                 <time datetime={update.toUTCString()}>{ymdFormat(update)}</time>
               </div>
             )
           }
 
-          <div class="article-tags">
-            <img class="article-tags__icon" src={icon_tags.src} alt="tags" />
+          <div class="article-info article-tags">
+            <img class="icon-md" src={icon_tags.src} alt="tags" />
             {
               tags.length ? (
                 tags.map((tag) => (
-                  <a class="article-tags__name" href={`${root}tags/${tagify(tag)}`}>
+                  <a class="link-sub article-tags__name" href={`${root}tags/${tagify(tag)}`}>
                     {tag}
                   </a>
                 ))
@@ -136,8 +137,8 @@ const { Content, headings } = await render(entry)
 
           <TableOfContents headings={headings} />
 
-          <a class="article-back" href="#top-of-article">
-            <img class="article-back__icon" src={icon_back_to_top.src} alt="back to top" />
+          <a class="article-info link-sub article-back" href="#top-of-article">
+            <img class="icon-md" src={icon_back_to_top.src} alt="back to top" />
             <span>{t('ui.back-to-top')}</span>
           </a>
 
@@ -146,16 +147,16 @@ const { Content, headings } = await render(entry)
           </div>
 
           <div class="article-star">
-            <img class="article-star__icon" src={icon_star.src} alt="star" />
+            <img class="icon-lg" src={icon_star.src} alt="star" />
           </div>
         </div>
       </div>
     </div>
 
-    <a class="article-back--mobile" href="#top-of-article">
-      <img class="article-back--mobile__icon" src={icon_back_to_top_mobile.src} alt="back to top" />
+    <a class="btn-corner article-back--mobile" href="#top-of-article">
+      <img class="icon-lg" src={icon_back_to_top_mobile.src} alt="back to top" />
     </a>
-  </Container>
+  </PageContainer>
 
   <div class="article__mobile-blank"></div>
 </Base>

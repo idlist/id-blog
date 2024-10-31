@@ -49,7 +49,7 @@ filtered.forEach((heading, i) => {
   {
     filtered.length ? (
       filtered.map((h) => (
-        <a href={`#${h.slug}`} class={`article-toc__l${h.depth}`}>
+        <a href={`#${h.slug}`} class:list={['link-sub', `article-toc__l${h.depth}`]}>
           {h.text}
         </a>
       ))
@@ -60,9 +60,6 @@ filtered.forEach((heading, i) => {
 </div>
 
 <style lang="scss">
-  @use '@/styles/utils' as *;
-  @use '@/styles/mixin' as mixin;
-
   .article-toc {
     margin: 0.5rem 0;
     padding: 0.125rem 0;
@@ -81,12 +78,8 @@ filtered.forEach((heading, i) => {
     &__l4,
     &__l5,
     &__l6 {
-      @include mixin.link-sub;
-
-      @include override {
-        display: block;
-        padding: 0.125rem 0.5rem;
-      }
+      display: block;
+      padding: 0.125rem 0.5rem;
     }
 
     &__l2 {

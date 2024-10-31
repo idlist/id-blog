@@ -2,7 +2,7 @@
 import './category.scss'
 import type { CollectionEntry } from 'astro:content'
 import Base from './base.astro'
-import Container from '@/components/container.astro'
+import PageContainer from '@/components/page-container.astro'
 import Tags from '@/components/tags.astro'
 import Timeline from '@/components/timeline.astro'
 import Pagination from '@/components/pagination.astro'
@@ -26,7 +26,7 @@ const t = useLang(Astro.url)
 ---
 
 <Base title={`${category}: ${value} | i'D Blog`}>
-  <Container>
+  <PageContainer>
     <div class="category__container">
       <div class="category__sidebar">
         <div class="category-title">
@@ -63,5 +63,5 @@ const t = useLang(Astro.url)
         <Pagination page={page} />
       </div>
     </div>
-  </Container>
+  </PageContainer>
 </Base>

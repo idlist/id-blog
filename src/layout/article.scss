@@ -1,6 +1,4 @@
-@use '../styles/vars' as *;
-@use '../styles/utils' as *;
-@use '../styles/mixin' as mixin;
+@use '../styles/scss' as *;
 
 #top-of-article {
   position: absolute;
@@ -76,57 +74,10 @@
   }
 }
 
-@mixin article-item {
-  @include nestable {
-    display: flex;
-    align-items: center;
-    column-gap: 0.5rem;
-    margin: 0.5rem 0;
-
-    &__icon {
-      width: 1.5rem;
-      height: 1.5rem;
-    }
-  }
-}
-
-.article-item {
-  @include article-item;
-
-  &__link {
-    @include mixin.link-sub;
-  }
-}
-
-.article-tags {
-  @include article-item;
-
-  @include override {
-    flex-wrap: wrap;
-  }
-
-  &__name {
-    @include mixin.link-sub;
-
-    @include override {
-      display: block;
-    }
-  }
-
-  &__no-tags {
-    color: var(--color-gray-light);
-  }
-}
-
 .article-share {
-  @include article-item;
-  @include mixin.link-sub;
-
-  @include override {
-    position: relative;
-    text-decoration: underline;
-    cursor: pointer;
-  }
+  position: relative;
+  text-decoration: underline;
+  cursor: pointer;
 
   &__popup {
     position: absolute;
@@ -144,30 +95,30 @@
   }
 }
 
-.article-back {
-  @include article-item;
-  @include mixin.link-sub;
+.article-tags {
+  flex-wrap: wrap;
 
+  &__name {
+    display: block;
+  }
+
+  &__no-tags {
+    color: var(--color-gray-light);
+  }
+}
+
+.article-back {
   @media (max-width: $screen-md) {
     display: none;
   }
 }
 
 .article-back--mobile {
-  @include mixin.btn-bottom;
+  bottom: 5rem;
+  z-index: 10;
 
-  @include override {
-    bottom: 5rem;
-    z-index: 10;
-
-    @media (min-width: $screen-md) {
-      display: none;
-    }
-
-    &__icon {
-      height: 1.75rem;
-      width: 1.75rem;
-    }
+  @media (min-width: $screen-md) {
+    display: none;
   }
 }
 
@@ -180,11 +131,6 @@
 
   @media (min-width: $screen-md) {
     display: none;
-  }
-
-  &__icon {
-    height: 2rem;
-    width: 2rem;
   }
 }
 
@@ -258,14 +204,6 @@ article {
   h6 {
     font-size: 1rem;
     color: var(--color-gray-light);
-  }
-
-  a {
-    @include mixin.link-main;
-
-    @include override {
-      color: var(--color-green);
-    }
   }
 
   p,

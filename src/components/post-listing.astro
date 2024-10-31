@@ -27,16 +27,16 @@ const t = useLang(code)
 
   <div class="post-meta">
     <div class="post-time">
-      <img class="post-time__icon" src={icon_time.src} alt="time" />
+      <img class="icon-sm" src={icon_time.src} alt="time" />
       <time datetime={date.toISOString()}>{ymdFormat(date)}</time>
     </div>
 
     <div class="post-tags">
-      <img class="post-tags__icon" src={icon_tags.src} alt="tags" />
+      <img class="icon-sm" src={icon_tags.src} alt="tags" />
       {
         tags.length ? (
           tags.map((tag) => (
-            <a class="post-tags__item" href={`${root}tags/${tagify(tag)}`}>
+            <a class="link-sub post-tags__item" href={`${root}tags/${tagify(tag)}`}>
               {tag}
             </a>
           ))
@@ -58,9 +58,8 @@ const t = useLang(code)
 </div>
 
 <style lang="scss">
-  @use '@/styles/vars' as *;
-  @use '@/styles/utils' as *;
-  @use '@/styles/mixin' as mixin;
+  @use '@/styles/scss' as *;
+
   .post {
     margin: 2rem 0;
 
@@ -73,14 +72,10 @@ const t = useLang(code)
     }
 
     &__title {
-      @include mixin.link-main;
-
-      @include override {
-        font-size: 1.5rem;
-        font-weight: normal;
-        margin: 0;
-        margin-bottom: 0.125rem;
-      }
+      font-size: 1.5rem;
+      font-weight: normal;
+      margin: 0;
+      margin-bottom: 0.125rem;
     }
   }
 
@@ -100,11 +95,6 @@ const t = useLang(code)
     display: flex;
     align-items: center;
     column-gap: 0.5rem;
-
-    &__icon {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
   }
 
   .post-tags {
@@ -113,17 +103,9 @@ const t = useLang(code)
     column-gap: 0.5rem;
     flex-wrap: wrap;
 
-    &__icon {
-      @extend .post-time__icon;
-    }
-
     &__item {
-      @include mixin.link-sub;
-
-      @include override {
-        line-height: 1.25;
-        word-break: break-word;
-      }
+      line-height: 1.25;
+      word-break: break-word;
     }
 
     &__no-tags {

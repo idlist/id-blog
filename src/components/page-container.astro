@@ -1,13 +1,13 @@
-<div class="container">
-  <div class="container__inner">
+<div class="page-container">
+  <div class="inner">
     <slot />
   </div>
 </div>
 
 <style lang="scss">
-  @use '@/styles/vars' as *;
+  @use '@/styles/scss' as *;
 
-  .container {
+  .page-container {
     display: flex;
     justify-content: center;
 
@@ -18,13 +18,13 @@
       margin: 0.5rem;
       margin-top: 3.5rem;
     }
-  }
 
-  .container__inner {
-    width: 100%;
-    max-width: $content-width;
+    .inner {
+      width: 100%;
+      max-width: $content-width;
 
-    background-color: #fff;
-    box-shadow: 0 0 10px #ccc;
+      background-color: #fff;
+      box-shadow: 0 0 10px #ccc;
+    }
   }
 </style>

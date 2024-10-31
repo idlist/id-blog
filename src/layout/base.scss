@@ -1,40 +1,28 @@
-@use '@/styles/vars' as *;
-@use '@/styles/utils' as *;
-@use '@/styles/mixin' as mixin;
+@use '@/styles/reuse' as *;
+@use '@/styles/scss' as *;
 
-@mixin icon-in-link {
-  @include nestable {
-    width: 1rem;
-    height: 1rem;
+.icon-link {
+  width: 1rem;
+  height: 1rem;
 
-    margin-right: 0.375rem;
-  }
+  margin-right: 0.375rem;
 }
 
-.menu-expander {
-  @include mixin.btn-bottom;
+.nav-fs-expander {
+  bottom: 1rem;
+  z-index: 50;
+  user-select: none;
 
-  @include override {
-    bottom: 1rem;
-    z-index: 50;
-    user-select: none;
-
-    @media (min-width: $screen-md) {
-      display: none;
-    }
+  @media (min-width: $screen-md) {
+    display: none;
   }
 
   &:active {
     background-color: var(--color-gray);
   }
-
-  &__icon {
-    height: 1.5rem;
-    width: 1.5rem;
-  }
 }
 
-.menu-fs {
+.nav-fs {
   position: fixed;
   left: 0;
   bottom: 0;
@@ -61,49 +49,31 @@
     padding-right: 4.5rem;
   }
 
-  &__lang {
+  .nav-item {
     display: flex;
     align-items: center;
     justify-content: right;
 
-    padding: 0.75rem;
+    padding: 0.50rem;
+    margin: 0.25rem;
+    border-radius: 0.25rem;
 
-    color: var(--color-gray-light-2);
+    color: var(--color-white)
   }
 
-  &__lang-icon {
-    @include icon-in-link;
+  .nav-subtitle {
+    color: var(--color-gray-light-2)
   }
 
-  &__link {
-    display: block;
-    text-align: right;
-
-    padding: 0.75rem;
-
-    text-decoration: none;
-    color: var(--color-white);
+  .nav-link {
+    @extend .link-white, .link-bare;
 
     &:active {
-      background-color: var(--color-gray);
+      background-color: var(--color-black-alpha-20);
     }
   }
 
-  &__link-text {
-    display: inline;
-    vertical-align: middle;
-  }
-
-  &__link-external {
-    @include icon-in-link;
-
-    @include override {
-      display: inline;
-      vertical-align: middle;
-    }
-  }
-
-  &__hr {
+  .nav-hr {
     margin: 0;
     padding: 0;
 
@@ -115,7 +85,7 @@
   }
 }
 
-header {
+.nav {
   position: fixed;
   top: 0;
   left: 0;
@@ -130,25 +100,25 @@ header {
   box-shadow: 0 0 8px var(--color-black);
 
   user-select: none;
+
+  &__container {
+    display: flex;
+    justify-content: space-between;
+
+    width: 100%;
+    max-width: var(--content-width);
+  }
 }
 
-.header-container {
-  display: flex;
-  justify-content: space-between;
-
-  width: 100%;
-  max-width: var(--content-width);
-}
-
-.header {
+.nav-header {
   display: flex;
   align-items: center;
 
-  &__banner {
+  .banner {
     height: 3rem;
   }
 
-  &__divider {
+  .divider {
     height: 2rem;
 
     margin-right: 0.5rem;
@@ -157,79 +127,63 @@ header {
   }
 }
 
-.menu-header {
+.nav-menu {
   display: flex;
   align-items: center;
 
   @media (max-width: $screen-md) {
     display: none;
   }
-}
 
-.menu-link {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  .nav-link {
+    @extend .link-white, .link-bare;
 
-  height: 100%;
-  padding: 0 0.75rem;
-
-  color: var(--color-white);
-  text-decoration: none;
-
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--color-gray-dark);
-  }
-
-  &:active {
-    background-color: var(--color-gray);
-  }
-
-  &__lang {
     display: flex;
+    justify-content: center;
     align-items: center;
-  }
 
-  &__lang-icon {
-    @include icon-in-link;
-  }
+    height: 100%;
+    padding: 0 0.75rem;
+    cursor: pointer;
 
-  &__dropdown {
-    @extend .menu-link;
+    &:hover {
+      background-color: var(--color-gray-dark);
+    }
 
-    &:hover .menu-link__dropdown-content {
+    &:active {
+      background-color: var(--color-gray);
+    }
+
+    .lang {
+      display: flex;
+      align-items: center;
+    }
+
+    &.dropdown:hover .dropdown-list {
       display: flex;
     }
-  }
 
-  &__dropdown-content {
-    display: none;
-    flex-direction: column;
+    .dropdown-list {
+      display: none;
+      flex-direction: column;
 
-    position: absolute;
-    top: 3rem;
+      position: absolute;
+      top: 3rem;
 
-    background-color: var(--color-black);
-    box-shadow: 0 0 8px var(--color-black);
-    border: 1px solid var(--color-gray-light-2);
-    border-radius: 0.5rem;
-    overflow: hidden;
-  }
-
-  &__dropdown-link {
-    @extend .menu-link;
-
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid var(--color-gray-light-2);
-
-    &:last-child {
-      border: none;
+      background-color: var(--color-black);
+      box-shadow: 0 0 8px var(--color-black);
+      border: 1px solid var(--color-gray-light-2);
+      border-radius: 0.5rem;
+      overflow: hidden;
     }
-  }
 
-  &__external {
-    @include icon-in-link;
+    .dropdown-link {
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid var(--color-gray-light-2);
+
+      &:last-child {
+        border: none;
+      }
+    }
   }
 }

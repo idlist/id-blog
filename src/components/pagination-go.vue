@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { clamp } from 'lodash-es'
+import clamp from 'lodash-es/clamp'
 import type { LangCode } from '@/i18n'
 import { defaultLang } from '@/utils/client'
 
@@ -40,14 +40,11 @@ const toPage = (e: MouseEvent) => {
     <input type="text" class="pagination-go__input" v-model="to" @keyup="to = to.replace(/[^\d]/g, '')" />
     <div>/</div>
     <div>{{ last }}</div>
-    <a class="pagination-go__text" @click="toPage" href="/">GO</a>
+    <a class="btn-pagination pagination-go__text" @click="toPage" href="/">GO</a>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@use '@/styles/utils' as *;
-@use '@/styles/mixin' as mixin;
-
 .pagination-go {
   display: flex;
   align-items: center;
@@ -67,10 +64,6 @@ const toPage = (e: MouseEvent) => {
 }
 
 .pagination-go__text {
-  @include mixin.btn-pagination;
-
-  @include override {
-    font-size: 0.875rem;
-  }
+  font-size: 0.875rem;
 }
 </style>
