@@ -1,7 +1,7 @@
 import rss, { type RSSFeedItem } from '@astrojs/rss'
 import type { APIRoute } from 'astro'
 import { getCollection } from 'astro:content'
-import { defaultLang, lang, langTags, type LangCode } from '@/i18n'
+import { defaultLang, lang, langTags, undef, type LangCode } from '@/i18n'
 
 export const GET: APIRoute = async ({ params, site }) => {
   const posts = await getCollection('posts')
@@ -22,7 +22,7 @@ export const GET: APIRoute = async ({ params, site }) => {
       pubDate: data.date,
       description: data.summary,
       categories: data.tags ?? [],
-      link: `/a/${data.lang == defaultLang ? '' : `${data.lang}/`}${data.route}`,
+      link: `/a/${undef(data.lang, defaultLang) ?? ''}/${data.route}`,
     })),
   })
 }
