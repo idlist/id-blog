@@ -10,7 +10,7 @@ const postsCollections = defineCollection({
     update: z.date().optional(),
     tags: z.array(z.string()).optional(),
     license: z.string().optional(),
-    summary: z.string().optional(),
+    summary: z.string(),
   }),
 })
 
