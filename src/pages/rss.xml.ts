@@ -10,6 +10,7 @@ export const GET: APIRoute = async (ctx) => {
     title: 'Reinventing the Wheel | i\'D Blog',
     description: '',
     site: ctx.site!,
+    trailingSlash: false,
     items: posts.map((post) => ({
       title: post.data.title,
       pubDate: post.data.date,
