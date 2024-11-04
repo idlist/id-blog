@@ -5,17 +5,17 @@ import { defaultLang, lang, langTags, type LangCode } from '@/i18n'
 
 export const GET: APIRoute = async ({ params, site }) => {
   const posts = await getCollection('posts')
-  const lang = params.lang
+  const code = params.lang as LangCode
   const postsByLang = posts.filter(({ data }) => {
-    return data.lang == lang || (data.lang === undefined && lang == defaultLang)
+    return data.lang == code || (data.lang === undefined && code == defaultLang)
   })
 
   return rss({
-    title: 'Reinventing the Wheel | i\'D Blog',
+    title: `Reinventing the Wheel | i'D Blog - ${lang[code]}`,
     description: '',
     site: site!,
     trailingSlash: false,
-    customData: `<language>${langTags[lang as LangCode]}</language>`,
+    customData: `<language>${langTags[code]}</language>`,
     items: postsByLang.map(({ data }): RSSFeedItem => ({
       title: data.title,
       author: 'i\'DLisT',
