@@ -69,7 +69,7 @@ export const ui: I18nBranch = {
           return 'No words'
         case 1:
           return 'Approx. 1 word'
-        case 2:
+        default:
           return `Approx. ${number} words`
       }
     }) as I18nLeaf,

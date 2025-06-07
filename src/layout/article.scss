@@ -214,19 +214,27 @@ article {
     margin-top: 0.75rem;
   }
 
+  ol ol, ol ul, ul ol, ul ul {
+    margin-top: 0;
+  }
+
   ol,
   ul {
     padding: none;
     padding-left: 1rem;
   }
 
-  li {
-    margin: 0.75rem 0;
-  }
-
   li::marker {
     font-weight: bold;
     color: var(--color-green);
+  }
+
+  blockquote {
+    margin: 0;
+    padding-left: 1rem;
+    color: var(--color-gray-light);
+    border: none;
+    border-left: 0.25rem solid var(--color-gray-light-2)
   }
 
   table,

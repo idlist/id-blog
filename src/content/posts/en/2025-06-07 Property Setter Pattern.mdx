@@ -1,0 +1,134 @@
+---
+lang: 'en'
+title: 'Property Setter Pattern for Exposed Properties in Godot'
+route: 'property-setter-pattern'
+date: 2025-06-07
+tags: ['Code', 'Gamedev', 'Godot']
+summary: 'A workaround to a certain pattern'
+---
+
+I've been doing some gamedev works recently, and finally decided to record some experiences I've got during the past times.
+
+I first started with Unity, but failed to get into it ~~(skill issue)~~, then switched to Godot with C#, hoping to at least retain some C# skills if my journey with Godot didn't go well. After some time I got a chance to cooperate with others in another project, in which they decided to use GDScript, and I'm okay with it as I know Python, the APIs are mostly the same and thus it would not be a big switch. Though, later I did realize there are (of course) *some* differences at the language level, meaning that sometimes I have to achieve the same goal in a different way.
+
+## The Problem
+
+For a 1v1 RPG game, assume I have a `Resource` class abstracting the action of a player so that I can configure it directly in the editor, and the action has a target:
+
+```gdscript
+# Action.gd
+extends Resource
+class_name BaseAction
+
+enum ActionTarget {
+  SELF,
+  RIVAL,
+}
+
+@export var target: ActionTarget
+# Equivalent to:
+# @export var target: ActionTarget = ActionTarget.SELF
+```
+
+Then, we extend it for different types of actions, like `ActionAttack`, `ActionHeal`, etc.
+
+The issue comes when you want to set the default value of `target` in `ActionAttack` to `ActionTarget.RIVAL`, since it's the most common option for this action. But you cannot directly do this as Godot would give you an error and the code would not compile:
+
+```gdscript
+# ActionAttack.gd
+extends BaseAction
+class_name ActionAttack
+
+@export var target: ActionTarget = ActionTarget.RIVAL
+```
+
+Also, changing the value in `_init()` would not work:
+
+```gdscript
+# ActionAttack.gd
+extends BaseAction
+class_name ActionAttack
+
+func _init():
+  target = ActionTarget.RIVAL
+```
+
+This is because the code in `_init()` would *not* be reflected **in the editor**, which means in the editor, `target` still gets the default value from the base class `BaseAction`. Then, during the initialization, Godot would apply the values in the editor **after** `_init()`, overriding whatever the value set to `target` in `_init()`.
+
+> An exception to the caveat described above is subresources, as you cannot have the default values set to subresources reflected in the editor by any means.
+
+On the other hand, changing the default value of `target` in `BaseAction` doesn't feel right either, as except for `ActionAttack`, other actions tend to have `ActionTarget.SELF` as a sensible default target.
+
+In C#, interfaces *may* help as you can have:
+
+```cs
+interface IPlayerTarget {
+  public ActionTarget target { get; set; }
+}
+```
+
+...and then have the actions inherit it, but it's not a thing in GDScript. So, is there some other way to achieve this?
+
+## Workaround?
+
+In my specific case, I actually do not care about whether the base class `BaseAction` itself expose the property (as it works as an abstract class and I would never use it directly), and only care about its child classes. With this in mind, here's the pattern I came up with:
+
+```gdscript
+# Action.gd
+extends Resource
+class_name BaseAction
+
+enum ActionTarget {
+  SELF,
+  RIVAL,
+}
+
+var target: ActionTarget = ActionTarget.SELF:
+  get = _get_target, set = _set_target
+
+func _get_target():
+  return target
+
+func _set_target(value: ActionTarget):
+  target = value
+```
+
+```gdscript
+# ActionAttack.gd
+extends BaseAction
+class_name ActionAttack
+
+@export var target_setter: ActionTarget = ActionTarget.RIVAL:
+  get: return _get_target()
+  set(value): _set_target(value)
+
+# (only use `target` in relavent code)
+```
+
+This is also a valid pattern to expose different properties for different child classes extending the same parent class.
+
+This pattern has an limitation:
+
+- Only one class in an inheritance chain can expose the property.
+  - Child classes inheriting from the one exposing the property still do not have a way to change its default values.
+
+In exchange, it has several benefits:
+
+- You can have different default values for the same property in the base class
+- Because the property is in base class, it has type safety.
+
+Another workaround is to utilize the behavior that certain types (like subresources) would not have default value set **in the editor** even if it was assigned to a default value in the code, and thus avoid the caveat described above (so that you can change the default values in `_init()`).
+
+The "subresource" pattern does not has the limitation the "property setter" pattern has, whereas it introduces its own disadvantages:
+
+- You cannot see the default values you set inside the editor now, as they would always be `<empty>`.
+- It introduces a level of nesting in the editor ~~which doesn't look nice~~.
+- It's slightly more costly, and might introduce other common issues resources have (e.g., `Local to Scene`, `duplicate()`).
+
+So for me, I would not go for it if the previous pattern has already met the requirements.
+
+There might also be some more complex solutions by overriding `_get()` & `_set()` & `_get_property_list()`. or even developing an editor plugin. Simply put, though, I don't think the complexity and development cost worth for it, unless the project does reach certain scale in the far, far future.
+
+## Future
+
+There is a [Pull Request](https://github.com/godotengine/godot/pull/93787) for changing the default value of exported properties in inherited classes, though it would take a while to land. If the PR gets merged, there would definitely be less boilerplate code going around; that said, this "property setter" pattern may still have its own use case.
