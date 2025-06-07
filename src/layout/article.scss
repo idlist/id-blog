@@ -212,9 +212,13 @@ article {
     line-height: 1.75rem;
     margin: 0;
     margin-top: 0.75rem;
+    vertical-align: middle;
   }
 
-  ol ol, ol ul, ul ol, ul ul {
+  ol ol,
+  ol ul,
+  ul ol,
+  ul ul {
     margin-top: 0;
   }
 
@@ -304,6 +308,7 @@ article {
     line-height: 1.375rem;
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
+    vertical-align: baseline;
 
     font-family: $monospace;
     background-color: var(--color-gray-light-4);
