@@ -31,7 +31,9 @@ const t = useLang(code)
         dataLayer.push(arguments)
       }
       gtag('js', new Date())
-      gtag('config', 'G-EML7QLCCWB')
+      gtag('config', 'G-EML7QLCCWB', {
+        transport_url: 'https://analytics.yourdomain.com/collect',
+      })
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
