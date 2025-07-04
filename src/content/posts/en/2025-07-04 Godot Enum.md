@@ -1,0 +1,106 @@
+---
+lang: 'en'
+title: In Case You Don't Know Godot's Enum Can...
+route: 'godot-enum'
+date: 2025-07-04
+tags: ['Code', 'Gamedev', 'Godot']
+summary: 'Why does nearly nobody mention it?'
+---
+
+...be assigned to a variable or a **constant**.
+
+I'll use the term "enum object" to refer to the enum "definitions" in distinction to enum values. Assigning an enum object to a variable might have some niche usage, but it's not our focus here; assigning an enum object to a constant, though, can really help.
+
+## The Problem
+
+Named enums in Godot are [auto-assigned dictionaries](https://docs.godotengine.org/en/latest/tutorials/scripting/gdscript/gdscript_basics.html#enums) with static type.
+
+```gdscript
+# map_tile.gd
+class_name MapTile
+
+enum Type {
+  GROUND,
+  WALL,
+  WATER,
+}
+```
+
+There are also "unnamed" (or "class-wide", I guess?) enums, and they are great on their own if the enum is only used inside the class and its sub-classes, as they have one limitation: they **lose** type information for other classes to refer to. For example, if the above example modifies to:
+
+```gdscript
+# map_tile.gd
+class_name MapTile
+
+enum {
+  GROUND,
+  WALL,
+  WATER,
+}
+```
+
+Then you cannot have:
+
+```gdscript
+# map.gd
+
+# This will give an error as MapTile is class name, not enum name.
+# You can only set the type of [tile_type] to [int], which...sucks.
+func set_tile(position: Vector2i, tile_type: MapTile):
+  ...
+```
+
+With named enum, the type information is **reserved**, and you can have:
+
+```gdscript
+# map.gd
+func set_tile(position: Vector2i, type: MapTile.Type)
+  ...
+```
+
+But here comes another problem: the name of the class plus the enum sometimes can get very long. This has practically hindered someone like me from using enums, as personally speaking, the long names of enum values in the code looks really bloated:
+
+```gdscript
+if tile_type == MapTile.Type.WALL or tile_type == MapTile.Type.WATER:
+  ...
+```
+
+Is there some way to, at least, mitigate this?
+
+## Simple Solution
+
+It really shocks me that when I search for this topic on the Internet, nearly no one points out that enums in Godot are *not* special in terms of language syntax: they are more like syntatic sugar than concrete syntax. And, nearly no one (or even ChatGPT) raises the fact that the enum objects and enum values **can be reassigned**:
+
+```gdscript
+# map.gd
+
+const TileType = MapTile.Type
+# Use [TileType] elsewhere in the code.
+```
+
+And that's it! `TileType` still has the same type as `MapTile.Type`, and the example code above can be simplified to:
+
+```gdscript
+if tile_type == TileType.WALL or tile_type == TileType.WATER:
+  ...
+```
+
+This seems to be trivial, but believe me, when enums pile up, this can greatly reduce the redundancy in both coding and reading.
+
+Enum values can also be reassigned to constants, although in this case they also lose the type information as an enum and degrade to `int`, so they have the same limitation mentioned above.
+
+```gdscript
+# base_map.gd
+
+const TILE_GROUND = MapTile.Type.GROUND
+# Use [TILE_GROUND] elsewhere in this class and its child class
+```
+
+## Not-solutions
+
+At the end, I'd like to mention some "suggestions" I've encountered regarding this topic:
+
+- Have an autoload dedicated to enums, which doesn't work as you still need to refer the enum as `AutoLoadName.EnumName.EnumValue`.
+- Use `int` directly, which isn't ideal by defeating the purpose of bringing up enums in modern age.
+
+Enums are great tools to enforce type safety, and with this tiny technique, it should now present us a slightly better dev experience.
