@@ -40,11 +40,6 @@ export default defineConfig({
           autoprefixer,
         ],
       },
-      preprocessorOptions: {
-        scss: {
-          api: 'modern-compiler',
-        },
-      },
     },
   },
   integrations: [
