@@ -1,0 +1,73 @@
+---
+lang: 'en'
+title: 'Writing GDScript vs. C# in Godot'
+route: 'godot-gdscript-vs-csharp'
+date: 2025-09-03
+tags: ['Code', 'Godot', 'GDScript', 'C#']
+summary: 'The pros and cons, as the cliche.'
+---
+
+I've been learning and developing games with Godot for a while, and for some strange reason, I've got a go with both "main" (*officially supported*) scripting languages of Godot: I've been using **C#** for my own project, and used **GDScript** for another project that I got involved.
+
+For now, I think I could make a naive and personal conclusion for the pros and cons of the both choices. Well, as one's pros is generally others' cons, I'll just list the pros for you to judge.
+
+## Pros of C#
+
+Aside from the issue of exporting target, which has been explained everywhere:
+
+### Richer **general** library support
+
+For example, I could directly use `Stateless` for FSM (finite state machine) when using C#. In GDScript, although I prefer FSM in pure code without unnecessary overhead, such community assets are usually bounded with nodes.
+
+### Handier language features
+
+**Interfaces** and **Generics** are two powerful language features that provide much flexibilty over type safety. **Interfaces** can let objects share features regardless of inheritance, and **Generics** can sometimes greatly reduces boilerplate codes.
+
+Especially for **Generics**, here's a real life example. I've encountered a data structure commonly seen in RPG games composed by "base value" and "modifiers", and the data structure *might be applied to not only one data type*. For convenience, I'll name this structure `Modable`. In GDScript, I need to have separated `ModableInt`, `ModableFloat` or `ModableEnum` (maybe even for each type of enums), while in Godot, these can all be concluded to `Modable<T>`.
+
+### Better static typing
+
+GDScript's "static" typing is strange: it's dynamic if you don't hint it with a type, yet it's hard to convert between typed and untyped variables without cost.
+
+The most infamous example should be finding a way to convert between `Array` and `Array[SomeType]` without extra memory allocation, which is nearly impossible. And...why this? Because some internal methods of `Array[SomeType]` returns `Array`, like `duplicate()` or `map()`.
+
+Needless to explain C# does a better job here as being originally a static type language.
+
+### More stable language server
+
+GDScript's langauge server can be unstable, especially when your code got the following things:
+
+- Circular references;
+- Long inheritance chains (usually more than 3 levels).
+
+Even with `WeakRef` to confront the circular references, as you eventually need to deref the `WeakRef` to the actual type, the vulnerability is still there.
+
+Roslyn, on the other hand, albeit eating up lots of memory, is much stabler when handling such things.
+
+## Pros of GDScript
+
+### Quicker reload
+
+Even my current C# code base is only around 8k lines, it starts take noticable time to compile. The specs of my PC is about upper-mid level, yet it still takes a few seconds to compile each time. On the other hand, GDScript is a **scripting** language and doesn't needed compiling, which makes code reloading much faster, and thus the dev cycle.
+
+### On-the-fly code reload
+
+It's a feature that seems trivial at first sight, while it becomes handy when you have established some base architecture and comes to the stage of polishing. As long as your adjusted code doesn't have syntax error on save, you can see the outcome immediately without restarting the game, which is impossible in C#. This feature strengthens GDScript’s capability in the prototyping stage.
+
+### More stable `@tool` script
+
+`@tool` script is a **core** feature of Godot ranging from building complex dev tools to just have some live preview of custom objects in the editor. For a long time, I though `@tool` should be renamed to `@live_preview` instead, as my shallow focus was only on the latter case.
+
+In C#, I do **not** recommended to use the getter and the setter of an `[Export]`ed variable in a `[Tool]` script, as it would almost certainly cause error when reloading assembly nearer or later, probably related to being unable to release references to the binding layer. To listen to the change of such variables, the safer way is to manually track them in the `_Process()` hook.
+
+Well, it's safe to use getters and setters of an `@export`ed variable in a `@tool` script in GDScript. At least I never encountered an issue.
+
+### Better platform-specific integration
+
+Many platform adapters (either official or community addons) come with only GDScript bindings. It's doable to call GDScript methods in C#, but it also means it loses the advantage of being a compiled language.
+
+The *chore* of maintaining cross-platform is tedious considering the number of target platforms vs. the number of (officially or unofficialy) supported languages, and it's understandable to have the in-house scripting language taking the priority. That said, an advantage is still an advantage.
+
+## Conclusion
+
+Overall, GDScript takes the power of fast prototyping and better integration, whereas C# have its strength in the language itself. Neither is perfect at this stage, and although I have listed the points above, there's no significant one that can be stronger than the taste of the project leader. So, choose the one you like, and happy coding.
