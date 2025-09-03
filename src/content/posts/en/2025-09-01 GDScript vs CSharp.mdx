@@ -23,7 +23,7 @@ For example, I could directly use `Stateless` for FSM (finite state machine) whe
 
 **Interfaces** and **Generics** are two powerful language features that provide much flexibilty over type safety. **Interfaces** can let objects share features regardless of inheritance, and **Generics** can sometimes greatly reduces boilerplate codes.
 
-Especially for **Generics**, here's a real life example. I've encountered a data structure commonly seen in RPG games composed by "base value" and "modifiers", and the data structure *might be applied to not only one data type*. For convenience, I'll name this structure `Modable`. In GDScript, I need to have separated `ModableInt`, `ModableFloat` or `ModableEnum` (maybe even for each type of enums), while in Godot, these can all be concluded to `Modable<T>`.
+Especially for **Generics**, here's a real life example. I've encountered a data structure commonly seen in RPG games composed by "base value" and "modifiers", and the data structure *might be applied to not only one data type*. For convenience, I'll name this structure `Modable`. In GDScript, I need to have separated `ModableInt`, `ModableFloat` or `ModableEnum` (maybe even for each type of enums), while in C#, these can all be concluded to `Modable<T>`.
 
 ### Better static typing
 
@@ -35,7 +35,7 @@ Needless to explain C# does a better job here as being originally a static type 
 
 ### More stable language server
 
-GDScript's langauge server can be unstable, especially when your code got the following things:
+GDScript's langauge server can be unstable, especially when your code get the following things:
 
 - Circular references;
 - Long inheritance chains (usually more than 3 levels).
@@ -52,7 +52,7 @@ Even my current C# code base is only around 8k lines, it starts take noticable t
 
 ### On-the-fly code reload
 
-It's a feature that seems trivial at first sight, while it becomes handy when you have established some base architecture and comes to the stage of polishing. As long as your adjusted code doesn't have syntax error on save, you can see the outcome immediately without restarting the game, which is impossible in C#. This feature strengthens GDScript’s capability in the prototyping stage.
+It's a feature that seems trivial at first sight, and then becomes surprisingly handy when you have established some base architecture and comes to the stage of polishing. As long as your adjusted code doesn't have syntax error on save, you can see the outcome immediately without restarting the game, which is impossible in C#. This feature strengthens GDScript’s capability in the prototyping stage.
 
 ### More stable `@tool` script
 
