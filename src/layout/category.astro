@@ -1,5 +1,4 @@
 ---
-import './category.scss'
 import type { CollectionEntry } from 'astro:content'
 import Base from './base.astro'
 import PageContainer from '@/components/page-container.astro'
@@ -9,8 +8,9 @@ import Pagination from '@/components/pagination.astro'
 import PostListing from '@/components/post-listing.astro'
 import { useLang } from '@/i18n'
 import type { Paging } from '@/utils/server'
+import './category.scss'
 
-import icon_category from '@/assets/icons/category.svg'
+import icon_Category from '@/assets/icons/category.svg'
 
 interface Props {
   type: 'tag' | 'timeline'
@@ -30,7 +30,7 @@ const t = useLang(Astro.url)
     <div class="category__container">
       <div class="category__sidebar">
         <div class="category-title">
-          <img class="category-title__icon" src={icon_category.src} alt="category" />
+          <img class="category-title__icon" src={icon_Category.src} alt="category" />
           <span class="category-title__text">i'D ARCHIVE</span>
         </div>
 

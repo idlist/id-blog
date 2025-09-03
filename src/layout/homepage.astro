@@ -1,6 +1,5 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import './homepage.scss'
 import Base from './base.astro'
 import PageContainer from '@/components/page-container.astro'
 import Contacts from '@/components/contacts.astro'
@@ -11,13 +10,14 @@ import Pagination from '@/components/pagination.astro'
 import LastUpdate from '@/components/last-update.astro'
 import { useLang } from '@/i18n'
 import type { Paging } from '@/utils/server'
+import './homepage.scss'
 
-import logo_personal from '@/assets/idlist.png'
-import icon_email from '@/assets/icons/email.svg'
-import icon_home from '@/assets/icons/home.svg'
-import icon_twitter from '@/assets/icons/twitter.svg'
-import icon_soundcloud from '@/assets/icons/soundcloud.svg'
-import icon_github from '@/assets/icons/github.svg'
+import logo_Personal from '@/assets/idlist.png'
+import icon_Email from '@/assets/icons/email.svg'
+import icon_Home from '@/assets/icons/home.svg'
+import icon_Twitter from '@/assets/icons/twitter.svg'
+import icon_Soundcloud from '@/assets/icons/soundcloud.svg'
+import icon_GitHub from '@/assets/icons/github.svg'
 
 interface Props {
   posts: CollectionEntry<'posts'>[]
@@ -35,16 +35,16 @@ const t = useLang(Astro.url)
       <div class="homepage__info">
         <div class="homepage-me">
           <div class="homepage-me__icon-bg">
-            <img class="homepage-me__icon" src={logo_personal.src} alt="idlist" />
+            <img class="homepage-me__icon" src={logo_Personal.src} alt="idlist" />
           </div>
           <div class="homepage-me__name">i'DLisT</div>
         </div>
 
-        <Contacts icon={icon_email.src} text="i@idl.ist" link="mailto:i@idl.ist" />
-        <Contacts icon={icon_home.src} text="idl.ist" link="https://idl.ist" />
-        <Contacts icon={icon_twitter.src} text="@i_dlist" link="https://x.com/i_dlist" />
-        <Contacts icon={icon_github.src} text="idlist" link="https://github.com/idlist" />
-        <Contacts icon={icon_soundcloud.src} text="i'DLisT" link="https://soundcloud.com/idlist" />
+        <Contacts icon={icon_Email.src} text="i@idl.ist" link="mailto:i@idl.ist" />
+        <Contacts icon={icon_Home.src} text="idl.ist" link="https://idl.ist" />
+        <Contacts icon={icon_Twitter.src} text="@i_dlist" link="https://x.com/i_dlist" />
+        <Contacts icon={icon_GitHub.src} text="idlist" link="https://github.com/idlist" />
+        <Contacts icon={icon_Soundcloud.src} text="i'DLisT" link="https://soundcloud.com/idlist" />
 
         <div class="homepage-stats">
           <Fragment set:html={t('ui.total-posts', total)} />
