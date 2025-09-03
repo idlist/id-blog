@@ -12,18 +12,11 @@ const posts = await getCollection('posts', (entry) => {
   return entry.id.startsWith(`${code}/`)
 })
 
-const stats: Record<number, Record<number, number>> = {}
+const stats: Record<number, number> = {}
 
 posts.forEach(({ data }) => {
   const date = ymd(data.date)
-
-  if (!stats[date.year]) {
-    stats[date.year] = {}
-  }
-  if (!stats[date.year][date.month]) {
-    stats[date.year][date.month] = 0
-  }
-  stats[date.year][date.month] += 1
+  stats[date.year] = stats[date.year] ? stats[date.year] + 1 : 1
 })
 
 const hasDate = Object.keys(stats).length
@@ -31,32 +24,22 @@ const hasDate = Object.keys(stats).length
 
 <div class="timeline">
   <div class="timeline__title">Timeline</div>
+  <div class="timeline__list">
   {
     hasDate ? (
       Object.entries(stats)
         .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
-        .map(([year, months]) => (
-          <>
-            <div class="timeline__year">
-              <span class="timeline__year-name">{year}</span>
-              <span class="post-count timeline__year-count">{sum(Object.values(months))}</span>
-            </div>
-            <div class="timeline__list">
-              {Object.entries(months)
-                .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
-                .map(([month, count]) => (
-                  <a class="link-sub timeline__item" href={`${root}timeline/${ymKey(year, month)}`}>
-                    <span class="timeline__month">{month}</span>
-                    <span class="post-count">{count}</span>
-                  </a>
-                ))}
-            </div>
-          </>
+        .map(([year, count]) => (
+          <a class="link-sub timeline__item" href={`${root}timeline/${year}`}>
+            <span class="timeline__name">{year}</span>
+            <span class="post-count">{count}</span>
+          </a>
         ))
     ) : (
       <div class="timeline__no-timeline">{t('ui.no-timeline')}</div>
     )
   }
+  </div>
 </div>
 
 <style lang="scss">
@@ -66,26 +49,6 @@ const hasDate = Object.keys(stats).length
     &__title {
       font-size: 1.5rem;
       font-weight: bold;
-    }
-
-    &__year {
-      display: flex;
-      column-gap: 0.5rem;
-      align-items: center;
-      margin-top: 0.5rem;
-      margin-bottom: 0.25rem;
-    }
-
-    &__year-name {
-      font-size: 1.25rem;
-      font-weight: bold;
-      color: var(--color-green);
-    }
-
-    &__year-count {
-      color: var(--color-green);
-      border: 1px solid var(--color-green);
-      background: none;
     }
 
     &__list {
@@ -100,6 +63,11 @@ const hasDate = Object.keys(stats).length
       align-items: center;
       column-gap: 0.25rem;
       word-break: break-word;
+      text-decoration-color: var(--color-green);
+    }
+
+    &__name {
+      color: var(--color-green);
     }
 
     &__no-timeline {

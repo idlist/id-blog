@@ -14,7 +14,6 @@ export const getStaticPaths = (async () => {
   interface GroupBy {
     code: string
     year: number
-    month: number
   }
 
   const postsByTime = new SlowMap<GroupBy, Posts>()
@@ -23,9 +22,8 @@ export const getStaticPaths = (async () => {
     const code = post.data.lang ?? defaultLang
     const date = ymd(post.data.date)
     const year = date.year
-    const month = date.month
 
-    const key = { code, year, month }
+    const key = { code, year }
     postsByTime.emplace(key, [post], (col) => col.push(post))
   })
 
@@ -46,10 +44,10 @@ export const getStaticPaths = (async () => {
         params: {
           lang: undef(key.code, defaultLang),
           page: undef(page, 1),
-          timeline: ymKey(key.year, key.month),
+          timeline: key.year.toString(),
         },
         props: {
-          timeline: `${key.year} / ${key.month}`,
+          timeline: key.year.toString(),
           posts: paginate(posts, page),
           total,
           page: createPaging(page, count),
