@@ -1,0 +1,54 @@
+---
+lang: 'en'
+title: 'Using Custom Resources for Node Configuration in Godot'
+route: 'resource-for-config'
+date: 2025-11-08
+tags: ['Code', 'Godot']
+summary: "Someone says it's never the intended way."
+---
+
+## Why
+
+When bringing up this topic, there would often be someone popping up saying: "It's not the intended way!" That's not completely wrong, as **Resource** in Godot is *usually* meant to be reused as much as possible, and for configuration data that are used only *once* in a node, a custom resource seems to be redundant.
+
+However, it's not always true. The biggest mechanism against it is that resources (and nodes) are the **only** interfaces with pre-defined in-editor visualization. If you want to show data inside the editor without using them, you need to either juggle with the trio of `_get()`, `_set()` and `_get_property_list()` (which requires `@tool` and can easily go wrong) or have a dedicated [`EditorInspectorPlugin`](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/inspector_plugins.html).
+
+There are also cases when attaching properties directly to nodes is *not* ideal, usually when the properties have some sort of modularity. For example, consider the following relations:
+
+```
+Node A: Property 1, 2, 3, a, b
+Node B: Property 1, 2, 3, x, y
+Node C: Property a, b, x, y
+```
+
+Then, other than coding each property directly to the nodes, it is also natural to group `Property 1, 2, 3`, `Property a, b` and `Property x, y` into "configuration sets" (using resources here) and then attach them to the nodes. This even becomes mandatory with array-like structures, i.e., "stackable" property sets.
+
+Nevertheless, despite the statement, there has already been tons of tutorials using resources as node configuration data. In the remaining article, I'll briefly mention some common gotchas in this specific use case.
+
+## How to do it correctly
+
+There are two slightly different cases depending on whether the node is **unique**.
+
+### The node is unique
+
+i.e., the node appears only once at any time in the whole project. It's the simplest case, and no specific actions are required.
+
+### The node is not unique
+
+i.e., the node is used more than once at a time in the whole project, usually by saving it as a scene, and then instantiating it or adding the scene to other scenes multiple times.
+This introduces a possible issue: by default, all instantiated nodes point to the **same** resource:
+
+```
+Custom Resource 1 (Configuration Data)
+|- Node A, Instance 1
+|- Node A, Instance 2
+|- Node A, Instance ...
+```
+
+This is okay when the resource would not be changed at runtime, but again, it's *not* always the case.
+
+The additional steps depends on whether the data structure is complex or not. If there's only one or several plain resources, then ticking `Local to Scene` for the resource is more than enough.
+
+However, I've once worked with resource-heavy data configuration with lots of arrays, and in this case, instead of ticking enormous `Local to Scene`s without leaving out anyone, a more solid solution would be deep `duplicate()` those resources when they're `_ready()`.
+
+Luckily, from Godot 4.5, `duplicate_deep()` should work [correctly and consistently](https://godotengine.org/releases/4.5/#duplicate-at-ease-with-expected-results) for arbitrary combinations of `Array`, `Dictionary` and `Resource`, which is much desired in our case. It would worth just another full article back in the age with incomplete behavior of `duplicate()`...
