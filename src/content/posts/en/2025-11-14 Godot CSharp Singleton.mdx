@@ -7,13 +7,13 @@ tags: ['Code', 'Godot', 'C#']
 summary: 'From the more C# style to the more Godot style.'
 ---
 
-Godot has Autoload and C# has singleton pattern, and they're mostly the same with slightly different setup. Autoloads are straightforward if coding in GDScript, but in C#, there's *more than* one way to form a singleton, in different situation, to meet different requirements.
+Godot has Autoload and C# has singleton pattern, and they're mostly the same with slightly different setup. Autoloads are straightforward if coding in GDScript, but in C#, there's *more than* one way to form a singleton in different situations, to meet different requirements.
 
-I'll try to cover them from the more basic ones to more Godot-specific ones. Also, this article is not about *whether* to use singletons, because don't know, either.
+I'll try to cover them from the more basic ones to more Godot-specific ones. Also, this article is not about *whether* to use singletons, because I don't know, either.
 
 ## Level 1: Pure C# Singleton
 
-Pure singleton is useful when it does not utilize the node system that Godot provides, like those related the save data. Tutorial of this can be found everywhere, so I'm only putting a basic one here.
+Pure singleton is useful when it does not utilize the node system that Godot provides, like those related to the save data. Tutorial of this can be found everywhere, so I'm only putting a basic one here.
 
 ```csharp
 public class Singleton {
@@ -26,7 +26,7 @@ public class Singleton {
 
 ## Level 2: C# Script Extending from a Node
 
-This case is usally when you:
+This case is usually when you:
 
 - Decide to stick to `[Signal]` for the global event bus in favor of `static event`, or
 - Want to utilize the hooks that Godot provides, usually `_Input()`.
@@ -53,9 +53,9 @@ public partial class Singleton : Node { // Usually Node is the type
 
 And then, directly add the script under the *Globals - Autoload* tag in *Project Settings*. It's not necessary to attach the script to a scene.
 
-If you've enabled nullability check (a.k.a. nullable reference type, or `<Nullable>enable</Nullable>`) in your project, [`CS8618`](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings#nonnullable-reference-not-initialized) will be reported on `Instance`, complaining it's not initialized since the compiler has no way to know the singleton *will* be initialized by Godot. There is nothing much can do other than silencing the warning.
+If you've enabled nullability check (a.k.a. nullable reference type, or `<Nullable>enable</Nullable>`) in your project, [`CS8618`](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings#nonnullable-reference-not-initialized) will be reported on `Instance`, complaining it's not initialized since the compiler has no way to know the singleton *will* be initialized by Godot. There is not much you can do other than silencing the warning.
 
-Before that, enabling nullability check without extra settings in a Godot project is not really a good idea, because every `[Export]`s become `CS8618`.I myself have made a custom Roslyn analyzer named `LateInitSuppressor` (inspired by Kotlin keyword `lateinit`) to solely suppress `CS8618` on fields or properties attributed by `[Export]`, and I'm also using it to suppress other `CS8618`s that *I know* will definitely not be null *after* certain lifecycle. Nullability check is handy when the object might *actually* be null, but not in these cases.
+Before that, enabling nullability check without extra settings in a Godot project is not really a good idea, because every `[Export]` becomes `CS8618`.I myself have made a custom Roslyn analyzer named `LateInitSuppressor` (inspired by Kotlin keyword `lateinit`) to solely suppress `CS8618` on fields or properties attributed by `[Export]`, and I'm also using it to suppress other `CS8618`s that *I know* will definitely not be null *after* certain lifecycle. Nullability check is handy when the object might *actually* be null, but not in these cases.
 
 Though being a bit of off-topic, the custom analyzer itself is quite simple to figure out. I'm not opening-source it or publishing it only because my code is too spaghetti: it works, but it only works.
 
@@ -121,7 +121,7 @@ public partial class AnotherNode : Node {
 }
 ```
 
-Here, `OnReady` is a custom extension method to delay the code execution (in its `Action` parameter) to when the node is ready. ~~Well, I just kind of want to show off my over-sugared Godot C# utilites without exposing the underlying code.~~
+Here, `OnReady` is a custom extension method to delay the code execution (in its `Action` parameter) until the the node is ready. ~~Well, I just kind of want to show off my over-sugared Godot C# utilities without exposing the underlying code.~~
 
 To make it clear, things that are not related to the child nodes (e.g., `[Signal]`s and resources at the root node) are still available as soon as possible via `Instance`, and the only thing matters might be the order in *Autoload*.
 
