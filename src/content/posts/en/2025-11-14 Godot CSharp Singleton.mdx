@@ -1,0 +1,132 @@
+---
+lang: 'en'
+title: 'Many Patterns of Singletons in Godot with C#'
+route: 'godot-csharp-singleton'
+date: 2025-11-14
+tags: ['Code', 'Godot', 'C#']
+summary: 'From the more C# style to the more Godot style.'
+---
+
+Godot has Autoload and C# has singleton pattern, and they're mostly the same with slightly different setup. Autoloads are straightforward if coding in GDScript, but in C#, there's *more than* one way to form a singleton, in different situation, to meet different requirements.
+
+I'll try to cover them from the more basic ones to more Godot-specific ones. Also, this article is not about *whether* to use singletons, because don't know, either.
+
+## Level 1: Pure C# Singleton
+
+Pure singleton is useful when it does not utilize the node system that Godot provides, like those related the save data. Tutorial of this can be found everywhere, so I'm only putting a basic one here.
+
+```csharp
+public class Singleton {
+  public static Singleton Instance { get; private set; } = new();
+
+  private Singleton() {
+  }
+}
+```
+
+## Level 2: C# Script Extending from a Node
+
+This case is usally when you:
+
+- Decide to stick to `[Signal]` for the global event bus in favor of `static event`, or
+- Want to utilize the hooks that Godot provides, usually `_Input()`.
+
+It can be done by:
+
+```csharp
+// res://autoloads/Singleton.cs
+public partial class Singleton : Node { // Usually Node is the type
+  public static Singleton Instance { get; private set; }
+
+  // Cannot be private, otherwise Godot would complain
+  public Singleton() {
+    if (Instance is null) {
+      Instance = this;
+      // Initialization goes here...
+    }
+    else {
+      QueueFree(); // Ensure the uniqueness of the node
+    }
+  }
+}
+```
+
+And then, directly add the script under the *Globals - Autoload* tag in *Project Settings*. It's not necessary to attach the script to a scene.
+
+If you've enabled nullability check (a.k.a. nullable reference type, or `<Nullable>enable</Nullable>`) in your project, [`CS8618`](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings#nonnullable-reference-not-initialized) will be reported on `Instance`, complaining it's not initialized since the compiler has no way to know the singleton *will* be initialized by Godot. There is nothing much can do other than silencing the warning.
+
+Before that, enabling nullability check without extra settings in a Godot project is not really a good idea, because every `[Export]`s become `CS8618`.I myself have made a custom Roslyn analyzer named `LateInitSuppressor` (inspired by Kotlin keyword `lateinit`) to solely suppress `CS8618` on fields or properties attributed by `[Export]`, and I'm also using it to suppress other `CS8618`s that *I know* will definitely not be null *after* certain lifecycle. Nullability check is handy when the object might *actually* be null, but not in these cases.
+
+Though being a bit of off-topic, the custom analyzer itself is quite simple to figure out. I'm not opening-source it or publishing it only because my code is too spaghetti: it works, but it only works.
+
+## Level 3: C# Script Attaching to a Simple Scene
+
+By "simple scene", I mean a scene that does not have any child nodes (it's okay to have resources as its property), or does not interact with its child node during its initialization, so that the initialization does not need to be postponed to `_Ready()`. It is sometimes a kind of extension of the previous case with the difference where you want to set some value for the singleton via the editor, which requires a scene.
+
+The setup for the **previous** case (script extending from a node) can again be used here. The difference comes within the *Project Settings*: the **scene** instead of the script is to be added to *Autoload*.
+
+## Level 4: A Scene with Initialization Involving Child Nodes
+
+At this point, the initialization related to child nodes needs to be done *after* the `_Ready()` hook. To cope with this, the setup needs to be changed:
+
+```csharp
+public partial class Singleton : Node { // Or whatever the node type is
+  public static Singleton Instance { get; private set; }
+
+  private static bool _initialized = false;
+
+  public Singleton() {
+    if (Instance is null) {
+      Instance = this;
+      // Initialization unrelated to child nodes goes here...
+    }
+    else {
+      QueueFree();
+    }
+  }
+
+  public override void _Ready() {
+    if (!_initilaized) {
+      _initilaized = true;
+      // Initialization related to child nodes needs to go here...
+    }
+  }
+}
+```
+
+A significant difference (and *pitfall*) here is about when the things related to the child nodes are ready for use, as those things can only be accessed when the singleton is `_Ready()`. For example, if the singleton has something like:
+
+```csharp
+public partial class Singleton : Node {
+  // Other code...
+
+  [Export]
+  public Sprite2D MySprite { get; private set; } // Set via the editor
+}
+```
+
+Then, due to the order of node instantiation, `MySprite` is only available when the `Singleton` is `_Ready()`, before which it will be **`null`**. In my codebase I'll have something like:
+
+```csharp
+public partial class AnotherNode : Node {
+  private Sprite2D? _sprite;
+
+  // The constructor of AnotherNode might be called
+  // before the Singleton is ready
+  public AnotherNode() {
+    Singleton.Instance.OnReady(() => {
+      _sprite = Singleton.Instance.MySprite
+    });
+  }
+}
+```
+
+Here, `OnReady` is a custom extension method to delay the code execution (in its `Action` parameter) to when the node is ready. ~~Well, I just kind of want to show off my over-sugared Godot C# utilites without exposing the underlying code.~~
+
+To make it clear, things that are not related to the child nodes (e.g., `[Signal]`s and resources at the root node) are still available as soon as possible via `Instance`, and the only thing matters might be the order in *Autoload*.
+
+## Afterword
+
+The patterns mentioned above are based on my own experience, and it is possible (and *very likely*) that there's better setup than mine. But at least, I'm using those setups and it works fine.
+
+I might or might not expand on `[LateInitSuppressor]` or the `OnReady` stuff in later articles, but that would quite depend on my mood. Maybe I'll do so if someone really interested in it? I dunno. 🤔

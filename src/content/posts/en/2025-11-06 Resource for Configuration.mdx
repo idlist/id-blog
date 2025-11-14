@@ -45,10 +45,8 @@ Custom Resource 1 (Configuration Data)
 |- Node A, Instance ...
 ```
 
-This is okay when the resource would not be changed at runtime, but again, it's *not* always the case.
+This is okay when the resource would not be changed at runtime, but again, it's *not* always the case. In one of my cases, I feel like it's more natural and compact to put the configured initial value and everchanging runtime value together (especially in RPG-style games), and you might also be finding your own case.
 
-The additional steps depends on whether the data structure is complex or not. If there's only one or several plain resources, then ticking `Local to Scene` for the resource is more than enough.
-
-However, I've once worked with resource-heavy data configuration with lots of arrays, and in this case, instead of ticking enormous `Local to Scene`s without leaving out anyone, a more solid solution would be deep `duplicate()` those resources when they're `_ready()`.
+The additional steps depends on whether the data structure is complex or not. If there's only one or several plain resources, then ticking `Local to Scene` for the resource is more than enough. However, I've once worked with resource-heavy data configuration with lots of arrays, and in this case, instead of ticking enormous `Local to Scene`s without leaving out anyone, a more solid solution would be deep `duplicate()` all of those resources when they're `_ready()`.
 
 Luckily, from Godot 4.5, `duplicate_deep()` should work [correctly and consistently](https://godotengine.org/releases/4.5/#duplicate-at-ease-with-expected-results) for arbitrary combinations of `Array`, `Dictionary` and `Resource`, which is much desired in our case. It would worth just another full article back in the age with incomplete behavior of `duplicate()`...
