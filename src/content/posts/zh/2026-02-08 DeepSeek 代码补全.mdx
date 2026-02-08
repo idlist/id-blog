@@ -12,7 +12,9 @@ import Warning from '@/elements/warning.astro'
   由于 AI 工具链变化得非常快，这篇文章的内容有可能不再有效。请注意检查文章的发布时间。
 </Warning>
 
-作为一个又很穷又很抠的人，我一直对生成式 AI 辅助工具没有什么好感：都说效率有提升，但是经常不怎么靠谱不说，真要用起来的价格实在是太贵了。众所周知 DeepSeek 的 API 价格比较便宜，所以我就想试试看能不能用。我一般用 VSCode 写代码，主要的目的在**代码补全**（我认为目前的 AI 工具在代码生成上添乱的情况比起作用的情况多），而一般的方案似乎是用 Continue 作为接入 API 的主体插件。
+作为一个又很穷又很抠的人，我一直对生成式 AI 辅助工具没有什么好感：都说效率有提升，但是经常不怎么靠谱不说，真要用起来的价格实在是太贵了。
+
+众所周知，DeepSeek 的 API 价格比较便宜，所以我就想着贪贪便宜。我一般用 VSCode 写代码，主要的目的在**代码补全**（我认为目前的 AI 工具在代码生成上添乱的情况比起作用的情况多），而一般的方案似乎是用 Continue 作为接入 API 的主体插件。
 
 理论上这应该是个很简单的事情：下载插件，接入 API，使用。但是实际上并不是那么回事。
 
@@ -60,9 +62,9 @@ context:
 
 然而，正如你预料的那样，这也是一个**过时**文档。
 
-如果使用了上述配置，那么设置完模型后，在尝试触发自动补全时，VSCode 会弹出神秘的 `Continue Autocomplete error:`（而且根本没有可见的 error，即使打开了 VSCode 的开发者控制台，在输出中也看不到具体的错误）。考虑到写这篇文章的时候，这篇文章已经 10 个月没更新过了，在 AI 工具天天 Breaking Change 的时代，这也不算稀奇。
+如果使用了上述配置，那么设置完模型后，在尝试触发代码补全时，VSCode 会弹出神秘的 `Continue Autocomplete error:`（而且根本没有可见的 error，即使打开了 VSCode 的开发者控制台，在输出中也看不到具体的错误）。考虑到写这篇文章的时候，“这篇文档”已经 10 个月没更新过了，在 AI 工具天天 Breaking Change 的时代，这也不算稀奇。
 
-于是我去了 Continue 的 [`config.yaml` 文档](https://docs.continue.dev/reference#models)看看究竟是咋回事。首先可以看到的是 `contentLength` 现在已经被挪到了 `defaultCompletionOptions` 下面。但即使修改了这个小问题，自动补全依旧跑不起来。
+于是我去了 Continue 的 [`config.yaml` 文档](https://docs.continue.dev/reference#models)看看究竟是咋回事。首先可以看到的是 `contentLength` 现在已经被挪到了 `defaultCompletionOptions` 下面。但即使进行了修改，自动补全依旧跑不起来。
 
 没办法，只能去 Continue 的[源码](https://github.com/continuedev/continue)里看一眼 DeepSeek 的接口究竟是怎么处理的了。直接用 `deepseek` 作为关键字在 GitHub 上搜索到[相关源码](https://github.com/continuedev/continue/blob/e9309615267b338a30fe33bed5ce3f27961bd4fb/packages/openai-adapters/src/apis/DeepSeek.ts#L22)并不难，然后我们就可以看到在代码补全的实现函数中，`endpoint` 已经亲切地在接口 URL 上帮我们加上了 `beta/completions`，而这意味着上面的 `config.yaml` 中配置 `apiBase` 这个行为本身是**多余的**。
 
@@ -120,4 +122,4 @@ models:
       useRecentlyOpened: false
 ```
 
-如果有跑得动本地代码补全的机器，或许就不需要如此顾虑了，但我没有。
+如果有跑得动本地代码补全的机器，或许就不需要如此顾虑了。但我没有。
