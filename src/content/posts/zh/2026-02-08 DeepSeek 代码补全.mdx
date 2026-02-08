@@ -1,0 +1,123 @@
+---
+title: '折腾一下 DeepSeek 代码补全'
+route: 'deepseek-autocomplete'
+date: 2026-02-08
+tags: ['Code', 'Environment']
+summary: '过时文档害人，但文档迟早会过时'
+---
+
+import Warning from '@/elements/warning.astro'
+
+<Warning title='时效性'>
+  由于 AI 工具链变化得非常快，这篇文章的内容有可能不再有效。请注意检查文章的发布时间。
+</Warning>
+
+作为一个又很穷又很抠的人，我一直对生成式 AI 辅助工具没有什么好感：都说效率有提升，但是经常不怎么靠谱不说，真要用起来的价格实在是太贵了。众所周知 DeepSeek 的 API 价格比较便宜，所以我就想试试看能不能用。我一般用 VSCode 写代码，主要的目的在**代码补全**（我认为目前的 AI 工具在代码生成上添乱的情况比起作用的情况多），而一般的方案似乎是用 Continue 作为接入 API 的主体插件。
+
+理论上这应该是个很简单的事情：下载插件，接入 API，使用。但是实际上并不是那么回事。
+
+## 和过时文档搏斗
+
+安装完 Continue 插件后，可以选择 `Select Model` - `Add Chat Model`，在这个对话框中可以选择 `Provider` 为 `DeepSeek`，然后第一个**过时**的地方就来了：目前 DeepSeek 3.2 不再有 Coder 分支，即使是代码补全也应当选择 `DeepSeek Chat` 作为模型，但是默认光标在 `DeepSeek Coder` 上。
+
+输入完 API Key 之后，Chat 和 Edit 角色的模型就自动配置完了。问题来了，我的代码补全（Autocomplete）呢？
+
+DeepSeek 的文档中，用于代码补全功能的 [FIM 补全](https://api-docs.deepseek.com/zh-cn/guides/fim_completion)文档是这么写的：
+
+> [Continue](https://continue.dev/) 是一款支持代码补全的 VSCode 插件，您可以参考[这篇文档](https://github.com/deepseek-ai/awesome-deepseek-integration/blob/840e93fbf2aa679f248b000dd35b94a91bf58b05/docs/continue/README_cn.md)来配置 Continue 以使用代码补全功能。
+
+为了省去你点击链接的时间，我把“这篇文档”中的配置复制粘贴在了这里：
+
+```yaml
+name: Local Assistant
+version: 1.0.0
+schema: v1
+models:
+  - name: DeepSeek
+    provider: deepseek
+    model: deepseek-chat
+    apiKey: YOUR_DEEPSEEK_API_KEY
+    apiBase: https://api.deepseek.com/beta
+    roles:
+      - chat
+      - edit
+      - apply
+      - summarize
+      - autocomplete
+    contextLength: 128000
+    defaultCompletionOptions:
+      temperature: 0.0
+      maxTokens: 256
+context:
+  - provider: code
+  - provider: docs
+  - provider: diff
+  - provider: terminal
+  - provider: problems
+  - provider: folder
+  - provider: codebase
+```
+
+然而，正如你预料的那样，这也是一个**过时**文档。
+
+如果使用了上述配置，那么设置完模型后，在尝试触发自动补全时，VSCode 会弹出神秘的 `Continue Autocomplete error:`（而且根本没有可见的 error，即使打开了 VSCode 的开发者控制台，在输出中也看不到具体的错误）。考虑到写这篇文章的时候，这篇文章已经 10 个月没更新过了，在 AI 工具天天 Breaking Change 的时代，这也不算稀奇。
+
+于是我去了 Continue 的 [`config.yaml` 文档](https://docs.continue.dev/reference#models)看看究竟是咋回事。首先可以看到的是 `contentLength` 现在已经被挪到了 `defaultCompletionOptions` 下面。但即使修改了这个小问题，自动补全依旧跑不起来。
+
+没办法，只能去 Continue 的[源码](https://github.com/continuedev/continue)里看一眼 DeepSeek 的接口究竟是怎么处理的了。直接用 `deepseek` 作为关键字在 GitHub 上搜索到[相关源码](https://github.com/continuedev/continue/blob/e9309615267b338a30fe33bed5ce3f27961bd4fb/packages/openai-adapters/src/apis/DeepSeek.ts#L22)并不难，然后我们就可以看到在代码补全的实现函数中，`endpoint` 已经亲切地在接口 URL 上帮我们加上了 `beta/completions`，而这意味着上面的 `config.yaml` 中配置 `apiBase` 这个行为本身是**多余的**。
+
+修改配置为下列内容，至此，代码补全至少终于能跑起来了。
+
+```yaml
+name: Local Config
+version: 1.0.0
+schema: v1
+models:
+  - name: DeepSeek Autocomplete
+    provider: deepseek
+    model: deepseek-chat
+    apiKey: DEEPSEEK_API_KEY # 替换为实际的 API 密钥
+    apiBase: https://api.deepseek.com
+    roles:
+      - autocomplete
+    defaultCompletionOptions:
+      contextLength: 128000
+      temperature: 0.0
+      maxTokens: 4000 # FIM 参考文档中提及输出最大为 4k
+```
+
+## 飞快的烧 token 速度
+
+然而，上面的简易配置并不是完美的。实际测试发现，代码补全消耗 token 的速度远超我的预期，而且消耗的数值有一个明显的特性：大约为上下文窗口（128k）的倍数。考虑到即使将整个文件发送也并没有 128k token 那么多，结论就只有一个：Continue 的默认补全策略非常激进，在 `config.yaml` 文档中提及的上下文中包含编辑的文件（`useRecentlyEdited`）或包含最近打开的文件（`useRecentlyOpened`）等选项恐怕都是默认打开的。文档本身并没有非常详细，甚至之于某些配置项可以说是语焉不详，至于实际的默认值只能又去翻源码了，但我懒得翻。
+
+但我只是想跑一个代码补全，这不合适吧？
+
+目前我也没有能摸索出一个合适的配置，能够降低 token 的使用量，并一定程度兼顾补全的质量。下面的配置姑且只做为参考，实际效果只能说未知。
+
+```yaml
+    # 其他配置项...
+    defaultCompletionOptions:
+      contextLength: 128000
+      temperature: 0
+      maxTokens: 4000
+
+    # 代码补全配置
+    autocompleteOptions:
+      # 提示词的最大长度……？这个是抄的
+      maxPromptTokens: 1024
+      # 请求防抖（毫秒）
+      debounceDelay: 500
+      # 使用缓存（其实并不知道缓存什么）
+      useCache: true
+      # 只使用仓库内的代码（还可以用仓库外的吗）
+      onlyMyCode: true
+      # 追溯上下文中的 imports
+      # 但并不是所有的语言都用的 import 关键字，姑且认为能识别吧
+      useImports: false
+      # 包括最近编辑的文件
+      useRecentlyEdited: false
+      # 包括最近打开的文件
+      useRecentlyOpened: false
+```
+
+如果有跑得动本地代码补全的机器，或许就不需要如此顾虑了，但我没有。
