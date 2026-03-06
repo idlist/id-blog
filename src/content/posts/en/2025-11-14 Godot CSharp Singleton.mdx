@@ -55,7 +55,7 @@ And then, directly add the script under the *Globals - Autoload* tag in *Project
 
 If you've enabled nullability check (a.k.a. nullable reference type, or `<Nullable>enable</Nullable>`) in your project, [`CS8618`](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings#nonnullable-reference-not-initialized) will be reported on `Instance`, complaining it's not initialized since the compiler has no way to know the singleton *will* be initialized by Godot. There is not much you can do other than silencing the warning.
 
-Before that, enabling nullability check without extra settings in a Godot project is not really a good idea, because every `[Export]` becomes `CS8618`.I myself have made a custom Roslyn analyzer named `LateInitSuppressor` (inspired by Kotlin keyword `lateinit`) to solely suppress `CS8618` on fields or properties attributed by `[Export]`, and I'm also using it to suppress other `CS8618`s that *I know* will definitely not be null *after* certain lifecycle. Nullability check is handy when the object might *actually* be null, but not in these cases.
+Or rather, enabling nullability check without extra settings in a Godot project is *not* really a good idea, because every `[Export]` becomes `CS8618`. I myself have made a custom Roslyn analyzer named `LateInitSuppressor` (inspired by Kotlin keyword `lateinit`) to solely suppress `CS8618` on fields or properties attributed by `[Export]`, and I'm also using it to suppress other `CS8618`s that *I know* will definitely not be null *after* certain lifecycle. Nullability check is handy when the object might *actually* be null, but not in these cases.
 
 Though being a bit of off-topic, the custom analyzer itself is quite simple to figure out. I'm not opening-source it or publishing it only because my code is too spaghetti: it works, but it only works.
 
@@ -94,7 +94,7 @@ public partial class Singleton : Node { // Or whatever the node type is
 }
 ```
 
-A significant difference (and *pitfall*) here is about when the things related to the child nodes are ready for use, as those things can only be accessed when the singleton is `_Ready()`. For example, if the singleton has something like:
+A significant difference (and *pitfall*) here is about *when* the things related to the child nodes are ready for use, as those things can only be accessed when the singleton is `_Ready()`. For example, if the singleton has something like:
 
 ```csharp
 public partial class Singleton : Node {
@@ -125,7 +125,7 @@ Here, `OnReady` is a custom extension method to delay the code execution (in its
 
 To make it clear, things that are not related to the child nodes (e.g., `[Signal]`s and resources at the root node) are still available as soon as possible via `Instance`, and the only thing matters might be the order in *Autoload*.
 
-## Afterword
+## Afterwords
 
 The patterns mentioned above are based on my own experience, and it is possible (and *very likely*) that there's better setup than mine. But at least, I'm using those setups and it works fine.
 
